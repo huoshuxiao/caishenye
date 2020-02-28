@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class MorningStarDTO {
 
+    private String page = "";
     // 基金代码
     private String fundCode = "";
     // 基金名称
@@ -41,7 +42,8 @@ public class MorningStarDTO {
 //            sbStr.append(",").append(v);
 //        });
 
-        sbStr.append(",").append(fundCode)
+        sbStr//.append(",").append(page)
+                .append(",").append(fundCode)
                 .append(",").append(fundName)
                 .append(",").append(return1Day)
                 .append(",").append(return1Week)

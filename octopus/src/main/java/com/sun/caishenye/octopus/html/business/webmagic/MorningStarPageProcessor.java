@@ -11,7 +11,6 @@ import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.model.HttpRequestBody;
 import us.codecraft.webmagic.pipeline.ConsolePipeline;
-import us.codecraft.webmagic.pipeline.JsonFilePipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Html;
 import us.codecraft.webmagic.selector.Selectable;
@@ -21,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Morning Star PageProcessor
@@ -40,7 +40,9 @@ public class MorningStarPageProcessor implements PageProcessor {
     private final String EL_ID_CTL00_CPHMAIN_LBPERFORMANCE = "ctl00_cphMain_lbPerformance";
 
     /* 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等 */
-    private Site site = Site.me().setRetryTimes(3).setSleepTime(1000).setTimeOut(5000);
+    private Site site = Site.me().setRetryTimes(3).setSleepTime(100).setTimeOut(Integer.MAX_VALUE);
+
+    private AtomicInteger aiNavPageIndex = new AtomicInteger(1);
 
     // process是定制爬虫逻辑的核心接口，在这里编写抽取逻辑，页面元素的抽取
     // 使用了三种抽取技术：XPath、正则表达式和CSS选择器。另外，对于JSON格式的内容，可使用JsonPath进行解析。
@@ -58,6 +60,9 @@ public class MorningStarPageProcessor implements PageProcessor {
         Selectable activeTabSelectable = html.xpath("div[@id='qr_tabcommand']/div[@id='qr_tab']/a[@class='active']");
         String activeTabId = activeTabSelectable.xpath("a/@id").get();
         log.debug("active tab id is {} ", activeTabId);
+        // 翻页阀值，最大值
+        int navPageMaxValue = (int)Math.ceil(Double.valueOf(html.xpath("div[@id='qr_pager']/*/span[@id='ctl00_cphMain_TotalResultLabel']/text()").get())
+                / Double.valueOf(html.xpath("select[@name='ctl00$cphMain$ddlPageSite']/option[@selected='selected']/@value").get())) ;
 
         // 快照 页面
         // <a id="ctl00_cphMain_lbSnapshot" class="active" href="javascript:__doPostBack('ctl00$cphMain$lbSnapshot','')">快照</a>
@@ -65,22 +70,27 @@ public class MorningStarPageProcessor implements PageProcessor {
             log.debug(activeTabId);
             // -> 跳转到 业绩和风险tab页(ctl00_cphMain_lbPerformance)
             String performanceTabHref =  html.xpath("div[@id='qr_tabcommand']/div[@id='qr_tab']/a[@id='ctl00_cphMain_lbPerformance']/@href").get();
+            log.debug("link el :: {}", performanceTabHref);
+
             // 使用form表单提交的方式
             request = setFormPostRequest(performanceTabHref, html);
-
+            // 将Request加入Scheduler中
             /* 部分三：从页面发现后续的url地址来抓取 */
             page.addTargetRequest(request);
 
         // 业绩和风险页面
         // <a id="ctl00_cphMain_lbPerformance" class="active" href="javascript:__doPostBack('ctl00$cphMain$lbPerformance','')">业绩和风险</a>
-        } else if (EL_ID_CTL00_CPHMAIN_LBPERFORMANCE.equals(activeTabId)) {
+        }
+        else if (EL_ID_CTL00_CPHMAIN_LBPERFORMANCE.equals(activeTabId) && aiNavPageIndex.get() <= navPageMaxValue) {
+
             log.debug(activeTabId);
             /* 采集数据 */
             List<MorningStarDTO> morningStarDTOList = dataAgent(html);
 
             // 保存结果至Pipeline，持久化对象结果
             for (MorningStarDTO morningStarDTO: morningStarDTOList) {
-                page.putField(morningStarDTO.getFundCode(), morningStarDTO.toStr());
+                // fundCode会为空，做组合key
+                page.putField(morningStarDTO.getPage() + "@"+ morningStarDTO.getFundCode() + "@" + morningStarDTO.getFundName(), morningStarDTO.toStr());
 //                page.putField(morningStarDTO.getFundCode(), morningStarDTO.getFundCode());
 //                page.putField(morningStarDTO.getFundName(), morningStarDTO.getFundName());
 //                page.putField(morningStarDTO.getReturn1Day(), morningStarDTO.getReturn1Day());
@@ -96,37 +106,59 @@ public class MorningStarPageProcessor implements PageProcessor {
 //                page.putField(morningStarDTO.getReturnInception(), morningStarDTO.getReturnInception());
             }
 
-            // 翻页
-//            Request request = setFormPostRequest(activeTabHref, html);
-//            // 使用form表单提交的方式
-//            page.addTargetRequest(request);
-        } else {
+            //////////////////////////// 当前页面数据采集完毕，构建翻页请求 //////////////////////////////////////
+            /* 模拟翻页请求JavaScript */
+            // 获取下一页元素(Form Submit Function)
+            int last = html.xpath("div[@id='qr_pager']/*/div[@id='ctl00_cphMain_AspNetPager1']/a").all().size();
+            last--;
+            String navPageJavaScriptRequest = html.xpath("div[@id='qr_pager']/*/div[@id='ctl00_cphMain_AspNetPager1']/a[" + last + "]/@href").get();
+            log.debug("nav page js request :: {}", navPageJavaScriptRequest);
+
+            // 为空时，翻页请求是最后一页。
+            log.debug("TotalResult counts {} ,NavPage {} ,max page {}", Integer.valueOf(html.xpath("div[@id='qr_pager']/*/span[@id='ctl00_cphMain_TotalResultLabel']/text()").get()), aiNavPageIndex.get(), navPageMaxValue);
+            if (StringUtils.isEmpty(navPageJavaScriptRequest)) {
+                // mock
+                navPageJavaScriptRequest = "javascript:__doPostBack('999999','999999')";
+            }
+
+            aiNavPageIndex.incrementAndGet();
+            // 使用form表单提交的方式
+            request = setFormPostRequest(navPageJavaScriptRequest, html);
+            // 将Request加入Scheduler中
+            /* 部分三：从页面发现后续的url地址来抓取 */
+            page.addTargetRequest(request);
+        }
+        else {
+            // 设置skip之后，这个页面的结果不会被Pipeline处理
             page.setSkip(Boolean.TRUE);
         }
-
-        /* 部分三：从页面发现后续的url地址来抓取 */
-//        page.addTargetRequest(request);
-
     }
 
+    /**
+     * 采集数据
+     *
+     * @param html
+     * @return
+     */
     private List<MorningStarDTO> dataAgent(Html html) {
+        // 根据每页数量定义List大小
         List<MorningStarDTO> morningStarDTOList = new ArrayList<>(Integer.valueOf(html.xpath("select[@name='ctl00$cphMain$ddlPageSite']/option[@selected='selected']/@value").get()));
 
-            /*
-            <td class="msDataText" width="60"><a href="/quicktake/0P0001696E" target="_blank">001410</a></td>
-            <td class="msDataText" width="150"><a href="/quicktake/0P0001696E" target="_blank">信达澳银新能源产业股票</a></td>
-            <td class="msDataNumeric" width="45">-4.77</td>
-            <td class="msDataNumeric" width="45">5.20</td>
-            <td class="msDataNumeric" width="45">19.27</td>
-            <td class="msDataNumeric" width="45">60.53</td>
-            <td class="msDataNumeric" width="45">77.30</td>
-            <td class="msDataNumeric" width="45">104.94</td>
-            <td class="msDataNumeric" width="55">49.16</td>
-            <td class="msDataNumeric" width="55">44.15</td>
-            <td class="msDataNumeric" width="55">-</td>
-            <td class="msDataNumeric" width="60">-</td>
-            <td class="msDataNumeric" width="60">230.41</td>
-             */
+        /*
+        <td class="msDataText" width="60"><a href="/quicktake/0P0001696E" target="_blank">001410</a></td>
+        <td class="msDataText" width="150"><a href="/quicktake/0P0001696E" target="_blank">信达澳银新能源产业股票</a></td>
+        <td class="msDataNumeric" width="45">-4.77</td>
+        <td class="msDataNumeric" width="45">5.20</td>
+        <td class="msDataNumeric" width="45">19.27</td>
+        <td class="msDataNumeric" width="45">60.53</td>
+        <td class="msDataNumeric" width="45">77.30</td>
+        <td class="msDataNumeric" width="45">104.94</td>
+        <td class="msDataNumeric" width="55">49.16</td>
+        <td class="msDataNumeric" width="55">44.15</td>
+        <td class="msDataNumeric" width="55">-</td>
+        <td class="msDataNumeric" width="60">-</td>
+        <td class="msDataNumeric" width="60">230.41</td>
+         */
         Selectable ctl00CphMainGridResultSelectable = html.xpath("table[@id='ctl00_cphMain_gridResult']");
         List<String> trs = ctl00CphMainGridResultSelectable.xpath("tr").all();
         // i从1开始，0为header，1为body数据
@@ -225,6 +257,7 @@ public class MorningStarPageProcessor implements PageProcessor {
 
             // 保存采集对象结果
             MorningStarDTO morningStarDTO = new MorningStarDTO();
+            morningStarDTO.setPage(String.valueOf(aiNavPageIndex.get()));
             morningStarDTO.setFundCode(fundCode);
             morningStarDTO.setFundName(fundName);
             morningStarDTO.setReturn1Day(return1Day);
@@ -291,8 +324,6 @@ public class MorningStarPageProcessor implements PageProcessor {
 
         // Monitor for JMX
 //        SpiderMonitor.instance().register(morningStarSpider);
-
-        new JsonFilePipeline();
 
         morningStarSpider
 //                .setScheduler()   // Scheduler包括两个作用： 对待抓取的URL队列进行管理, 对已抓取的URL进行去重。

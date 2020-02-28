@@ -7,17 +7,16 @@
 数据来源于多种终端多种类型多种方式, 如:
  
  * 网站
-   - [Web Magic](http://webmagic.io/)
-    > 使用中
+   - [x] [Web Magic](http://webmagic.io/)
  
  * 日志
-   - [Apache Flume](https://flume.apache.org/)
-   - [Fluentd](http://docs.fluentd.org/articles/quickstart)
-   - [Logstash](https://github.com/elastic/logstash)
-   - [Splunk Forwarder](http://www.splunk.com/)
+   - [ ] [Apache Flume](https://flume.apache.org/)
+   - [ ] [Fluentd](http://docs.fluentd.org/articles/quickstart)
+   - [ ] [Logstash](https://github.com/elastic/logstash)
+   - [ ] [Splunk Forwarder](http://www.splunk.com/)
  
  * 数据库
-   - [Apache Sqoop](https://sqoop.apache.org/)
+   - [ ] [Apache Sqoop](https://sqoop.apache.org/)
   
 ### 架构组成
 
