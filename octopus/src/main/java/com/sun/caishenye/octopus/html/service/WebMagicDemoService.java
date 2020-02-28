@@ -1,17 +1,16 @@
 package com.sun.caishenye.octopus.html.service;
 
-import com.sun.caishenye.octopus.html.business.webmagic.MorningStarPageProcessor;
+import com.sun.caishenye.octopus.html.business.webmagic.WebMagicProcessorDemo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MorningStarService {
+public class WebMagicDemoService {
 
-//    private final WebmagicGithubPageProcessorDemo githubRepo;
-    private final MorningStarPageProcessor processor;
+    private final WebMagicProcessorDemo processor;
 
     @Autowired
-    public MorningStarService(MorningStarPageProcessor processor) {
+    public WebMagicDemoService(WebMagicProcessorDemo processor) {
         this.processor = processor;
     }
 
