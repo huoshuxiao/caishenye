@@ -18,16 +18,19 @@ public class MorningStarController {
         this.morningstarService = morningstarService;
     }
 
+    // step1: 基础数据
     @GetMapping("base")
     public Object base() {
         return morningstarService.base();
     }
 
+    // step2: 扩展数据：基金ID，供采集明细用
     @GetMapping("extend")
     public Object extend() {
         return morningstarService.extend();
     }
 
+    // step4: 扩展数据： 年平均回报/风险
     @GetMapping("detail")
     public Object detail() {
         return morningstarService.detail();
