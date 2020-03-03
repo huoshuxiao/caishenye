@@ -1,9 +1,9 @@
-package com.sun.caishenye.octopus.morningstar.business.api;
+package com.sun.caishenye.octopus.fund.business.api;
 
 import com.sun.caishenye.octopus.common.Constans;
-import com.sun.caishenye.octopus.morningstar.domain.MorningStarDetailDomain;
-import com.sun.caishenye.octopus.morningstar.domain.MorningStarDomain;
-import com.sun.caishenye.octopus.morningstar.domain.MorningStarExtendDomain;
+import com.sun.caishenye.octopus.fund.domain.MorningStarDetailDomain;
+import com.sun.caishenye.octopus.fund.domain.MorningStarDomain;
+import com.sun.caishenye.octopus.fund.domain.MorningStarExtendDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

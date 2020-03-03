@@ -1,9 +1,8 @@
-package com.sun.caishenye.octopus.morningstar.service;
+package com.sun.caishenye.octopus.fund.service;
 
-import com.sun.caishenye.octopus.morningstar.business.api.MorningStarRestService;
-import com.sun.caishenye.octopus.morningstar.business.api.MorningStarRestTemplate;
-import com.sun.caishenye.octopus.morningstar.business.webmagic.MorningStarBasePageProcessor;
-import com.sun.caishenye.octopus.morningstar.business.webmagic.MorningStarExtendPageProcessor;
+import com.sun.caishenye.octopus.fund.business.api.MorningStarRestService;
+import com.sun.caishenye.octopus.fund.business.webmagic.MorningStarBasePageProcessor;
+import com.sun.caishenye.octopus.fund.business.webmagic.MorningStarExtendPageProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

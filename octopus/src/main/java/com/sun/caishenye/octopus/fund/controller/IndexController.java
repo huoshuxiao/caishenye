@@ -1,4 +1,4 @@
-package com.sun.caishenye.octopus.morningstar.controller;
+package com.sun.caishenye.octopus.fund.controller;
 
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package com.sun.caishenye.octopus.morningstar.domain;
+package com.sun.caishenye.octopus.fund.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

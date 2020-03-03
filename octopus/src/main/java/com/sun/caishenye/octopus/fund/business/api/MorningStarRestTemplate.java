@@ -1,26 +1,14 @@
-package com.sun.caishenye.octopus.morningstar.business.api;
+package com.sun.caishenye.octopus.fund.business.api;
 
-import com.sun.caishenye.octopus.common.Constans;
-import com.sun.caishenye.octopus.morningstar.domain.MorningStarDetailDomain;
-import com.sun.caishenye.octopus.morningstar.domain.MorningStarDomain;
-import com.sun.caishenye.octopus.morningstar.domain.MorningStarExtendDomain;
+import com.sun.caishenye.octopus.fund.domain.MorningStarDetailDomain;
+import com.sun.caishenye.octopus.fund.domain.MorningStarExtendDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

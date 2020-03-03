@@ -1,6 +1,6 @@
-package com.sun.caishenye.octopus.morningstar.controller;
+package com.sun.caishenye.octopus.fund.controller;
 
-import com.sun.caishenye.octopus.morningstar.service.WebMagicDemoService;
+import com.sun.caishenye.octopus.fund.service.WebMagicDemoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

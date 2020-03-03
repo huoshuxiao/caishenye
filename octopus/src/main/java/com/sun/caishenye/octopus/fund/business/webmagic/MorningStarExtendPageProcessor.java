@@ -1,7 +1,7 @@
-package com.sun.caishenye.octopus.morningstar.business.webmagic;
+package com.sun.caishenye.octopus.fund.business.webmagic;
 
 import com.sun.caishenye.octopus.common.Constans;
-import com.sun.caishenye.octopus.morningstar.domain.MorningStarExtendDomain;
+import com.sun.caishenye.octopus.fund.domain.MorningStarExtendDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
