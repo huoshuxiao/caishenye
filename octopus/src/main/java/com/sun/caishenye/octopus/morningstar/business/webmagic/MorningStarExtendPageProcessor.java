@@ -1,6 +1,7 @@
-package com.sun.caishenye.octopus.html.business.webmagic;
+package com.sun.caishenye.octopus.morningstar.business.webmagic;
 
-import com.sun.caishenye.octopus.html.dto.MorningStarDTO;
+import com.sun.caishenye.octopus.common.Constans;
+import com.sun.caishenye.octopus.morningstar.domain.MorningStarExtendDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Component
 @Slf4j
-public class MorningStarPageProcessor implements PageProcessor {
+public class MorningStarExtendPageProcessor implements PageProcessor {
 
     // 基金工具->基金筛选器/
     private final String URL = "http://cn.morningstar.com/quickrank/default.aspx";
@@ -43,6 +44,10 @@ public class MorningStarPageProcessor implements PageProcessor {
     private Site site = Site.me().setRetryTimes(3).setSleepTime(100).setTimeOut(Integer.MAX_VALUE);
 
     private AtomicInteger aiNavPageIndex = new AtomicInteger(1);
+
+    private final String FILE_PATH = "data";
+    private final String FILE_NAME = "MorningStarExtend.log";
+    private final Integer THREADS = 10;
 
     // process是定制爬虫逻辑的核心接口，在这里编写抽取逻辑，页面元素的抽取
     // 使用了三种抽取技术：XPath、正则表达式和CSS选择器。另外，对于JSON格式的内容，可使用JsonPath进行解析。
@@ -85,12 +90,12 @@ public class MorningStarPageProcessor implements PageProcessor {
 
             log.debug(activeTabId);
             /* 采集数据 */
-            List<MorningStarDTO> morningStarDTOList = dataAgent(html);
+            List<MorningStarExtendDomain> morningStarDTOList = dataAgent(html);
 
             // 保存结果至Pipeline，持久化对象结果
-            for (MorningStarDTO morningStarDTO: morningStarDTOList) {
+            for (MorningStarExtendDomain morningStarDTO: morningStarDTOList) {
                 // fundCode会为空，做组合key
-                page.putField(morningStarDTO.getPage() + "@"+ morningStarDTO.getFundCode() + "@" + morningStarDTO.getFundName(), morningStarDTO.toStr());
+                page.putField(morningStarDTO.getFundId() + "@"+ morningStarDTO.getFundCode() + "@" + morningStarDTO.getFundName(), morningStarDTO.toStr());
 //                page.putField(morningStarDTO.getFundCode(), morningStarDTO.getFundCode());
 //                page.putField(morningStarDTO.getFundName(), morningStarDTO.getFundName());
 //                page.putField(morningStarDTO.getReturn1Day(), morningStarDTO.getReturn1Day());
@@ -140,9 +145,9 @@ public class MorningStarPageProcessor implements PageProcessor {
      * @param html
      * @return
      */
-    private List<MorningStarDTO> dataAgent(Html html) {
+    private List<MorningStarExtendDomain> dataAgent(Html html) {
         // 根据每页数量定义List大小
-        List<MorningStarDTO> morningStarDTOList = new ArrayList<>(Integer.valueOf(html.xpath("select[@name='ctl00$cphMain$ddlPageSite']/option[@selected='selected']/@value").get()));
+        List<MorningStarExtendDomain> morningStarDTOList = new ArrayList<>(Integer.valueOf(html.xpath("select[@name='ctl00$cphMain$ddlPageSite']/option[@selected='selected']/@value").get()));
 
         /*
         <td class="msDataText" width="60"><a href="/quicktake/0P0001696E" target="_blank">001410</a></td>
@@ -169,6 +174,8 @@ public class MorningStarPageProcessor implements PageProcessor {
             Html trHtml = Html.create(htmlTableTemplate.replace("{0}", trs.get(i)));
             List<String> tds = trHtml.xpath("td").all();
 
+            // 基金ID
+            String fundId = "";
             // 基金代码
             String fundCode = "";
             // 基金名称
@@ -212,7 +219,9 @@ public class MorningStarPageProcessor implements PageProcessor {
 
                 switch (j) {
                     case 2 :
+                        fundId = tdHtml.xpath("td/a/@href").get().split("/")[2];
                         fundCode = tdValue;
+                        log.debug("fundId >> {}", fundId);
                         break;
                     case 3 :
                         fundName = tdValue;
@@ -256,7 +265,8 @@ public class MorningStarPageProcessor implements PageProcessor {
             }
 
             // 保存采集对象结果
-            MorningStarDTO morningStarDTO = new MorningStarDTO();
+            MorningStarExtendDomain morningStarDTO = new MorningStarExtendDomain();
+            morningStarDTO.setFundId(fundId);
             morningStarDTO.setPage(String.valueOf(aiNavPageIndex.get()));
             morningStarDTO.setFundCode(fundCode);
             morningStarDTO.setFundName(fundName);
@@ -288,7 +298,7 @@ public class MorningStarPageProcessor implements PageProcessor {
     private Request setFormPostRequest(String activeTabHref, Html html) {
 
         String formParam = StringUtils.substringBetween(activeTabHref,"(",")");
-        String[] formParams = formParam.split(",");
+        String[] formParams = formParam.split(Constans.DELIMITING_COMMA.getCode());
         Map<String,Object> params = new HashedMap();
         params.put("__EVENTTARGET", formParams[0].replaceAll("[']",""));
         params.put("__EVENTARGUMENT", formParams[1].replaceAll("[']",""));
@@ -319,7 +329,7 @@ public class MorningStarPageProcessor implements PageProcessor {
 
     public void run() throws Exception {
 
-        Spider morningStarSpider = Spider.create(new MorningStarPageProcessor())
+        Spider morningStarSpider = Spider.create(new MorningStarExtendPageProcessor())
                 .addUrl(URL);   // add url to Scheduler
 
         // Monitor for JMX
@@ -329,8 +339,8 @@ public class MorningStarPageProcessor implements PageProcessor {
 //                .setScheduler()   // Scheduler包括两个作用： 对待抓取的URL队列进行管理, 对已抓取的URL进行去重。
 //                .setDownloader()  // Downloader负责从互联网上下载页面。如：SeleniumDownloader
                 .addPipeline(new ConsolePipeline()) // 输出结果到控制台
-                .addPipeline(new TextFilePipeline("data", "MorningStar.log"))  // 使用Pipeline保存结果到文件
-                .thread(5)
+                .addPipeline(new TextFilePipeline(FILE_PATH, FILE_NAME))  // 使用Pipeline保存结果到文件
+                .thread(THREADS)
                 .run();
     }
 }

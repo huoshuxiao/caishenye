@@ -1,20 +1,20 @@
-package com.sun.caishenye.octopus.html.controller;
+package com.sun.caishenye.octopus.morningstar.controller;
 
-import com.sun.caishenye.octopus.html.service.MorningStarService;
+import com.sun.caishenye.octopus.morningstar.service.WebMagicDemoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("morningstar/")
-public class MorningStarController {
+@RequestMapping("demo/")
+public class WebMagicDemoController {
 
-    private final MorningStarService morningstarService;
+    private final WebMagicDemoService morningstarService;
 
     // @Autowired (to do constructor injection) works well
     @Autowired
-    public MorningStarController(MorningStarService morningstarService) {
+    public WebMagicDemoController(WebMagicDemoService morningstarService) {
         this.morningstarService = morningstarService;
     }
 
