@@ -33,7 +33,7 @@ public class WebMagicProcessorDemo implements PageProcessor {
         // 保存结果，这个结果会最终保存到ResultItems中(KV的形式按行输出)
         page.putField("author", author);
         page.putField("name", name);
-        if (page.getResultItems().get("name")==null){
+        if (page.getResultItems().get("name") == null) {
             // 设置skip之后，这个页面的结果不会被Pipeline处理
             page.setSkip(true);
         }
@@ -57,10 +57,10 @@ public class WebMagicProcessorDemo implements PageProcessor {
         demo
 //            .setScheduler()   // Scheduler包括两个作用： 对待抓取的URL队列进行管理, 对已抓取的URL进行去重。
 //            .setDownloader()  // Downloader负责从互联网上下载页面。如：SeleniumDownloader
-            .addPipeline(new ConsolePipeline()) // 输出结果到控制台
-            .addPipeline(new FilePipeline("MorningStarDEMO"))  // 使用Pipeline保存结果到文件
-            .thread(5)
-            .run();
+                .addPipeline(new ConsolePipeline()) // 输出结果到控制台
+                .addPipeline(new FilePipeline("MorningStarDEMO"))  // 使用Pipeline保存结果到文件
+                .thread(5)
+                .run();
     }
 
 }

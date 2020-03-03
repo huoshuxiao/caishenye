@@ -21,6 +21,7 @@ public class MorningStarDomain {
 
         sbStr.append(Constans.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getFundCode())
                 .append(Constans.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getFundName())
+                .append(Constans.DELIMITING_COMMA.getCode()).append(morningStarExtendDomain.getRisk())
                 .append(Constans.DELIMITING_COMMA.getCode()).append(morningStarDetailDomain.getInceptionDate())
                 .append(Constans.DELIMITING_COMMA.getCode()).append(morningStarExtendDomain.getReturnAvg())
                 .append(Constans.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getReturn1Day())

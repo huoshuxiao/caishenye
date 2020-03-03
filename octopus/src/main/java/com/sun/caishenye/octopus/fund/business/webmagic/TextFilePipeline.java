@@ -52,7 +52,7 @@ public class TextFilePipeline extends FilePersistentBase implements Pipeline {
         try (OutputStream out = new BufferedOutputStream(
                 Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND))) {
             for (Map.Entry<String, Object> entry : resultItems.getAll().entrySet()) {
-                byte data[] = (entry.getValue().toString()+"\r\n").getBytes();
+                byte data[] = (entry.getValue().toString() + "\r\n").getBytes();
                 out.write(data, 0, data.length);
 
             }

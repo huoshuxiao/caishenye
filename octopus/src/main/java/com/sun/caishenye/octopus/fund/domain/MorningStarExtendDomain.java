@@ -14,6 +14,8 @@ public class MorningStarExtendDomain extends MorningStarBaseDomain {
 
     // 年平均回报(%)
     private String returnAvg;
+    // 风险
+    private String risk;
 
     @Override
     public String toStr() {

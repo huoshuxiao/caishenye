@@ -11,7 +11,7 @@
   - 数据采集
   
 * 太极 (Tai chi)
-  - API中心
+  - 服务中心
   
 * 招财猫 (Lucky Cat)
   - Frontend

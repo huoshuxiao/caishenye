@@ -25,13 +25,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Morning Star PageProcessor
- *
+ * <p>
  * 分为三个部分，分别是爬虫的配置、页面元素的抽取和链接的发现
- *
  */
 @Component
 @Slf4j
 public class MorningStarBasePageProcessor implements PageProcessor {
+
+    /* 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等 */
+    private Site site = Site.me().setRetryTimes(3).setSleepTime(100).setTimeOut(Integer.MAX_VALUE);
+    private final Integer THREADS = 10;
 
     // 基金工具->基金筛选器/
     private final String URL = "http://cn.morningstar.com/quickrank/default.aspx";
@@ -39,9 +42,6 @@ public class MorningStarBasePageProcessor implements PageProcessor {
     private final String EL_ID_CTL00_CPHMAIN_LBSNAPSHOT = "ctl00_cphMain_lbSnapshot";
     // 业绩和风险页面 ID
     private final String EL_ID_CTL00_CPHMAIN_LBPERFORMANCE = "ctl00_cphMain_lbPerformance";
-
-    /* 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等 */
-    private Site site = Site.me().setRetryTimes(3).setSleepTime(100).setTimeOut(Integer.MAX_VALUE);
 
     private AtomicInteger aiNavPageIndex = new AtomicInteger(1);
 
@@ -65,15 +65,15 @@ public class MorningStarBasePageProcessor implements PageProcessor {
         String activeTabId = activeTabSelectable.xpath("a/@id").get();
         log.debug("active tab id is {} ", activeTabId);
         // 翻页阀值，最大值
-        int navPageMaxValue = (int)Math.ceil(Double.valueOf(html.xpath("div[@id='qr_pager']/*/span[@id='ctl00_cphMain_TotalResultLabel']/text()").get())
-                / Double.valueOf(html.xpath("select[@name='ctl00$cphMain$ddlPageSite']/option[@selected='selected']/@value").get())) ;
+        int navPageMaxValue = (int) Math.ceil(Double.valueOf(html.xpath("div[@id='qr_pager']/*/span[@id='ctl00_cphMain_TotalResultLabel']/text()").get())
+                / Double.valueOf(html.xpath("select[@name='ctl00$cphMain$ddlPageSite']/option[@selected='selected']/@value").get()));
 
         // 快照 页面
         // <a id="ctl00_cphMain_lbSnapshot" class="active" href="javascript:__doPostBack('ctl00$cphMain$lbSnapshot','')">快照</a>
         if (EL_ID_CTL00_CPHMAIN_LBSNAPSHOT.equals(activeTabId)) {
             log.debug(activeTabId);
             // -> 跳转到 业绩和风险tab页(ctl00_cphMain_lbPerformance)
-            String performanceTabHref =  html.xpath("div[@id='qr_tabcommand']/div[@id='qr_tab']/a[@id='ctl00_cphMain_lbPerformance']/@href").get();
+            String performanceTabHref = html.xpath("div[@id='qr_tabcommand']/div[@id='qr_tab']/a[@id='ctl00_cphMain_lbPerformance']/@href").get();
             log.debug("link el :: {}", performanceTabHref);
 
             // 使用form表单提交的方式
@@ -82,19 +82,18 @@ public class MorningStarBasePageProcessor implements PageProcessor {
             /* 部分三：从页面发现后续的url地址来抓取 */
             page.addTargetRequest(request);
 
-        // 业绩和风险页面
-        // <a id="ctl00_cphMain_lbPerformance" class="active" href="javascript:__doPostBack('ctl00$cphMain$lbPerformance','')">业绩和风险</a>
-        }
-        else if (EL_ID_CTL00_CPHMAIN_LBPERFORMANCE.equals(activeTabId) && aiNavPageIndex.get() <= navPageMaxValue) {
+            // 业绩和风险页面
+            // <a id="ctl00_cphMain_lbPerformance" class="active" href="javascript:__doPostBack('ctl00$cphMain$lbPerformance','')">业绩和风险</a>
+        } else if (EL_ID_CTL00_CPHMAIN_LBPERFORMANCE.equals(activeTabId) && aiNavPageIndex.get() <= navPageMaxValue) {
 
             log.debug(activeTabId);
             /* 采集数据 */
             List<MorningStarBaseDomain> morningStarDTOList = dataAgent(html);
 
             // 保存结果至Pipeline，持久化对象结果
-            for (MorningStarBaseDomain morningStarDTO: morningStarDTOList) {
+            for (MorningStarBaseDomain morningStarDTO : morningStarDTOList) {
                 // fundCode会为空，做组合key
-                page.putField(morningStarDTO.getPage() + "@"+ morningStarDTO.getFundCode() + "@" + morningStarDTO.getFundName(), morningStarDTO.toStr());
+                page.putField(morningStarDTO.getPage() + "@" + morningStarDTO.getFundCode() + "@" + morningStarDTO.getFundName(), morningStarDTO.toStr());
 //                page.putField(morningStarDTO.getFundCode(), morningStarDTO.getFundCode());
 //                page.putField(morningStarDTO.getFundName(), morningStarDTO.getFundName());
 //                page.putField(morningStarDTO.getReturn1Day(), morningStarDTO.getReturn1Day());
@@ -131,8 +130,7 @@ public class MorningStarBasePageProcessor implements PageProcessor {
             // 将Request加入Scheduler中
             /* 部分三：从页面发现后续的url地址来抓取 */
             page.addTargetRequest(request);
-        }
-        else {
+        } else {
             // 设置skip之后，这个页面的结果不会被Pipeline处理
             page.setSkip(Boolean.TRUE);
         }
@@ -205,7 +203,7 @@ public class MorningStarBasePageProcessor implements PageProcessor {
             // td2: checkbox
             // td n-2: 三年标准差(%)
             // td n-1: 三年晨星风险系数
-            for (int j = 2; j < tds.size() -2; j++) {
+            for (int j = 2; j < tds.size() - 2; j++) {
                 log.debug("td :: {}", tds.get(j));
                 // 为了让Html.create构建出html元素，补充table元素
                 String htmlTableTrTemplate = "<table><tr>{0}</tr></table>";
@@ -215,43 +213,43 @@ public class MorningStarBasePageProcessor implements PageProcessor {
                 log.debug("td value :: {}", tdValue);
 
                 switch (j) {
-                    case 2 :
+                    case 2:
                         fundCode = tdValue;
                         break;
-                    case 3 :
+                    case 3:
                         fundName = tdValue;
                         break;
-                    case 4 :
+                    case 4:
                         return1Day = tdValue;
                         break;
-                    case 5 :
+                    case 5:
                         return1Week = tdValue;
                         break;
-                    case 6 :
+                    case 6:
                         return1Month = tdValue;
                         break;
-                    case 7 :
+                    case 7:
                         return3Month = tdValue;
                         break;
-                    case 8 :
+                    case 8:
                         return6Month = tdValue;
                         break;
-                    case 9 :
+                    case 9:
                         return1Year = tdValue;
                         break;
-                    case 10 :
+                    case 10:
                         return2Year = tdValue;
                         break;
-                    case 11 :
+                    case 11:
                         return3Year = tdValue;
                         break;
-                    case 12 :
+                    case 12:
                         return5Year = tdValue;
                         break;
-                    case 13 :
+                    case 13:
                         return10Year = tdValue;
                         break;
-                    case 14 :
+                    case 14:
                         returnInception = tdValue;
                         break;
                     default:
@@ -291,11 +289,11 @@ public class MorningStarBasePageProcessor implements PageProcessor {
      */
     private Request setFormPostRequest(String activeTabHref, Html html) {
 
-        String formParam = StringUtils.substringBetween(activeTabHref,"(",")");
+        String formParam = StringUtils.substringBetween(activeTabHref, "(", ")");
         String[] formParams = formParam.split(Constans.DELIMITING_COMMA.getCode());
-        Map<String,Object> params = new HashedMap();
-        params.put("__EVENTTARGET", formParams[0].replaceAll("[']",""));
-        params.put("__EVENTARGUMENT", formParams[1].replaceAll("[']",""));
+        Map<String, Object> params = new HashedMap();
+        params.put("__EVENTTARGET", formParams[0].replaceAll("[']", ""));
+        params.put("__EVENTARGUMENT", formParams[1].replaceAll("[']", ""));
         params.put("__LASTFOCUS", html.xpath("form[@id='aspnetForm']/input[@id=__LASTFOCUS]/@value").get());
         params.put("__VIEWSTATE", html.xpath("form[@id='aspnetForm']/input[@id=__VIEWSTATE]/@value").get());
         params.put("__VIEWSTATEGENERATOR", html.xpath("form[@id='aspnetForm']/input[@id=__VIEWSTATEGENERATOR]/@value").get());
@@ -334,7 +332,7 @@ public class MorningStarBasePageProcessor implements PageProcessor {
 //                .setDownloader()  // Downloader负责从互联网上下载页面。如：SeleniumDownloader
                 .addPipeline(new ConsolePipeline()) // 输出结果到控制台
                 .addPipeline(new TextFilePipeline(FILE_PATH, FILE_NAME))  // 使用Pipeline保存结果到文件
-                .thread(5)
+                .thread(THREADS)
                 .run();
     }
 }

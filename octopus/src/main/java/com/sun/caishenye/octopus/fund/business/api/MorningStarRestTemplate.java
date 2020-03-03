@@ -13,7 +13,6 @@ import java.util.Map;
 
 /**
  * RestTemplate 采集晨星数据,然后写入
- *
  */
 @Component
 @Slf4j
@@ -24,12 +23,13 @@ public class MorningStarRestTemplate {
     protected final String QUERY_URL = "command={0}&fcid={1}&randomid={2}";
 
     private RestTemplate restTemplate;
+
     @Autowired
     public MorningStarRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-//    @Async
+    //    @Async
     public MorningStarDetailDomain getManageForObject(String manage, MorningStarExtendDomain extendDomain) {
 
         // 基金ID

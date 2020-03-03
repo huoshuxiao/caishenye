@@ -10,6 +10,7 @@ public enum Constans {
     @Setter
     @Getter
     private String code;
+
     Constans(String code) {
         this.code = code;
     }
