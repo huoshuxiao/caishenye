@@ -4,10 +4,10 @@ import com.sun.caishenye.octopus.common.Constans;
 import lombok.Data;
 
 /**
- * 晨星 总domain
+ * 基金 总domain
  */
 @Data
-public class MorningStarDomain {
+public class FundDomain {
 
     private MorningStarBaseDomain morningStarBaseDomain;
 
@@ -21,6 +21,8 @@ public class MorningStarDomain {
 
         sbStr.append(Constans.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getFundCode())
                 .append(Constans.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getFundName())
+                .append(Constans.DELIMITING_COMMA.getCode()).append(morningStarExtendDomain.getClosePriceDate())
+                .append(Constans.DELIMITING_COMMA.getCode()).append(morningStarExtendDomain.getClosePrice())
                 .append(Constans.DELIMITING_COMMA.getCode()).append(morningStarExtendDomain.getRisk())
                 .append(Constans.DELIMITING_COMMA.getCode()).append(morningStarDetailDomain.getInceptionDate())
                 .append(Constans.DELIMITING_COMMA.getCode()).append(morningStarExtendDomain.getReturnAvg())

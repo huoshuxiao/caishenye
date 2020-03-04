@@ -2,7 +2,7 @@ package com.sun.caishenye.octopus.fund.dao;
 
 import com.sun.caishenye.octopus.common.Constans;
 import com.sun.caishenye.octopus.fund.domain.EastMoneyDetailDomain;
-import com.sun.caishenye.octopus.fund.domain.MorningStarDomain;
+import com.sun.caishenye.octopus.fund.domain.FundDomain;
 import com.sun.caishenye.octopus.fund.domain.MorningStarExtendDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +26,7 @@ import java.util.Map;
 public class MorningStarDao {
 
     protected final String DATA_FILE_NAME_EXTEND = "data/MorningStarExtend.log";
-    protected final String DATA_FILE_NAME = "data/Fund.log";
+    protected final String DATA_FILE_NAME = "data/Fund.csv";
     private final Double BASE_DAY = 360d;
 
     public List<MorningStarExtendDomain> readExtendData() {
@@ -36,7 +36,7 @@ public class MorningStarDao {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 log.debug("read data >> {}", line);
-                String[] extendDomainArray = line.split(Constans.DELIMITING_COMMA.getCode());
+                String[] extendDomainArray = line.split(Constans.DELIMITING_12.getCode());
                 MorningStarExtendDomain extendDomain = new MorningStarExtendDomain();
                 // 基金ID
                 extendDomain.setFundId(extendDomainArray[0]);
@@ -80,18 +80,26 @@ public class MorningStarDao {
      * @param data
      * @param eastMoneyMap
      */
-    public void writeData(List<MorningStarDomain> data, Map<String, EastMoneyDetailDomain> eastMoneyMap) {
+    public void writeData(List<FundDomain> data, Map<String, EastMoneyDetailDomain> eastMoneyMap) {
 
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(DATA_FILE_NAME), StandardCharsets.UTF_8)) {
-            for (MorningStarDomain morningStarDomain : data) {
+            for (FundDomain morningStarDomain : data) {
                 MorningStarExtendDomain extendDomain = new MorningStarExtendDomain();
                 // 计算 年平均回报(%)
-                extendDomain.setReturnAvg(calReturnAvg(morningStarDomain));
-                // 风险
-                if (eastMoneyMap.get(morningStarDomain.getMorningStarBaseDomain().getFundCode()) == null) {
+                extendDomain.setReturnAvg(calReturnAvg(morningStarDomain).replace(",", ""));
+                EastMoneyDetailDomain eastMoneyDetailDomain = eastMoneyMap.get(morningStarDomain.getMorningStarBaseDomain().getFundCode());
+                // 晨星数据在东方财富中不存在
+                if (eastMoneyDetailDomain == null) {
+                    // 风险
                     extendDomain.setRisk("-");
+                    // 净值日期
+                    extendDomain.setClosePriceDate("-");
+                    // 单位净值
+                    extendDomain.setClosePrice("-");
                 } else {
-                    extendDomain.setRisk(eastMoneyMap.get(morningStarDomain.getMorningStarBaseDomain().getFundCode()).getRisk().toString());
+                    extendDomain.setRisk(eastMoneyDetailDomain.getRisk().toString());
+                    extendDomain.setClosePriceDate(eastMoneyDetailDomain.getClosePriceDate());
+                    extendDomain.setClosePrice(eastMoneyDetailDomain.getClosePrice());
                 }
 
                 morningStarDomain.setMorningStarExtendDomain(extendDomain);
@@ -105,12 +113,12 @@ public class MorningStarDao {
     }
 
     // 计算 年平均回报(%)
-    private String calReturnAvg(MorningStarDomain morningStarDomain) {
+    private String calReturnAvg(FundDomain morningStarDomain) {
 
         log.debug("calReturnAvg data {}", morningStarDomain.toString());
 
         // 设立以来(%)
-        String returnInception = morningStarDomain.getMorningStarBaseDomain().getReturnInception();
+        String returnInception = morningStarDomain.getMorningStarBaseDomain().getReturnInception().replace(",", "");
         // 成立日期
         String inceptionDate = morningStarDomain.getMorningStarDetailDomain().getInceptionDate();
 

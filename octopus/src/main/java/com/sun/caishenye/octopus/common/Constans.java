@@ -5,7 +5,7 @@ import lombok.Setter;
 
 public enum Constans {
 
-    DELIMITING_COMMA(",");
+    DELIMITING_COMMA(","), DELIMITING_12("!@");
 
     @Setter
     @Getter

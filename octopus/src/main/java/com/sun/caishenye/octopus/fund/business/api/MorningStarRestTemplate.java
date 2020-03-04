@@ -5,6 +5,7 @@ import com.sun.caishenye.octopus.fund.domain.MorningStarExtendDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,16 +30,21 @@ public class MorningStarRestTemplate {
         this.restTemplate = restTemplate;
     }
 
-    //    @Async
+//    @Async
     public MorningStarDetailDomain getManageForObject(String manage, MorningStarExtendDomain extendDomain) {
 
+        log.debug("extendDomain :: {}", extendDomain);
         // 基金ID
         String fcId = extendDomain.getFundId();
 
         String url = BASE_URL + QUERY_URL;
         // call rest service
         MorningStarDetailDomain morningStarDetailDomain = restTemplate.getForObject(url, MorningStarDetailDomain.class, urlBuilder(manage, fcId));
-        log.debug("morningStarDetailDomain value :: {}", morningStarDetailDomain.toString());
+        // 异常数据
+        if (morningStarDetailDomain == null) {
+            morningStarDetailDomain = new MorningStarDetailDomain();
+        }
+        log.debug("morningStarDetailDomain value :: {}", morningStarDetailDomain);
         return morningStarDetailDomain;
     }
 

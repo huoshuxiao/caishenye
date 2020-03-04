@@ -48,7 +48,8 @@ public class EastMoneyService {
             // 根据基金code采集数据
             eastMoneyDetailPageProcessor.run(urls);
         } catch (Exception e) {
-            return e.getMessage();
+            log.error("" + e);
+            return e;
         }
         return "finished";
     }

@@ -10,6 +10,7 @@ import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.pipeline.ConsolePipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Html;
+import us.codecraft.webmagic.selector.Selectable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -60,10 +61,11 @@ public class EastMoneyDetailPageProcessor implements PageProcessor {
             eastMoneyDetailDomain.setRisk(Boolean.TRUE);
         }
 
-        // 基金代码
-        String fundCode = html.css(".wrapper")
+        Selectable merchandiseDetail = html.css(".wrapper")
                 .css(".wrapper_min")
-                .css(".merchandiseDetail")
+                .css(".merchandiseDetail");
+        // 基金代码
+        String fundCode = merchandiseDetail
                 .css(".fundDetail-header")
                 .css(".fundDetail-tit")
                 .xpath("div/div/text()")
@@ -71,15 +73,36 @@ public class EastMoneyDetailPageProcessor implements PageProcessor {
         eastMoneyDetailDomain.setFundCode(fundCode);
 
         // 基金名称
-        String fundName = html.css(".wrapper")
-                .css(".wrapper_min")
-                .css(".merchandiseDetail")
+        String fundName = merchandiseDetail
                 .css(".fundDetail-header")
                 .css(".fundDetail-tit")
                 .css(".ui-num")
                 .xpath("span/text()")
                 .get();
         eastMoneyDetailDomain.setFundName(fundName);
+
+        Selectable dataItem02 = merchandiseDetail.css(".fundDetail-main")
+                .css(".fundInfoItem")
+                .css(".dataOfFund")
+                .css(".dataItem02")
+                ;
+
+        // 净值日期
+        String closePriceDate = "-";
+        if (StringUtils.isNotEmpty(dataItem02.xpath("dt/p/text()").get())) {
+            closePriceDate = dataItem02.xpath("dt/p/text()").get().replace("(","").replace(")","");
+        }
+        eastMoneyDetailDomain.setClosePriceDate(closePriceDate);
+        // 单位净值
+        String closePrice = "-";
+        if (StringUtils.isNotEmpty(dataItem02.xpath("dd/span/text()").get())) {
+            closePrice = dataItem02.xpath("dd/span/text()").get();
+        }
+        // 货币基金 7日年华收益率 ，排除此类数据
+        if (closePrice.contains("%")) {
+            closePrice = "-";
+        }
+        eastMoneyDetailDomain.setClosePrice(closePrice);
 
         return eastMoneyDetailDomain;
     }

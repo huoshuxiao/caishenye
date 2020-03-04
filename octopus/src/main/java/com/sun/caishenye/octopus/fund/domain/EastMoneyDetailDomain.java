@@ -12,16 +12,22 @@ public class EastMoneyDetailDomain {
     protected String fundCode = "";
     // 基金名称
     protected String fundName = "";
+    // 净值日期
+    private String closePriceDate;
+    // 单位净值
+    private String closePrice;
 
     public String toStr() {
 
         StringBuilder sbStr = new StringBuilder();
 
-        sbStr.append(Constans.DELIMITING_COMMA.getCode()).append(fundName)
-                .append(Constans.DELIMITING_COMMA.getCode()).append(fundCode)
-//                .append(Constans.DELIMITING_COMMA.getCode()).append(fundName)
-                .append(Constans.DELIMITING_COMMA.getCode()).append(risk)
+        sbStr.append(Constans.DELIMITING_12.getCode()).append(fundName)
+                .append(Constans.DELIMITING_12.getCode()).append(fundCode)
+//                .append(Constans.DELIMITING_6.getCode()).append(fundName)
+                .append(Constans.DELIMITING_12.getCode()).append(closePriceDate)
+                .append(Constans.DELIMITING_12.getCode()).append(closePrice)
+                .append(Constans.DELIMITING_12.getCode()).append(risk)
         ;
-        return sbStr.toString().replaceFirst(Constans.DELIMITING_COMMA.getCode(), "");
+        return sbStr.toString().replaceFirst(Constans.DELIMITING_12.getCode(), "");
     }
 }

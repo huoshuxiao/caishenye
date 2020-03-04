@@ -32,14 +32,18 @@ public class EastMoneyDao {
             while ((line = reader.readLine()) != null) {
                 log.debug("read data >> {}", line);
                 EastMoneyDetailDomain eastMoneyDetailDomain = new EastMoneyDetailDomain();
-                String[] extendDomainArray = line.split(Constans.DELIMITING_COMMA.getCode());
+                String[] extendDomainArray = line.split(Constans.DELIMITING_12.getCode());
 
                 // 基金代码
                 eastMoneyDetailDomain.setFundCode(extendDomainArray[0]);
                 // 基金名称
                 eastMoneyDetailDomain.setFundName(extendDomainArray[1]);
+                // 净值日期
+                eastMoneyDetailDomain.setClosePriceDate(extendDomainArray[2]);
+                // 单位净值
+                eastMoneyDetailDomain.setClosePrice(extendDomainArray[3]);
                 // 风险
-                eastMoneyDetailDomain.setRisk(Boolean.valueOf(extendDomainArray[2]));
+                eastMoneyDetailDomain.setRisk(Boolean.valueOf(extendDomainArray[4]));
 
                 list.add(eastMoneyDetailDomain);
             }

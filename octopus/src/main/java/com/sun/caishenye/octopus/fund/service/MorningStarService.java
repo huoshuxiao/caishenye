@@ -5,14 +5,16 @@ import com.sun.caishenye.octopus.fund.business.webmagic.MorningStarBasePageProce
 import com.sun.caishenye.octopus.fund.business.webmagic.MorningStarExtendPageProcessor;
 import com.sun.caishenye.octopus.fund.dao.MorningStarDao;
 import com.sun.caishenye.octopus.fund.domain.EastMoneyDetailDomain;
-import com.sun.caishenye.octopus.fund.domain.MorningStarDomain;
+import com.sun.caishenye.octopus.fund.domain.FundDomain;
 import com.sun.caishenye.octopus.fund.domain.MorningStarExtendDomain;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class MorningStarService {
 
@@ -44,7 +46,8 @@ public class MorningStarService {
         try {
             morningStarBasePageProcessor.run();
         } catch (Exception e) {
-            return e.getMessage();
+            log.error("" + e);
+            return e;
         }
         return "finished";
     }
@@ -53,7 +56,8 @@ public class MorningStarService {
         try {
             morningStarExtendPageProcessor.run();
         } catch (Exception e) {
-            return e.getMessage();
+            log.error("" + e);
+            return e;
         }
         return "finished";
     }
@@ -62,12 +66,14 @@ public class MorningStarService {
         try {
             Map<String, EastMoneyDetailDomain> eastMoneyMap = eastMoneyService.readDetailDataMap();
             List<MorningStarExtendDomain> readDataList = readExtendData();
-            // 补全数据
-            List<MorningStarDomain> writeDataList = morningStarRestService.run(readDataList);
+            // 扩展数据： 明细数据
+            List<FundDomain> writeDataList = morningStarRestService.run(readDataList);
             writeData(writeDataList, eastMoneyMap);
         } catch (Exception e) {
+            log.error("" + e);
             return e;
         }
+        log.debug("finished");
         return "finished";
     }
 
@@ -75,7 +81,7 @@ public class MorningStarService {
         return morningStarDao.readExtendData();
     }
 
-    public void writeData(List<MorningStarDomain> writeDataList, Map<String, EastMoneyDetailDomain> eastMoneyMap) {
+    public void writeData(List<FundDomain> writeDataList, Map<String, EastMoneyDetailDomain> eastMoneyMap) {
         morningStarDao.writeData(writeDataList, eastMoneyMap);
     }
 }

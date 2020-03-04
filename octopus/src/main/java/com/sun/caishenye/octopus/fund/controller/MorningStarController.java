@@ -30,7 +30,7 @@ public class MorningStarController {
         return morningstarService.extend();
     }
 
-    // step4: 扩展数据： 年平均回报/风险
+    // 生成最终数据 step4: 扩展数据： 明细数据/年平均回报/风险/净值日期/单位净值
     @GetMapping("detail")
     public Object detail() {
         return morningstarService.detail();

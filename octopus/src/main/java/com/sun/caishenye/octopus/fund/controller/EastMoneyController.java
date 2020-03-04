@@ -17,7 +17,7 @@ public class EastMoneyController {
         this.eastMoneyService = eastMoneyService;
     }
 
-    // step3: 扩展数据：友情提示 风险，供生成数据用
+    // step3: 扩展数据：友情提示 风险/净值日期/单位净值，供生成数据用
     @GetMapping("detail")
     public Object detail() {
         return eastMoneyService.detail();
