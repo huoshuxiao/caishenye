@@ -12,6 +12,9 @@
   
 * 太极 (Tai chi)
   - 服务中心
+
+* 魔方 (Rubik's cube)
+  - 数据工厂
   
 * 招财猫 (Lucky Cat)
   - Frontend
