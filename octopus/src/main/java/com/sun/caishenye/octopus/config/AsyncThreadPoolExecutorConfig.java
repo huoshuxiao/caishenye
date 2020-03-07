@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 public class AsyncThreadPoolExecutorConfig {
 
-    @Bean(name = "octopusThreadPoolTaskExecutor")
+    @Bean
     public Executor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         // 核心线程数	线程池创建时候初始化的线程数

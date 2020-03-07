@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * RestTemplate 采集晨星数据,然后写入
@@ -30,9 +31,8 @@ public class MorningStarRestTemplate {
         this.restTemplate = restTemplate;
     }
 
-//    @Async
-    public MorningStarDetailDomain getManageForObject(String manage, MorningStarExtendDomain extendDomain) {
-
+    @Async
+    public CompletableFuture<MorningStarDetailDomain> getManageForObject(String manage, MorningStarExtendDomain extendDomain) {
         log.debug("extendDomain :: {}", extendDomain);
         // 基金ID
         String fcId = extendDomain.getFundId();
@@ -45,7 +45,7 @@ public class MorningStarRestTemplate {
             morningStarDetailDomain = new MorningStarDetailDomain();
         }
         log.debug("morningStarDetailDomain value :: {}", morningStarDetailDomain);
-        return morningStarDetailDomain;
+        return CompletableFuture.completedFuture(morningStarDetailDomain);
     }
 
     protected Map<String, String> urlBuilder(String manage, String fcid) {
