@@ -59,6 +59,11 @@
             <artifactId>webmagic-extension</artifactId>
             <version>${us.codecraft.webmagic.version}</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

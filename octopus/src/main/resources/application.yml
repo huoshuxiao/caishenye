@@ -11,3 +11,8 @@ logging:
     com:
       sun:
         caishenye: debug
+spring:
+  data:
+    mongodb:
+      host: localhost
+      database: kitty
