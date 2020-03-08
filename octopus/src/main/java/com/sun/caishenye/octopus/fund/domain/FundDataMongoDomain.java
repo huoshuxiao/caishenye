@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @author Administrator
  */
 @Data
-@Document(collection = "t_fund_data")
+@Document(collection = "t_fund_data1")
 public class FundDataMongoDomain implements Serializable {
     private String fund_code;
     private String fund_name;
