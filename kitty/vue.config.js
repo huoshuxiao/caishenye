@@ -114,10 +114,10 @@ module.exports = {
           config
             .plugin('ScriptExtHtmlWebpackPlugin')
             .after('html')
-            .use('script-ext-html-webpack-plugin', [{
-            // `runtime` must same as runtimeChunk name. default is `runtime`
-              inline: /runtime\..*\.js$/
-            }])
+                .use('script-ext-html-webpack-plugin', [{
+                  // `runtime` must same as runtimeChunk name. default is `runtime`
+                  inline: /runtime\..*\.js$/
+                }])
             .end()
           config
             .optimization.splitChunks({
