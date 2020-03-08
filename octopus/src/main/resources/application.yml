@@ -1,9 +1,15 @@
+spring:
+  application:
+    name: octopus
+
 server:
   port: 9000
   servlet:
-    context-path: /octopus
+    context-path: /${spring.application.name}
 
 logging:
+  file:
+    name: log/${spring.application.name}.log
   level:
     #    org:
     #      apache:
