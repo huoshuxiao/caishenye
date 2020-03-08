@@ -1,5 +1,6 @@
 package com.sun.caishenye.octopus.fund.business.api;
 
+import com.sun.caishenye.octopus.fund.domain.FundDomain;
 import com.sun.caishenye.octopus.fund.domain.MorningStarDetailDomain;
 import com.sun.caishenye.octopus.fund.domain.MorningStarExtendDomain;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class MorningStarRestTemplate {
     }
 
     @Async
-    public CompletableFuture<MorningStarDetailDomain> getManageForObject(String manage, MorningStarExtendDomain extendDomain) {
+    public CompletableFuture<FundDomain> getManageForObject(String manage, MorningStarExtendDomain extendDomain) {
         log.debug("extendDomain :: {}", extendDomain);
         // 基金ID
         String fcId = extendDomain.getFundId();
@@ -45,7 +46,11 @@ public class MorningStarRestTemplate {
             morningStarDetailDomain = new MorningStarDetailDomain();
         }
         log.debug("morningStarDetailDomain value :: {}", morningStarDetailDomain);
-        return CompletableFuture.completedFuture(morningStarDetailDomain);
+
+        FundDomain morningStarDomain = new FundDomain();
+        morningStarDomain.setMorningStarBaseDomain(extendDomain);
+        morningStarDomain.setMorningStarDetailDomain(morningStarDetailDomain);
+        return CompletableFuture.completedFuture(morningStarDomain);
     }
 
     protected Map<String, String> urlBuilder(String manage, String fcid) {

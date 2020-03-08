@@ -24,20 +24,19 @@ public class MorningStarRestService {
 
     public List<FundDomain> run(List<MorningStarExtendDomain> readDataList) {
         List<FundDomain> writeDataList = new ArrayList<>(readDataList.size());
+        List<CompletableFuture<FundDomain>> futureList = new ArrayList<>();
         try {
             for (MorningStarExtendDomain extendDomain : readDataList) {
                 // call rest service
-                CompletableFuture<MorningStarDetailDomain> future = CompletableFuture.supplyAsync(() -> morningStarRestTemplate.getManageForObject("manage", extendDomain)).get();
-                if (future.isDone()) {
-                    MorningStarDetailDomain morningStarDetailDomain = (MorningStarDetailDomain)future.get();
-                    FundDomain morningStarDomain = new FundDomain();
-                    morningStarDomain.setMorningStarBaseDomain(extendDomain);
-                    morningStarDomain.setMorningStarDetailDomain(morningStarDetailDomain);
-                    writeDataList.add(morningStarDomain);
-                    log.debug("morningStarDetailDomain value :: {}", morningStarDetailDomain.toString());
-
-                }
+                CompletableFuture<FundDomain> future = CompletableFuture.supplyAsync(() -> morningStarRestTemplate.getManageForObject("manage", extendDomain)).get();
+                futureList.add(future);
             }
+
+            for (CompletableFuture<FundDomain> future: futureList) {
+                FundDomain fundDomain = future.get();
+                writeDataList.add(fundDomain);
+            }
+
         } catch (InterruptedException | ExecutionException e) {
             log.error("" + e);
             return null;
