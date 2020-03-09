@@ -3,7 +3,7 @@ package com.sun.caishenye.octopus.common;
 import lombok.Getter;
 import lombok.Setter;
 
-public enum Constans {
+public enum Constants {
 
     DELIMITING_COMMA(","), DELIMITING_12("!@");
 
@@ -11,7 +11,7 @@ public enum Constans {
     @Getter
     private String code;
 
-    Constans(String code) {
+    Constants(String code) {
         this.code = code;
     }
 }

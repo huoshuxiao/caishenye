@@ -43,37 +43,21 @@ public class MorningStarService {
 //    }
 
     public Object base() {
-        try {
-            morningStarBasePageProcessor.run();
-        } catch (Exception e) {
-            log.error("" + e);
-            return e;
-        }
+        morningStarBasePageProcessor.run();
         return "finished";
     }
 
     public Object extend() {
-        try {
-            morningStarExtendPageProcessor.run();
-        } catch (Exception e) {
-            log.error("" + e);
-            return e;
-        }
+        morningStarExtendPageProcessor.run();
         return "finished";
     }
 
     public Object detail() {
-        try {
-            Map<String, EastMoneyDetailDomain> eastMoneyMap = eastMoneyService.readDetailDataMap();
-            List<MorningStarExtendDomain> readDataList = readExtendData();
-            // 扩展数据： 明细数据
-            List<FundDomain> writeDataList = morningStarRestService.run(readDataList);
-            writeData(writeDataList, eastMoneyMap);
-        } catch (Exception e) {
-            log.error("" + e);
-            return e;
-        }
-        log.debug("finished");
+        Map<String, EastMoneyDetailDomain> eastMoneyMap = eastMoneyService.readDetailDataMap();
+        List<MorningStarExtendDomain> readDataList = readExtendData();
+        // 扩展数据： 明细数据
+        List<FundDomain> writeDataList = morningStarRestService.run(readDataList);
+        writeData(writeDataList, eastMoneyMap);
         return "finished";
     }
 

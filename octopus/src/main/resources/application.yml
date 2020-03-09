@@ -1,6 +1,10 @@
 spring:
   application:
     name: octopus
+#  data:
+#    mongodb:
+#      host: localhost
+#      database: kitty
 
 server:
   port: 9000
@@ -10,6 +14,8 @@ server:
 logging:
   file:
     name: log/${spring.application.name}.log
+    max-history: 2
+    max-size: 100MB
   level:
     #    org:
     #      apache:
@@ -17,8 +23,8 @@ logging:
     com:
       sun:
         caishenye: debug
-spring:
-  data:
-    mongodb:
-      host: localhost
-      database: kitty
+
+################### 项目属性 ###############################
+job:
+  cron:
+    fund: 0 0 0/1 * * ?

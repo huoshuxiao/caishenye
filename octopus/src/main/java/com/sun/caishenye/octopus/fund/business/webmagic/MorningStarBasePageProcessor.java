@@ -1,6 +1,6 @@
 package com.sun.caishenye.octopus.fund.business.webmagic;
 
-import com.sun.caishenye.octopus.common.Constans;
+import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.fund.domain.MorningStarBaseDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
@@ -290,7 +290,7 @@ public class MorningStarBasePageProcessor implements PageProcessor {
     private Request setFormPostRequest(String activeTabHref, Html html) {
 
         String formParam = StringUtils.substringBetween(activeTabHref, "(", ")");
-        String[] formParams = formParam.split(Constans.DELIMITING_COMMA.getCode());
+        String[] formParams = formParam.split(Constants.DELIMITING_COMMA.getCode());
         Map<String, Object> params = new HashedMap();
         params.put("__EVENTTARGET", formParams[0].replaceAll("[']", ""));
         params.put("__EVENTARGUMENT", formParams[1].replaceAll("[']", ""));
@@ -319,7 +319,7 @@ public class MorningStarBasePageProcessor implements PageProcessor {
         return site;
     }
 
-    public void run() throws Exception {
+    public void run() {
 
         Spider morningStarSpider = Spider.create(new MorningStarBasePageProcessor())
                 .addUrl(URL);   // add url to Scheduler

@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -39,18 +38,14 @@ public class EastMoneyService {
 //    }
 
     public Object detail() {
-        try {
-            List<MorningStarExtendDomain> readDataList = morningStarService.readExtendData();
-            List<String> urls = new ArrayList<>(readDataList.size());
-            for (MorningStarExtendDomain morningStarExtendDomain : readDataList) {
-                urls.add(BASE_URL.replace("{fundCode}", morningStarExtendDomain.getFundCode()));
-            }
-            // 根据基金code采集数据
-            eastMoneyDetailPageProcessor.run(urls);
-        } catch (Exception e) {
-            log.error("" + e);
-            return e;
+        List<MorningStarExtendDomain> readDataList = morningStarService.readExtendData();
+        List<String> urls = new ArrayList<>(readDataList.size());
+        for (MorningStarExtendDomain morningStarExtendDomain : readDataList) {
+            urls.add(BASE_URL.replace("{fundCode}", morningStarExtendDomain.getFundCode()));
         }
+        // 根据基金code采集数据
+        eastMoneyDetailPageProcessor.run(urls);
+
         return "finished";
     }
 

@@ -1,6 +1,6 @@
 package com.sun.caishenye.octopus.fund.domain;
 
-import com.sun.caishenye.octopus.common.Constans;
+import com.sun.caishenye.octopus.common.Constants;
 import lombok.Data;
 
 /**
@@ -48,21 +48,21 @@ public class MorningStarBaseDomain {
 //        });
 
         sbStr//.append(Constans.DELIMITING_6.getCode()).append(page)
-                .append(Constans.DELIMITING_12.getCode()).append(fundCode)
-                .append(Constans.DELIMITING_12.getCode()).append(fundName)
-                .append(Constans.DELIMITING_12.getCode()).append(return1Day)
-                .append(Constans.DELIMITING_12.getCode()).append(return1Week)
-                .append(Constans.DELIMITING_12.getCode()).append(return1Month)
-                .append(Constans.DELIMITING_12.getCode()).append(return3Month)
-                .append(Constans.DELIMITING_12.getCode()).append(return6Month)
-                .append(Constans.DELIMITING_12.getCode()).append(return1Year)
-                .append(Constans.DELIMITING_12.getCode()).append(return2Year)
-                .append(Constans.DELIMITING_12.getCode()).append(return3Year)
-                .append(Constans.DELIMITING_12.getCode()).append(return5Year)
-                .append(Constans.DELIMITING_12.getCode()).append(return10Year)
-                .append(Constans.DELIMITING_12.getCode()).append(returnInception);
+                .append(Constants.DELIMITING_12.getCode()).append(fundCode)
+                .append(Constants.DELIMITING_12.getCode()).append(fundName)
+                .append(Constants.DELIMITING_12.getCode()).append(return1Day)
+                .append(Constants.DELIMITING_12.getCode()).append(return1Week)
+                .append(Constants.DELIMITING_12.getCode()).append(return1Month)
+                .append(Constants.DELIMITING_12.getCode()).append(return3Month)
+                .append(Constants.DELIMITING_12.getCode()).append(return6Month)
+                .append(Constants.DELIMITING_12.getCode()).append(return1Year)
+                .append(Constants.DELIMITING_12.getCode()).append(return2Year)
+                .append(Constants.DELIMITING_12.getCode()).append(return3Year)
+                .append(Constants.DELIMITING_12.getCode()).append(return5Year)
+                .append(Constants.DELIMITING_12.getCode()).append(return10Year)
+                .append(Constants.DELIMITING_12.getCode()).append(returnInception);
 
-        return sbStr.toString().replaceFirst(Constans.DELIMITING_12.getCode(), "");
+        return sbStr.toString().replaceFirst(Constants.DELIMITING_12.getCode(), "");
     }
 
 //    public JSONObject toJsonObject() {

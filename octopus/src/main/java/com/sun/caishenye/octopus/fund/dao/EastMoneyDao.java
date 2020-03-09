@@ -1,6 +1,6 @@
 package com.sun.caishenye.octopus.fund.dao;
 
-import com.sun.caishenye.octopus.common.Constans;
+import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.fund.domain.EastMoneyDetailDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -32,7 +32,7 @@ public class EastMoneyDao {
             while ((line = reader.readLine()) != null) {
                 log.debug("read data >> {}", line);
                 EastMoneyDetailDomain eastMoneyDetailDomain = new EastMoneyDetailDomain();
-                String[] extendDomainArray = line.split(Constans.DELIMITING_12.getCode());
+                String[] extendDomainArray = line.split(Constants.DELIMITING_12.getCode());
 
                 // 基金代码
                 eastMoneyDetailDomain.setFundCode(extendDomainArray[0]);

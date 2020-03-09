@@ -1,6 +1,6 @@
 package com.sun.caishenye.octopus.fund.domain;
 
-import com.sun.caishenye.octopus.common.Constans;
+import com.sun.caishenye.octopus.common.Constants;
 import lombok.Data;
 
 @Data
@@ -21,13 +21,13 @@ public class EastMoneyDetailDomain {
 
         StringBuilder sbStr = new StringBuilder();
 
-        sbStr.append(Constans.DELIMITING_12.getCode()).append(fundName)
-                .append(Constans.DELIMITING_12.getCode()).append(fundCode)
+        sbStr.append(Constants.DELIMITING_12.getCode()).append(fundName)
+                .append(Constants.DELIMITING_12.getCode()).append(fundCode)
 //                .append(Constans.DELIMITING_6.getCode()).append(fundName)
-                .append(Constans.DELIMITING_12.getCode()).append(closePriceDate)
-                .append(Constans.DELIMITING_12.getCode()).append(closePrice)
-                .append(Constans.DELIMITING_12.getCode()).append(risk)
+                .append(Constants.DELIMITING_12.getCode()).append(closePriceDate)
+                .append(Constants.DELIMITING_12.getCode()).append(closePrice)
+                .append(Constants.DELIMITING_12.getCode()).append(risk)
         ;
-        return sbStr.toString().replaceFirst(Constans.DELIMITING_12.getCode(), "");
+        return sbStr.toString().replaceFirst(Constants.DELIMITING_12.getCode(), "");
     }
 }

@@ -15,13 +15,7 @@ public class WebMagicDemoService {
     }
 
     public Object run() {
-
-        try {
-            processor.run();
-        } catch (Exception e) {
-            return e.getMessage();
-        }
-
+        processor.run();
         return "OK";
     }
 }

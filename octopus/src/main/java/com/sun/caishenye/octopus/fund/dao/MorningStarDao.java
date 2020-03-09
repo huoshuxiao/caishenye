@@ -1,6 +1,7 @@
 package com.sun.caishenye.octopus.fund.dao;
 
-import com.sun.caishenye.octopus.common.Constans;
+import com.sun.caishenye.octopus.common.Constants;
+import com.sun.caishenye.octopus.common.Utils;
 import com.sun.caishenye.octopus.fund.domain.EastMoneyDetailDomain;
 import com.sun.caishenye.octopus.fund.domain.FundDomain;
 import com.sun.caishenye.octopus.fund.domain.MorningStarExtendDomain;
@@ -36,7 +37,7 @@ public class MorningStarDao {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 log.debug("read data >> {}", line);
-                String[] extendDomainArray = line.split(Constans.DELIMITING_12.getCode());
+                String[] extendDomainArray = line.split(Constants.DELIMITING_12.getCode());
                 MorningStarExtendDomain extendDomain = new MorningStarExtendDomain();
                 // 基金ID
                 extendDomain.setFundId(extendDomainArray[0]);
@@ -86,7 +87,7 @@ public class MorningStarDao {
             for (FundDomain morningStarDomain : data) {
                 MorningStarExtendDomain extendDomain = new MorningStarExtendDomain();
                 // 计算 年平均回报(%)
-                extendDomain.setReturnAvg(calReturnAvg(morningStarDomain).replace(",", ""));
+                extendDomain.setReturnAvg(calReturnAvg(morningStarDomain));
                 EastMoneyDetailDomain eastMoneyDetailDomain = eastMoneyMap.get(morningStarDomain.getMorningStarBaseDomain().getFundCode());
                 // 晨星数据在东方财富中不存在
                 if (eastMoneyDetailDomain == null) {
@@ -118,7 +119,7 @@ public class MorningStarDao {
         log.debug("calReturnAvg data {}", morningStarDomain.toString());
 
         // 设立以来(%)
-        String returnInception = morningStarDomain.getMorningStarBaseDomain().getReturnInception().replace(",", "");
+        String returnInception = Utils.formatNumber2String(morningStarDomain.getMorningStarBaseDomain().getReturnInception());
         // 成立日期
         String inceptionDate = morningStarDomain.getMorningStarDetailDomain().getInceptionDate();
 
@@ -132,6 +133,6 @@ public class MorningStarDao {
                 Integer.valueOf(inceptionDate.substring(5, 7)).intValue(),
                 Integer.valueOf(inceptionDate.substring(8, 10)).intValue());
         double returnAvg = Double.valueOf(returnInception) / Double.valueOf(ChronoUnit.DAYS.between(inceptionLocalDate, today) / BASE_DAY);
-        return String.format("%.2f", returnAvg);
+        return Utils.formatNumber2String(String.format("%.2f", returnAvg));
     }
 }
