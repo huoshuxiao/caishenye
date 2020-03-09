@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: rubikcube
+#  data:
+#    mongodb:
+#      host: localhost
+#      database: kitty
+
+server:
+  port: 9001
+  servlet:
+    context-path: /${spring.application.name}
+
+logging:
+  file:
+    name: log/${spring.application.name}.log
+  level:
+    #    org:
+    #      apache:
+    #        http: debug
+    com:
+      sun:
+        caishenye: debug
