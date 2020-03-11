@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RubikcubeApplication {
+public class RubikCubeApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RubikcubeApplication.class, args);
+        SpringApplication.run(RubikCubeApplication.class, args);
     }
 
 }

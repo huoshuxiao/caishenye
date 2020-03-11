@@ -1,10 +1,11 @@
 spring:
   application:
     name: rubikcube
-#  data:
-#    mongodb:
-#      host: localhost
-#      database: kitty
+  data:
+    mongodb:
+      uri: mongodb://root:root123@localhost:27017/caishenye
+      # 多个 IP 集群可以采用以下配置：
+      # spring.data.mongodb.uri=mongodb://user:pwd@ip1:port1,ip2:port2/database
 
 server:
   port: 9001
