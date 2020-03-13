@@ -3,9 +3,12 @@ spring:
     name: rubikcube
   data:
     mongodb:
-      uri: mongodb://root:root123@localhost:27017/caishenye
       # 多个 IP 集群可以采用以下配置：
       # spring.data.mongodb.uri=mongodb://user:pwd@ip1:port1,ip2:port2/database
+      uri: mongodb://root:root123@localhost:27017/caishenye
+#  datasource:
+#    druid:
+#      driver-class-name:
 
 server:
   port: 9001
