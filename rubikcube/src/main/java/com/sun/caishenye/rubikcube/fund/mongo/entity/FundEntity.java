@@ -1,15 +1,17 @@
 package com.sun.caishenye.rubikcube.fund.mongo.entity;
 
+import com.sun.caishenye.rubikcube.common.entity.BaseEntity;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @Document("fund_t")
-public class FundEntity {
+public class FundEntity extends BaseEntity {
 
     // 基金代码
-//    @Id         // 影响 findOne 的查询结果，没有id是不用id注解
+    @Id         // 影响 findOne 的查询结果，没有id是不用id注解
     @Field("fund_code")
     protected String fundCode;
 

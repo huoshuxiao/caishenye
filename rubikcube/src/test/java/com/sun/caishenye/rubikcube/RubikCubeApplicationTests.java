@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -21,7 +22,15 @@ class RubikCubeApplicationTests {
     }
 
     @Test
-    void testMongoAdd() {
+    void testMongoSaveList() {
+        FundEntity entity = buildData();
+        List<FundEntity> fundEntityList = new ArrayList<>();
+        fundEntityList.add(entity);
+        fundService.save(fundEntityList);
+    }
+
+    @Test
+    void testMongoSave() {
         FundEntity entity = buildData();
         fundService.save(entity);
     }

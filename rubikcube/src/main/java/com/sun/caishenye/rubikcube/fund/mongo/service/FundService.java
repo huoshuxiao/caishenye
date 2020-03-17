@@ -5,6 +5,7 @@ import com.sun.caishenye.rubikcube.fund.mongo.entity.FundEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,13 +18,13 @@ public class FundService {
         this.iFundDao = iFundDao;
     }
 
-//    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public List<FundEntity> save(List<FundEntity> list) {
         iFundDao.deleteAll();
         return iFundDao.saveAll(list);
     }
 
-//    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public FundEntity save(FundEntity fundEntity) {
         return iFundDao.save(fundEntity);
     }
