@@ -11,7 +11,7 @@ spring:
 #      driver-class-name:
 
 server:
-  port: 9001
+  port: 19001
   servlet:
     context-path: /${spring.application.name}
 

@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TaichiApplication {
+public class TaiChiApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(TaichiApplication.class, args);
+        SpringApplication.run(TaiChiApplication.class, args);
     }
 
 }

@@ -7,7 +7,7 @@ spring:
 #      database: kitty
 
 server:
-  port: 9000
+  port: 19000
   servlet:
     context-path: /${spring.application.name}
 

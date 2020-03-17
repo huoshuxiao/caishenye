@@ -1,0 +1,20 @@
+
+spring:
+  application:
+    name: taichi
+
+server:
+  port: 19002
+  servlet:
+    context-path: /${spring.application.name}
+
+logging:
+  file:
+    name: log/${spring.application.name}.log
+  level:
+    #    org:
+    #      apache:
+    #        http: debug
+    com:
+      sun:
+        caishenye: debug
