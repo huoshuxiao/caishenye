@@ -1,4 +1,4 @@
-package com.sun.caishenye.octopus.fund.controller;
+package com.sun.caishenye.octopus.controller;
 
 import com.sun.caishenye.octopus.fund.service.WebMagicDemoService;
 import org.springframework.beans.factory.annotation.Autowired;

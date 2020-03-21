@@ -1,6 +1,6 @@
 package com.sun.caishenye.octopus.fund.service;
 
-import com.sun.caishenye.octopus.fund.business.webmagic.EastMoneyDetailPageProcessor;
+import com.sun.caishenye.octopus.fund.business.webmagic.EastMoneyDetailDataPageProcessor;
 import com.sun.caishenye.octopus.fund.dao.EastMoneyDao;
 import com.sun.caishenye.octopus.fund.domain.EastMoneyDetailDomain;
 import com.sun.caishenye.octopus.fund.domain.MorningStarExtendDomain;
@@ -27,7 +27,7 @@ public class EastMoneyService {
     @Autowired
     private MorningStarService morningStarService;
     @Autowired
-    private EastMoneyDetailPageProcessor eastMoneyDetailPageProcessor;
+    private EastMoneyDetailDataPageProcessor eastMoneyDetailPageProcessor;
 //    @Autowired
 //    public EastMoneyService(EastMoneyDetailPageProcessor eastMoneyDetailPageProcessor,
 //                            MorningStarService morningStarService,

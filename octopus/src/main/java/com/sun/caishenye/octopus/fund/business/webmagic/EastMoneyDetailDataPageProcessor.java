@@ -1,5 +1,6 @@
 package com.sun.caishenye.octopus.fund.business.webmagic;
 
+import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.fund.domain.EastMoneyDetailDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -22,11 +23,10 @@ import java.util.List;
  */
 @Component
 @Slf4j
-public class EastMoneyDetailPageProcessor implements PageProcessor {
+public class EastMoneyDetailDataPageProcessor implements PageProcessor {
 
     /* 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等 */
     private Site site = Site.me().setRetryTimes(3).setSleepTime(100).setTimeOut(Integer.MAX_VALUE);
-    private final Integer THREADS = 10;
 
     // home page
     private final String FILE_PATH = "data";
@@ -114,11 +114,11 @@ public class EastMoneyDetailPageProcessor implements PageProcessor {
     }
 
     public void run(List<String> urls) {
-        Spider.create(new EastMoneyDetailPageProcessor())
+        Spider.create(new EastMoneyDetailDataPageProcessor())
                 .startUrls(urls)
                 .addPipeline(new ConsolePipeline()) // 输出结果到控制台
                 .addPipeline(new TextFilePipeline(FILE_PATH, FILE_NAME))  // 使用Pipeline保存结果到文件
-                .thread(THREADS)
+                .thread(Constants.THREADS.getCount())
                 .run();
     }
 }
