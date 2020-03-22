@@ -18,6 +18,8 @@
 
     <properties>
         <us.codecraft.webmagic.version>0.7.3</us.codecraft.webmagic.version>
+        <google.guava.version>28.2-jre</google.guava.version>
+        <apache.log4j.version>1.2.17</apache.log4j.version>
     </properties>
 
     <dependencies>
@@ -53,6 +55,21 @@
             <groupId>us.codecraft</groupId>
             <artifactId>webmagic-extension</artifactId>
             <version>${us.codecraft.webmagic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>us.codecraft</groupId>
+            <artifactId>webmagic-selenium</artifactId>
+            <version>${us.codecraft.webmagic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${google.guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${apache.log4j.version}</version>
         </dependency>
 
     </dependencies>

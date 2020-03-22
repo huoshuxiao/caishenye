@@ -20,24 +20,24 @@ public class FundDomain {
 
         StringBuilder sbStr = new StringBuilder();
 
-        sbStr.append(Constants.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getFundCode())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getFundName())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarExtendDomain.getClosePriceDate())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarExtendDomain.getClosePrice())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarExtendDomain.getRisk())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarDetailDomain.getInceptionDate())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarExtendDomain.getReturnAvg())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getReturn1Day())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getReturn1Week())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getReturn1Month())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getReturn3Month())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getReturn6Month())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getReturn1Year())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getReturn2Year())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getReturn3Year())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getReturn5Year())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(morningStarBaseDomain.getReturn10Year())
-                .append(Constants.DELIMITING_COMMA.getCode()).append(Utils.formatNumber2String(morningStarBaseDomain.getReturnInception()));
-        return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getCode(), "");
+        sbStr.append(Constants.DELIMITING_COMMA.getString()).append(morningStarBaseDomain.getFundCode())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarBaseDomain.getFundName())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarExtendDomain.getClosePriceDate())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarExtendDomain.getClosePrice())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarExtendDomain.getRisk())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarDetailDomain.getInceptionDate())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarExtendDomain.getReturnAvg())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarBaseDomain.getReturn1Day())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarBaseDomain.getReturn1Week())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarBaseDomain.getReturn1Month())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarBaseDomain.getReturn3Month())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarBaseDomain.getReturn6Month())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarBaseDomain.getReturn1Year())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarBaseDomain.getReturn2Year())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarBaseDomain.getReturn3Year())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarBaseDomain.getReturn5Year())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarBaseDomain.getReturn10Year())
+                .append(Constants.DELIMITING_COMMA.getString()).append(Utils.formatNumber2String(morningStarBaseDomain.getReturnInception()));
+        return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
     }
 }

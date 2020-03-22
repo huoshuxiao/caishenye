@@ -289,7 +289,7 @@ public class MorningStarBaseDataPageProcessor implements PageProcessor {
     private Request setFormPostRequest(String activeTabHref, Html html) {
 
         String formParam = StringUtils.substringBetween(activeTabHref, "(", ")");
-        String[] formParams = formParam.split(Constants.DELIMITING_COMMA.getCode());
+        String[] formParams = formParam.split(Constants.DELIMITING_COMMA.getString());
         Map<String, Object> params = new HashedMap();
         params.put("__EVENTTARGET", formParams[0].replaceAll("[']", ""));
         params.put("__EVENTARGUMENT", formParams[1].replaceAll("[']", ""));
@@ -331,7 +331,7 @@ public class MorningStarBaseDataPageProcessor implements PageProcessor {
 //                .setDownloader()  // Downloader负责从互联网上下载页面。如：SeleniumDownloader
                 .addPipeline(new ConsolePipeline()) // 输出结果到控制台
                 .addPipeline(new TextFilePipeline(FILE_PATH, FILE_NAME))  // 使用Pipeline保存结果到文件
-                .thread(Constants.THREADS.getCount())
+                .thread(Constants.THREADS.getInteger())
                 .run();
     }
 }

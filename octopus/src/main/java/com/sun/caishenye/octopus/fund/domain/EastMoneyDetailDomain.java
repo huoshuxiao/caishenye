@@ -21,13 +21,13 @@ public class EastMoneyDetailDomain {
 
         StringBuilder sbStr = new StringBuilder();
 
-        sbStr.append(Constants.DELIMITING_12.getCode()).append(fundName)
-                .append(Constants.DELIMITING_12.getCode()).append(fundCode)
+        sbStr.append(Constants.DELIMITING_12.getString()).append(fundName)
+                .append(Constants.DELIMITING_12.getString()).append(fundCode)
 //                .append(Constans.DELIMITING_6.getCode()).append(fundName)
-                .append(Constants.DELIMITING_12.getCode()).append(closePriceDate)
-                .append(Constants.DELIMITING_12.getCode()).append(closePrice)
-                .append(Constants.DELIMITING_12.getCode()).append(risk)
+                .append(Constants.DELIMITING_12.getString()).append(closePriceDate)
+                .append(Constants.DELIMITING_12.getString()).append(closePrice)
+                .append(Constants.DELIMITING_12.getString()).append(risk)
         ;
-        return sbStr.toString().replaceFirst(Constants.DELIMITING_12.getCode(), "");
+        return sbStr.toString().replaceFirst(Constants.DELIMITING_12.getString(), "");
     }
 }

@@ -48,21 +48,21 @@ public class MorningStarBaseDomain {
 //        });
 
         sbStr//.append(Constans.DELIMITING_6.getCode()).append(page)
-                .append(Constants.DELIMITING_12.getCode()).append(fundCode)
-                .append(Constants.DELIMITING_12.getCode()).append(fundName)
-                .append(Constants.DELIMITING_12.getCode()).append(return1Day)
-                .append(Constants.DELIMITING_12.getCode()).append(return1Week)
-                .append(Constants.DELIMITING_12.getCode()).append(return1Month)
-                .append(Constants.DELIMITING_12.getCode()).append(return3Month)
-                .append(Constants.DELIMITING_12.getCode()).append(return6Month)
-                .append(Constants.DELIMITING_12.getCode()).append(return1Year)
-                .append(Constants.DELIMITING_12.getCode()).append(return2Year)
-                .append(Constants.DELIMITING_12.getCode()).append(return3Year)
-                .append(Constants.DELIMITING_12.getCode()).append(return5Year)
-                .append(Constants.DELIMITING_12.getCode()).append(return10Year)
-                .append(Constants.DELIMITING_12.getCode()).append(returnInception);
+                .append(Constants.DELIMITING_12.getString()).append(fundCode)
+                .append(Constants.DELIMITING_12.getString()).append(fundName)
+                .append(Constants.DELIMITING_12.getString()).append(return1Day)
+                .append(Constants.DELIMITING_12.getString()).append(return1Week)
+                .append(Constants.DELIMITING_12.getString()).append(return1Month)
+                .append(Constants.DELIMITING_12.getString()).append(return3Month)
+                .append(Constants.DELIMITING_12.getString()).append(return6Month)
+                .append(Constants.DELIMITING_12.getString()).append(return1Year)
+                .append(Constants.DELIMITING_12.getString()).append(return2Year)
+                .append(Constants.DELIMITING_12.getString()).append(return3Year)
+                .append(Constants.DELIMITING_12.getString()).append(return5Year)
+                .append(Constants.DELIMITING_12.getString()).append(return10Year)
+                .append(Constants.DELIMITING_12.getString()).append(returnInception);
 
-        return sbStr.toString().replaceFirst(Constants.DELIMITING_12.getCode(), "");
+        return sbStr.toString().replaceFirst(Constants.DELIMITING_12.getString(), "");
     }
 
 //    public JSONObject toJsonObject() {

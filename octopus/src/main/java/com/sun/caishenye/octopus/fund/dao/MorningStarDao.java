@@ -37,7 +37,7 @@ public class MorningStarDao {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 log.debug("read data >> {}", line);
-                String[] extendDomainArray = line.split(Constants.DELIMITING_12.getCode());
+                String[] extendDomainArray = line.split(Constants.DELIMITING_12.getString());
                 MorningStarExtendDomain extendDomain = new MorningStarExtendDomain();
                 // 基金ID
                 extendDomain.setFundId(extendDomainArray[0]);

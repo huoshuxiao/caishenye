@@ -5,24 +5,28 @@ import lombok.Setter;
 
 public enum Constants {
 
+    FR_YUAN("元"),
+    EXCHANGE_SH("sh"),
+    EXCHANGE_SZ("sz"),
     THREADS(10),
+    FR_10000(100000000),    // 亿
     DELIMITING_COMMA(","),
     DELIMITING_12("!@");
 
     @Setter
     @Getter
-    private String code;
+    private String string;
 
     @Setter
     @Getter
-    private Integer count;
+    private Integer integer;
 
 
-    Constants(String code) {
-        this.code = code;
+    Constants(String string) {
+        this.string = string;
     }
 
-    Constants(Integer count) {
-        this.count = count;
+    Constants(Integer integer) {
+        this.integer = integer;
     }
 }
