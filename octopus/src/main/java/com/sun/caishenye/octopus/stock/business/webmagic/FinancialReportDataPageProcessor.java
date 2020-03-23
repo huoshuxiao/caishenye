@@ -14,6 +14,7 @@ import us.codecraft.webmagic.pipeline.ConsolePipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Html;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,34 +43,56 @@ public class FinancialReportDataPageProcessor implements PageProcessor {
 //        log.debug("html :: {} ", html);
 
         /* 采集数据 */
-        StockDomain stockDomain = dataAgent(html);
-
-        // 保存结果至Pipeline，持久化对象结果
-        page.putField(stockDomain.getCompanyCode(), stockDomain.toFrStr());
-        log.debug("FinancialReport value :: {}", stockDomain);
+        List<StockDomain> dataList = dataAgent(html);
+        for (StockDomain stockDomain : dataList) {
+            // 保存结果至Pipeline，持久化对象结果
+            page.putField(stockDomain.getFrDomain().getDeadline() + "@" + stockDomain.getCompanyCode(), stockDomain.toFrStr());
+            log.debug("FinancialReport value :: {}", stockDomain);
+        }
     }
 
-    private StockDomain dataAgent(Html html) {
-        StockDomain stockDomain = new StockDomain();
-        // 公司代码
-        stockDomain.setCompanyCode(html.xpath("[@id='toolbar']/div[1]/h2/text()").get());
-        // 公司简称
-        stockDomain.setCompanyName(html.xpath("[@id='toolbar']/div[1]/h1/a/text()").get());
-        // 截止日期
-        stockDomain.getFrDomain().setDeadline(html.xpath("[@id=\"FundHoldSharesTable\"]/tbody/tr[1]/td[2]/strong/text()").get());
-        // 主营业务收入
-        String mbi = Utils.formatNumber2String(html.xpath("[@id=\"FundHoldSharesTable\"]/tbody/tr[9]/td[2]/a/text() | [@id=\"FundHoldSharesTable\"]/tbody/tr[9]/td[2]/text()").get().trim().replace(Constants.FR_YUAN.getString(), ""));
-        if (mbi.length() == 1) {
-            mbi = "0";
-        }
-        stockDomain.getFrDomain().setMainBusinessIncome(Utils.formatNumber2String(String.valueOf(Double.valueOf(Utils.formatNumber2String(mbi)) / Constants.FR_10000.getInteger())));
-        // 净利润
-        String np = html.xpath("[@id=\"FundHoldSharesTable\"]/tbody/tr[11]/td[2]/a/text()").get().replace(Constants.FR_YUAN.getString(), "");
-        stockDomain.getFrDomain().setNetProfit(Utils.formatNumber2String(String.valueOf(Double.valueOf(Utils.formatNumber2String(np)) / Constants.FR_10000.getInteger())));
-        // 净利润率
-        stockDomain.getFrDomain().setNetMargin(Utils.rate(stockDomain.getFrDomain().getNetProfit(), stockDomain.getFrDomain().getMainBusinessIncome()));
+    private List<StockDomain> dataAgent(Html html) {
+        // 每期财报所占tr的行数
+        int trBlock = 12;
+        int trSize = html.xpath("[@id='FundHoldSharesTable']/tbody/tr").all().size();
+        // 根据财报期数创建list size
+        List<StockDomain> dataList = new ArrayList<>(trSize / trBlock);
 
-        return stockDomain;
+        String companyCode = html.xpath("[@id='toolbar']/div[1]/h2/text()").get();
+        String companyName = html.xpath("[@id='toolbar']/div[1]/h1/a/text()").get();
+
+        for (int i = 1; i <= trSize; i = i + trBlock) {
+
+            StockDomain stockDomain = new StockDomain();
+            // 公司代码
+            stockDomain.setCompanyCode(companyCode);
+            // 公司简称
+            stockDomain.setCompanyName(companyName);
+
+            // 截止日期
+            stockDomain.getFrDomain().setDeadline(html.xpath("[@id='FundHoldSharesTable']/tbody/tr["+ i +"]/td[2]/strong/text()").get());
+            // 主营业务收入
+            int j = i + 8;
+            String mbi = Utils.formatNumber2String(html.xpath("[@id='FundHoldSharesTable']/tbody/tr["+ j +"]/td[2]/a/text() | [@id='FundHoldSharesTable']/tbody/tr["+ j +"]/td[2]/text()").get().trim().replace(Constants.FR_YUAN.getString(), ""));
+            // trim 失败
+            if (mbi.length() == 1) {
+                mbi = "0";
+            }
+            stockDomain.getFrDomain().setMainBusinessIncome(Utils.formatNumber2String(String.valueOf(Double.valueOf(Utils.formatNumber2String(mbi)) / Constants.FR_10000.getInteger())));
+            // 净利润
+            int k = i + 10;
+            String np = html.xpath("[@id='FundHoldSharesTable']/tbody/tr["+ k +"]/td[2]/a/text() | [@id='FundHoldSharesTable']/tbody/tr["+ k +"]/td[2]/text()").get().trim().replace(Constants.FR_YUAN.getString(), "");
+            // trim 失败
+            if (np.length() == 1) {
+                np = "0";
+            }
+            stockDomain.getFrDomain().setNetProfit(Utils.formatNumber2String(String.valueOf(Double.valueOf(Utils.formatNumber2String(np)) / Constants.FR_10000.getInteger())));
+            // 净利润率
+            stockDomain.getFrDomain().setNetMargin(Utils.rate(stockDomain.getFrDomain().getNetProfit(), stockDomain.getFrDomain().getMainBusinessIncome()));
+
+            dataList.add(stockDomain);
+        }
+        return dataList;
     }
 
     @Override

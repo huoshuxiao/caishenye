@@ -19,8 +19,10 @@ import java.util.stream.Stream;
 @Service
 public class StockService {
 
-    // 财务报表—sina网
-    protected final String FR_BASE_URL = "https://money.finance.sina.com.cn/corp/go.php/vFD_FinanceSummary/stockid/{companyCode}/displaytype/4.phtml";
+    // 财务报表:财务摘要 —新浪财经
+    protected final String FR_BASE_URL =
+//            "https://money.finance.sina.com.cn/corp/go.php/vFD_FinanceSummary/stockid/{companyCode}/displaytype/4.phtml";
+            "https://money.finance.sina.com.cn/corp/go.php/vFD_FinanceSummary/stockid/{companyCode}.phtml";
 
     @Autowired
     private ShService shService;
