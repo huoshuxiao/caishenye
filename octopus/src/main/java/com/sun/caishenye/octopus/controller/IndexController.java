@@ -70,7 +70,7 @@ public class IndexController {
     @Autowired
     private StockService stockService;
 
-//    // step1: 基础数据 TODO unuse
+//    // step1: 基础数据 TODO unuse download excel
 //    @GetMapping("sh/base")
 //    public Object shBase() throws ExecutionException, InterruptedException {
 //        return shangZhengService.base2();
@@ -87,5 +87,14 @@ public class IndexController {
     public Object shareBonus() {
         return stockService.shareBonus();
     }
+
+    // step2: 实时行情
+    @GetMapping("hq")
+    public Object hq() throws ExecutionException, InterruptedException {
+        return stockService.hq();
+    }
+
+    // step3: 钱多多
+
 
 }

@@ -10,6 +10,7 @@ public enum Constants {
     EXCHANGE_SZ("sz"),
     THREADS(10),
     FR_10000(100000000),    // 亿
+    HQ_SUSPENSION("停牌"),
     DELIMITING_COMMA(","),
     DELIMITING_12("!@");
 

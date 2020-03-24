@@ -1,12 +1,14 @@
 package com.sun.caishenye.octopus.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,6 +20,7 @@ import java.util.List;
 @Configuration
 public class RestTemplateConfig {
 
+    // json
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
 
@@ -30,9 +33,20 @@ public class RestTemplateConfig {
         converter.setSupportedMediaTypes(Collections.singletonList(MediaType.ALL));
         converter.setDefaultCharset(StandardCharsets.UTF_8);
         messageConverters.add(converter);
+        messageConverters.add(new StringHttpMessageConverter());
 
         RestTemplate restTemplate = restTemplateBuilder.messageConverters()
                 .additionalMessageConverters(messageConverters)
+                .build();
+
+        return restTemplate;
+    }
+
+    // string
+    @Bean("restTemplateText")
+    public RestTemplate restTemplateText(RestTemplateBuilder restTemplateBuilder) {
+
+        RestTemplate restTemplate = restTemplateBuilder.messageConverters()
                 .build();
 
         return restTemplate;

@@ -1,8 +1,10 @@
 package com.sun.caishenye.octopus.stock.service;
 
 
+import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.stock.business.webmagic.FinancialReportDataPageProcessor;
 import com.sun.caishenye.octopus.stock.business.webmagic.ShareBonusDataPageProcessor;
+import com.sun.caishenye.octopus.stock.dao.StockDao;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,6 +40,9 @@ public class StockService {
 
     @Autowired
     private ShareBonusDataPageProcessor sbPageProcessor;
+
+    @Autowired
+    private StockDao stockDao;
 
     // 分红配股
     public Object shareBonus() {
@@ -69,6 +75,28 @@ public class StockService {
         frPageProcessor.run(urls);
 
         return "finished";
+    }
+
+    // 实时行情
+    public Object hq() throws ExecutionException, InterruptedException {
+        // 查询证券基础数据
+        List<StockDomain> stockDomainList = readBaseData();
+        for (StockDomain stockDomain: stockDomainList) {
+            if (Constants.EXCHANGE_SZ.getString().equals(stockDomain.getExchange())) {
+                szService.hq(stockDomain);
+            } else {
+                shService.hq(stockDomain);
+            }
+        }
+        
+        // 写入 实时行情 数据
+        writeHqData(stockDomainList);
+        
+        return "hq";
+    }
+
+    public void writeHqData(List<StockDomain> stockDomainList) {
+        stockDao.writeHqData(stockDomainList);
     }
 
     // 查询证券基础数据

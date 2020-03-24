@@ -1,12 +1,17 @@
 package com.sun.caishenye.octopus.stock.service;
 
+import com.sun.caishenye.octopus.common.Constants;
+import com.sun.caishenye.octopus.stock.business.api.ShRestTemplate;
 import com.sun.caishenye.octopus.stock.dao.ShDao;
+import com.sun.caishenye.octopus.stock.domain.ShHqDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 上海证券
@@ -17,12 +22,13 @@ public class ShService {
 
     @Autowired
     private ShDao shangZhengDao;
+
+    @Autowired
+    private ShRestTemplate restTemplate;
+
 /*
     @Autowired
     private ShBaseDataPageProcessor shangZhengBaseDataPageProcessor;
-
-    @Autowired
-    private ShRestTemplate template;
 
     public Object base2() {
         shangZhengBaseDataPageProcessor.run();
@@ -73,5 +79,21 @@ public class ShService {
     public List<StockDomain> readBaseData() {
 
         return shangZhengDao.readBaseData();
+    }
+
+    // 实时行情 price
+    public void hq(StockDomain stockDomain) throws ExecutionException, InterruptedException {
+
+        // call rest service
+        CompletableFuture<ShHqDomain> hqDomainCompletableFuture = CompletableFuture.supplyAsync(() -> restTemplate.getHqForObject(stockDomain)).get();
+        ShHqDomain shHqDomain = hqDomainCompletableFuture.get();
+        // 停牌
+        if (shHqDomain.getLine().size() == 0) {
+            shHqDomain.setPrice(Constants.HQ_SUSPENSION.getString());
+        } else {
+            Number[] numbers = shHqDomain.getLine().get(shHqDomain.getLine().size() - 1);
+            shHqDomain.setPrice(numbers[1].toString());
+        }
+        stockDomain.setPrice(shHqDomain.getPrice());
     }
 }

@@ -23,6 +23,9 @@ public class StockDomain {
     @JsonProperty("LISTING_DATE")
     private String listingDate;
 
+    // 股价
+    private String price;
+
     // 证券交易所
     private String exchange;
 
@@ -40,6 +43,17 @@ public class StockDomain {
                 .append(Constants.DELIMITING_COMMA.getString()).append(companyName)
                 .append(Constants.DELIMITING_COMMA.getString()).append(listingDate)
                 ;
+        return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
+    }
+
+    // 实时行情
+    public String toHqStr() {
+
+        StringBuilder sbStr = new StringBuilder();
+        sbStr.append(Constants.DELIMITING_COMMA.getString()).append(companyCode)
+                .append(Constants.DELIMITING_COMMA.getString()).append(companyName)
+                .append(Constants.DELIMITING_COMMA.getString()).append(price)
+        ;
         return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
     }
 
