@@ -8,10 +8,13 @@ import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.pipeline.ConsolePipeline;
 import us.codecraft.webmagic.pipeline.FilePipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
+import us.codecraft.webmagic.selector.Html;
 
 @Component
 @Slf4j
 public class WebMagicProcessorDemo implements PageProcessor {
+
+    private final static String BASE_URL = "http://money.finance.sina.com.cn/corp/go.php/vCI_CorpInfo/stockid/601318.phtml";
 
     // 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等
     private Site site = Site.me().setRetryTimes(3).setSleepTime(1000).setTimeOut(5000);
@@ -20,30 +23,37 @@ public class WebMagicProcessorDemo implements PageProcessor {
     // 使用了三种抽取技术：XPath、正则表达式和CSS选择器。另外，对于JSON格式的内容，可使用JsonPath进行解析。
     @Override
     public void process(Page page) {
+
+        /* 部分二：定义如何抽取页面信息，并保存下来 */
+        // Selectable相关的抽取元素链式API是WebMagic的一个核心功能。抽取是支持链式调用的
+        // 使用Selectable抽取元素，分为两类：抽取部分和获取结果部分。
+        Html html = page.getHtml();
+        log.debug("html :: {} ", html);
+
         /* 正则表达式 */
         // 这段代码的分为两部分，page.getHtml().links().regex("(https://github\\.com/\\w+/\\w+)").all()
         // 用于获取所有满足"(https:/ /github\.com/\w+/\w+)"这个正则表达式的链接，
         // page.addTargetRequests()则将这些链接加入到待抓取的队列中去。
 //        page.addTargetRequests(page.getHtml().links().regex("(https://github\\.com/\\w+/\\w+)").all());
-
-        String author = page.getUrl().regex("https://github\\.com/(\\w+)/.*").toString();
-        // XPath
-        String name = page.getHtml().xpath("//h1[@class='entry-title public']/strong/a/text()").toString();
-
-        // 保存结果，这个结果会最终保存到ResultItems中(KV的形式按行输出)
-        page.putField("author", author);
-        page.putField("name", name);
-        if (page.getResultItems().get("name") == null) {
-            // 设置skip之后，这个页面的结果不会被Pipeline处理
-            page.setSkip(true);
-        }
-        page.putField("readme", page.getHtml().xpath("//div[@id='readme']/tidyText()"));
-
-        log.info(String.format("author >> %s ", author));
-        log.info("name >> {} ", name);
-        log.info("readme >> {} ", page.getHtml().xpath("//div[@id='readme']/tidyText()").toString());
-
-        page.addTargetRequest("https://github.com/huoshuxiao/caishenye");
+//
+//        String author = page.getUrl().regex("https://github\\.com/(\\w+)/.*").toString();
+//        // XPath
+//        String name = page.getHtml().xpath("//h1[@class='entry-title public']/strong/a/text()").toString();
+//
+//        // 保存结果，这个结果会最终保存到ResultItems中(KV的形式按行输出)
+//        page.putField("author", author);
+//        page.putField("name", name);
+//        if (page.getResultItems().get("name") == null) {
+//            // 设置skip之后，这个页面的结果不会被Pipeline处理
+//            page.setSkip(true);
+//        }
+//        page.putField("readme", page.getHtml().xpath("//div[@id='readme']/tidyText()"));
+//
+//        log.info(String.format("author >> %s ", author));
+//        log.info("name >> {} ", name);
+//        log.info("readme >> {} ", page.getHtml().xpath("//div[@id='readme']/tidyText()").toString());
+//
+//        page.addTargetRequest("https://github.com/huoshuxiao/caishenye");
     }
 
     @Override
@@ -52,7 +62,7 @@ public class WebMagicProcessorDemo implements PageProcessor {
     }
 
     public void run() {
-        Spider demo = Spider.create(new WebMagicProcessorDemo()).addUrl("https://github.com/huoshuxiao");
+        Spider demo = Spider.create(this).addUrl(BASE_URL);
 
         demo
 //            .setScheduler()   // Scheduler包括两个作用： 对待抓取的URL队列进行管理, 对已抓取的URL进行去重。
