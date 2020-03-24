@@ -18,8 +18,8 @@ public class WebMagicDemoController {
         this.morningstarService = morningstarService;
     }
 
-    @GetMapping("web")
-    public Object web() {
+    @GetMapping("webmagic")
+    public Object webMagic() {
         return morningstarService.run();
     }
 }
