@@ -20,18 +20,18 @@ import java.util.List;
 public class ShDao {
 
     protected final String BASE_DATA_FILE_NAME = "data/ShangZhengBase.csv";
-
-    public void writeData(List<StockDomain> data) {
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(BASE_DATA_FILE_NAME), StandardCharsets.UTF_8)) {
-            for (StockDomain stockDomain : data) {
-                String s = stockDomain.toStr() + "\r\n";
-                log.debug("write data >> {}", s);
-                writer.write(s, 0, s.length());
-            }
-        } catch (IOException x) {
-            log.error(String.format("IOException: %s%n", x));
-        }
-    }
+//
+//    public void writeData(List<StockDomain> data) {
+//        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(BASE_DATA_FILE_NAME), StandardCharsets.UTF_8)) {
+//            for (StockDomain stockDomain : data) {
+//                String s = stockDomain.toStr() + "\r\n";
+//                log.debug("write data >> {}", s);
+//                writer.write(s, 0, s.length());
+//            }
+//        } catch (IOException x) {
+//            log.error(String.format("IOException: %s%n", x));
+//        }
+//    }
 
     public List<StockDomain> readBaseData() {
 

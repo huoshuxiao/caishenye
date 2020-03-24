@@ -2,7 +2,6 @@ package com.sun.caishenye.octopus.controller;
 
 import com.sun.caishenye.octopus.fund.service.EastMoneyService;
 import com.sun.caishenye.octopus.fund.service.MorningStarService;
-import com.sun.caishenye.octopus.stock.service.ShService;
 import com.sun.caishenye.octopus.stock.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.ServerSentEvent;
@@ -65,22 +64,28 @@ public class IndexController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @Autowired
-    private ShService shangZhengService;
+//    @Autowired
+//    private ShService shangZhengService;
 
     @Autowired
     private StockService stockService;
 
-    // step1: 基础数据 TODO unuse
-    @GetMapping("sh/base")
-    public Object shBase() throws ExecutionException, InterruptedException {
-        return shangZhengService.base2();
-    }
+//    // step1: 基础数据 TODO unuse
+//    @GetMapping("sh/base")
+//    public Object shBase() throws ExecutionException, InterruptedException {
+//        return shangZhengService.base2();
+//    }
 
     // step2: 财务报表
     @GetMapping("fr")
-    public Object financialReport() throws ExecutionException, InterruptedException {
+    public Object financialReport() {
         return stockService.financialReport();
+    }
+
+    // step2: 分红配股
+    @GetMapping("sb")
+    public Object shareBonus() {
+        return stockService.shareBonus();
     }
 
 }

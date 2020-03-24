@@ -1,20 +1,12 @@
 package com.sun.caishenye.octopus.stock.service;
 
-import com.sun.caishenye.octopus.stock.business.api.ShRestTemplate;
-import com.sun.caishenye.octopus.stock.business.webmagic.ShBaseDataPageProcessor;
 import com.sun.caishenye.octopus.stock.dao.ShDao;
-import com.sun.caishenye.octopus.stock.domain.PageHelpDomain;
-import com.sun.caishenye.octopus.stock.domain.SseQueryDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 /**
  * 上海证券
@@ -25,7 +17,7 @@ public class ShService {
 
     @Autowired
     private ShDao shangZhengDao;
-
+/*
     @Autowired
     private ShBaseDataPageProcessor shangZhengBaseDataPageProcessor;
 
@@ -75,6 +67,7 @@ public class ShService {
     public void writeData(List<StockDomain> writeDataList) {
         shangZhengDao.writeData(writeDataList);
     }
+    */
 
 
     public List<StockDomain> readBaseData() {

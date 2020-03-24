@@ -2,6 +2,7 @@ package com.sun.caishenye.octopus.stock.service;
 
 
 import com.sun.caishenye.octopus.stock.business.webmagic.FinancialReportDataPageProcessor;
+import com.sun.caishenye.octopus.stock.business.webmagic.ShareBonusDataPageProcessor;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,10 @@ import java.util.stream.Stream;
 public class StockService {
 
     // 财务报表:财务摘要 —新浪财经
-    protected final String FR_BASE_URL =
-//            "https://money.finance.sina.com.cn/corp/go.php/vFD_FinanceSummary/stockid/{companyCode}/displaytype/4.phtml";
-            "https://money.finance.sina.com.cn/corp/go.php/vFD_FinanceSummary/stockid/{companyCode}.phtml";
+    protected final String FR_BASE_URL = "https://money.finance.sina.com.cn/corp/go.php/vFD_FinanceSummary/stockid/{companyCode}.phtml";
+
+    // 发行与分配:分红配股 — 新浪财经
+    protected final String SB_BASE_URL = "https://money.finance.sina.com.cn/corp/go.php/vISSUE_ShareBonus/stockid/{companyCode}.phtml";
 
     @Autowired
     private ShService shService;
@@ -32,6 +34,25 @@ public class StockService {
 
     @Autowired
     private FinancialReportDataPageProcessor frPageProcessor;
+
+    @Autowired
+    private ShareBonusDataPageProcessor sbPageProcessor;
+
+    // 分红配股
+    public Object shareBonus() {
+
+        // 查询证券基础数据
+        List<StockDomain> stockDomainList = readBaseData();
+
+        List<String> urls = new ArrayList<>(stockDomainList.size());
+        for (StockDomain stockDomain: stockDomainList) {
+            urls.add(SB_BASE_URL.replace("{companyCode}", stockDomain.getCompanyCode()));
+        }
+
+        // 新浪财经 分红配股
+        sbPageProcessor.run(urls);
+        return "finished";
+    }
 
     // 财务报表
     public Object financialReport() {

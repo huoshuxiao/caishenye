@@ -5,7 +5,6 @@ import com.sun.caishenye.octopus.common.Utils;
 import com.sun.caishenye.octopus.fund.business.webmagic.TextFilePipeline;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -27,7 +26,7 @@ import java.util.List;
 public class FinancialReportDataPageProcessor implements PageProcessor {
 
     /* 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等 */
-    private Site site = Site.me().setRetryTimes(3).setSleepTime(100).setTimeOut(Integer.MAX_VALUE);
+    private Site site = Site.me().setRetryTimes(3).setSleepTime(100).setTimeOut(Integer.MAX_VALUE).setCharset("gb2312");
 
     // home page
     private final String FILE_PATH = "data";
@@ -97,7 +96,6 @@ public class FinancialReportDataPageProcessor implements PageProcessor {
 
     @Override
     public Site getSite() {
-        site.setCharset("gb2312");
         return site;
     }
 
