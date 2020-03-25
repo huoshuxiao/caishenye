@@ -40,7 +40,7 @@ public class SzService {
         // call rest service
         CompletableFuture<SzHqDomain> hqDomainCompletableFuture = CompletableFuture.supplyAsync(() -> restTemplate.getHqForObject(stockDomain)).get();
         SzHqDomain hqDomain = hqDomainCompletableFuture.get();
-        hqDomain.setPrice(hqDomain.getData().getNow());
+        hqDomain.setPrice(hqDomain.getData().getNow() == null ? Constants.HQ_SUSPENSION.getString() : hqDomain.getData().getNow());
         stockDomain.setPrice(hqDomain.getPrice());
     }
 }

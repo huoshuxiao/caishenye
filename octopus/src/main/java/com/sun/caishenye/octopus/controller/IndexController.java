@@ -93,8 +93,15 @@ public class IndexController {
     public Object hq() throws ExecutionException, InterruptedException {
         return stockService.hq();
     }
+    // step2: 实时行情
+    @GetMapping("hhq")
+    public Object hhq() throws ExecutionException, InterruptedException {
+        return stockService.hq();
+    }
 
     // step3: 钱多多
-
-
+    @GetMapping("mm")
+    public Object moneyMoney() {
+        return stockService.moneyMoney();
+    }
 }

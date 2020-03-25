@@ -25,6 +25,8 @@ public class StockDomain {
 
     // 股价
     private String price;
+    // 股息率
+    private String dividendYield;
 
     // 证券交易所
     private String exchange;
@@ -83,6 +85,24 @@ public class StockDomain {
                 .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getDividendDate())      // 除权除息日
                 .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getRegistrationDate())  // 股权登记日
         ;
+        return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
+    }
+
+    // 钱多多
+    public String toMmStr() {
+
+        StringBuilder sbStr = new StringBuilder();
+
+        sbStr.append(Constants.DELIMITING_COMMA.getString()).append(companyCode)
+                .append(Constants.DELIMITING_COMMA.getString()).append(companyName)
+                .append(Constants.DELIMITING_COMMA.getString()).append(price)                           // 股价
+                .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getBonusDate())         // 公告日期
+                .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getDividend())          // 派息(税前)(元)
+                .append(Constants.DELIMITING_COMMA.getString()).append(dividendYield)                   // 股息率
+                .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getSchedule())          // 进度
+                .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getDividendDate())      // 除权除息日
+                .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getRegistrationDate())  // 股权登记日
+                ;
         return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
     }
 }

@@ -14,8 +14,6 @@ public class ShareBonusDomain {
     private String increase;
     // 派息(税前)(元)
     private String dividend;
-    // 股息率
-    private String dividendYield;
     // 进度
     private String schedule;
     // 除权除息日
