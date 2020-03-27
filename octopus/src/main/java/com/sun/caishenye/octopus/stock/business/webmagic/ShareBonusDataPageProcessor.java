@@ -55,7 +55,7 @@ public class ShareBonusDataPageProcessor implements PageProcessor {
                 continue;
             }
             // 保存结果至Pipeline，持久化对象结果
-            page.putField(stockDomain.getSbDomain().getBonusDate() + "@" + stockDomain.getCompanyCode(), stockDomain.toSbStr());
+            page.putField(stockDomain.getSbDomain().getBonusDate() + "@" + stockDomain.getCompanyCode(), stockDomain.sbBuilder());
             log.debug("ShareBonus value :: {}", stockDomain);
         }
     }

@@ -33,6 +33,10 @@ public class ShRestTemplate {
     // http://yunhq.sse.com.cn:32041//v1/sh1/line/600000?callback=jQuery11240024167803351734296_1583823993285&begin=0&end=-1&select=time%2Cprice%2Cvolume&_=1583823993299
     protected final String SH_HQ_BASE_URL = "http://yunhq.sse.com.cn:32041//v1/sh1/line/{companyCode}?callback=jQuery{random}_{random2}&begin=0&end=-1&select=time,price,volume&_={random3}";
 
+//    // 历史行情 上海证券交易所
+//    // http://yunhq.sse.com.cn:32041//v1/sh1/dayk/600000?callback=jQuery112404567523489726468_1585101083795&select=date%2Copen%2Chigh%2Clow%2Cclose%2Cvolume&begin=-3650&end=-1&_=1585101083815
+//    protected final String SH_HHQ_BASE_URL = "http://yunhq.sse.com.cn:32041//v1/sh1/dayk/{companyCode}?callback=jQuery{random}_{random2}&select=date,open,high,low,close,volume&begin=-"+ Constants.HHQ_DATES.getInteger() +"&end=-1&_={random3}";
+
     @Qualifier("restTemplateText")
     @Autowired
     private RestTemplate restTemplate;
@@ -42,6 +46,32 @@ public class ShRestTemplate {
         this.restTemplate = restTemplate;
     }
 
+//    // 历史行情
+//    @Async
+//    public CompletableFuture<ShHqDomain> getHhqForObject(StockDomain stockDomain) {
+//
+//        log.debug("ShRestTemplate call hhq request params :: {}", stockDomain);
+//        ShHqDomain shHqDomain = new ShHqDomain();
+//        try {
+//
+//            // call rest service
+//            String response = restTemplate.getForObject(SH_HHQ_BASE_URL, String.class, hhqUrlBuilder(stockDomain));
+//            response = StringUtils.substringBetween(response, "(", ")");
+//
+//            Gson gson = new Gson();
+//            shHqDomain = gson.fromJson(response, ShHqDomain.class);
+//            log.debug("ShRestTemplate call hhq response value :: {}", shHqDomain);
+//        } catch (HttpClientErrorException e) {
+//            log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
+//        }
+//        return CompletableFuture.completedFuture(shHqDomain);
+//    }
+//
+//    private Map<String, Object> hhqUrlBuilder(StockDomain stockDomain) {
+//        return hqUrlBuilder(stockDomain);
+//    }
+
+    // 实时行情
     @Async
     public CompletableFuture<ShHqDomain> getHqForObject(StockDomain stockDomain) {
 
@@ -71,6 +101,7 @@ public class ShRestTemplate {
         params.put("random3", RandomUtils.nextInt());
         return params;
     }
+
 /*
     @Async
     public CompletableFuture<SseQueryDomain> getBaseForObject(PageHelpDomain pageHelpDomain) {

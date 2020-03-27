@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.caishenye.octopus.common.Constants;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 /**
  * 股票 基础信息 bean
  *
@@ -25,6 +27,8 @@ public class StockDomain {
 
     // 股价
     private String price;
+    // 交易日
+    private String date;
     // 股息率
     private String dividendYield;
 
@@ -37,7 +41,7 @@ public class StockDomain {
     // 分红配股
     private ShareBonusDomain sbDomain = new ShareBonusDomain();
 
-    public String toStr() {
+    public String baseBuilder() {
 
         StringBuilder sbStr = new StringBuilder();
         sbStr.append(Constants.DELIMITING_COMMA.getString()).append(exchange)
@@ -49,18 +53,19 @@ public class StockDomain {
     }
 
     // 实时行情
-    public String toHqStr() {
+    public String hqBuilder() {
 
         StringBuilder sbStr = new StringBuilder();
         sbStr.append(Constants.DELIMITING_COMMA.getString()).append(companyCode)
                 .append(Constants.DELIMITING_COMMA.getString()).append(companyName)
+                .append(Constants.DELIMITING_COMMA.getString()).append(LocalDate.now())     // 交易日 2020-03-26
                 .append(Constants.DELIMITING_COMMA.getString()).append(price)
         ;
         return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
     }
 
     // 财务报表
-    public String toFrStr() {
+    public String frBuilder() {
 
         StringBuilder sbStr = new StringBuilder();
         sbStr.append(Constants.DELIMITING_COMMA.getString()).append(companyCode)
@@ -74,7 +79,7 @@ public class StockDomain {
     }
 
     // 分红配股
-    public String toSbStr() {
+    public String sbBuilder() {
         StringBuilder sbStr = new StringBuilder();
 
         sbStr.append(Constants.DELIMITING_COMMA.getString()).append(companyCode)
@@ -89,12 +94,13 @@ public class StockDomain {
     }
 
     // 钱多多
-    public String toMmStr() {
+    public String mmBuilder() {
 
         StringBuilder sbStr = new StringBuilder();
 
         sbStr.append(Constants.DELIMITING_COMMA.getString()).append(companyCode)
                 .append(Constants.DELIMITING_COMMA.getString()).append(companyName)
+                .append(Constants.DELIMITING_COMMA.getString()).append(date)                           // 交易日
                 .append(Constants.DELIMITING_COMMA.getString()).append(price)                           // 股价
                 .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getBonusDate())         // 公告日期
                 .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getDividend())          // 派息(税前)(元)

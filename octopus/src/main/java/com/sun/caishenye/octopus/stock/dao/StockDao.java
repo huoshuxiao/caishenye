@@ -1,6 +1,7 @@
 package com.sun.caishenye.octopus.stock.dao;
 
 import com.sun.caishenye.octopus.common.Constants;
+import com.sun.caishenye.octopus.stock.domain.DayLineDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -20,6 +21,7 @@ import java.util.List;
 public class StockDao {
 
     protected final String HQ_DATA_FILE = "data/HQ.csv";
+    protected final String HHQ_DATA_FILE = "data/HHQ.csv";
     protected final String SB_DATA_FILE = "data/ShareBonus.csv";
     protected final String MM_DATA_FILE = "data/MoneyMoney.csv";
 
@@ -27,7 +29,7 @@ public class StockDao {
 
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(MM_DATA_FILE), StandardCharsets.UTF_8)) {
             for (StockDomain stockDomain : data) {
-                String s = stockDomain.toMmStr() + "\r\n";
+                String s = stockDomain.mmBuilder() + "\r\n";
                 log.debug("write mm data >> {}", s);
                 writer.write(s, 0, s.length());
             }
@@ -39,7 +41,7 @@ public class StockDao {
     public void writeHqData(List<StockDomain> data) {
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(HQ_DATA_FILE), StandardCharsets.UTF_8)) {
             for (StockDomain stockDomain : data) {
-                String s = stockDomain.toHqStr() + "\r\n";
+                String s = stockDomain.hqBuilder() + "\r\n";
                 log.debug("write hq data >> {}", s);
                 writer.write(s, 0, s.length());
             }
@@ -64,8 +66,10 @@ public class StockDao {
                 stockDomain.setCompanyCode(extendDomainArray[0].trim());
                 // 公司简称
                 stockDomain.setCompanyName(extendDomainArray[1].trim());
+                // 交易日
+                stockDomain.setDate(extendDomainArray[2].trim());
                 // 股价
-                stockDomain.setPrice(extendDomainArray[2].trim());
+                stockDomain.setPrice(extendDomainArray[3].trim());
 
                 list.add(stockDomain);
             }
@@ -111,5 +115,49 @@ public class StockDao {
         }
 
         return list;
+    }
+
+    // 读 历史行情
+    public List<DayLineDomain> readHhqData() {
+        List<DayLineDomain> list = new ArrayList<>();
+        Path path = Paths.get(HHQ_DATA_FILE);
+
+        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                log.debug("read hhq data >> {}", line);
+
+                DayLineDomain stockDomain = new DayLineDomain();
+                String[] extendDomainArray = line.split(Constants.DELIMITING_COMMA.getString());
+
+                // 公司代码
+                stockDomain.setCompanyCode(extendDomainArray[0].trim());
+                // 公司简称
+                stockDomain.setCompanyName(extendDomainArray[1].trim());
+                // 收盘日
+                stockDomain.setDay(extendDomainArray[2].trim());
+                // 股价
+                stockDomain.setPrice(extendDomainArray[3].trim());
+
+                list.add(stockDomain);
+            }
+        } catch (IOException x) {
+            log.error(String.format("IOException: %s%n", x));
+        }
+        return list;
+    }
+
+    // 写 历史行情
+    public void writeHhqData(List<DayLineDomain> data) {
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(HHQ_DATA_FILE), StandardCharsets.UTF_8)) {
+            for (DayLineDomain domain : data) {
+                String s = domain.hhqBuilder() + "\r\n";
+                log.debug("write hhq data >> {}", s);
+                writer.write(s, 0, s.length());
+            }
+        } catch (IOException x) {
+            log.error(String.format("IOException: %s%n", x));
+        }
     }
 }

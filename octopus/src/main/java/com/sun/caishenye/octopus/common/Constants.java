@@ -5,11 +5,11 @@ import lombok.Setter;
 
 public enum Constants {
 
+    THREADS(10),
     FR_YUAN("元"),
+    FR_10000(100000000),    // 亿
     EXCHANGE_SH("sh"),
     EXCHANGE_SZ("sz"),
-    THREADS(10),
-    FR_10000(100000000),    // 亿
     HQ_SUSPENSION("停牌"),
     SB_SCHEDULE_IMPLEMENT("实施"),
     SB_SCHEDULE_PLAN("预案"),

@@ -45,7 +45,7 @@ public class FinancialReportDataPageProcessor implements PageProcessor {
         List<StockDomain> dataList = dataAgent(html);
         for (StockDomain stockDomain : dataList) {
             // 保存结果至Pipeline，持久化对象结果
-            page.putField(stockDomain.getFrDomain().getDeadline() + "@" + stockDomain.getCompanyCode(), stockDomain.toFrStr());
+            page.putField(stockDomain.getFrDomain().getDeadline() + "@" + stockDomain.getCompanyCode(), stockDomain.frBuilder());
             log.debug("FinancialReport value :: {}", stockDomain);
         }
     }

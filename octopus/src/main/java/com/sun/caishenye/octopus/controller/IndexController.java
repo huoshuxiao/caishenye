@@ -93,10 +93,10 @@ public class IndexController {
     public Object hq() throws ExecutionException, InterruptedException {
         return stockService.hq();
     }
-    // step2: 实时行情
+    // step2: 历史行情
     @GetMapping("hhq")
     public Object hhq() throws ExecutionException, InterruptedException {
-        return stockService.hq();
+        return stockService.hhq();
     }
 
     // step3: 钱多多

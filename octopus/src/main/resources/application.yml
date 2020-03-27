@@ -15,16 +15,18 @@ logging:
   file:
     name: log/${spring.application.name}.log
     max-history: 2
-    max-size: 100MB
+    max-size: 1000MB
   level:
     #    org:
     #      apache:
     #        http: debug
     com:
       sun:
-        caishenye: debug
+        caishenye: warn
 
 ################### 项目属性 ###############################
 job:
   cron:
-    fund: 0 0 0/1 * * ?
+    # 2020-03-27 02:01:00 每天2点
+    fund: 0 5 2 * * ?
+    stock: 0 5 3 * * ?

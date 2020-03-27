@@ -14,13 +14,14 @@ public class AsyncThreadPoolExecutorConfig {
 
     @Bean
     public Executor threadPoolTaskExecutor() {
+        int coreThreadCount = Runtime.getRuntime().availableProcessors();
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         // 核心线程数	线程池创建时候初始化的线程数
-        executor.setCorePoolSize(10);
+        executor.setCorePoolSize(coreThreadCount + 1);
         // 最大线程数	线程池最大的线程数，只有在缓冲队列满了之后，才会申请超过核心线程数的线程
-        executor.setMaxPoolSize(20);
+        executor.setMaxPoolSize((coreThreadCount + 1) * 2);
         // 缓冲队列	用来缓冲执行任务的队列
-        executor.setQueueCapacity(200);
+        executor.setQueueCapacity((coreThreadCount + 1) * 2 * 10);
         // 允许线程的空闲时间	当超过了核心线程之外的线程，在空闲时间到达之后会被销毁
         executor.setKeepAliveSeconds(60);
         // 线程池名的前缀	可以用于定位处理任务所在的线程池

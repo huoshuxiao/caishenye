@@ -16,11 +16,11 @@ public class ShareBonusDomain {
     private String dividend;
     // 进度
     private String schedule;
-    // 除权除息日
+    // 除权除息日 fmt: 2016-06-03
     private String dividendDate;
-    // 股权登记日
+    // 股权登记日 fmt: 2016-06-03
     private String registrationDate;
-    // 红股上市日
+    // 红股上市日 fmt: 2016-06-03
     private String listingDate;
 
 }

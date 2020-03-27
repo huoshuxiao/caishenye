@@ -43,4 +43,11 @@ public class SzService {
         hqDomain.setPrice(hqDomain.getData().getNow() == null ? Constants.HQ_SUSPENSION.getString() : hqDomain.getData().getNow());
         stockDomain.setPrice(hqDomain.getPrice());
     }
+
+//    // 历史行情
+//    public void hhq(StockDomain stockDomain) throws ExecutionException, InterruptedException {
+//        // call rest service
+//        CompletableFuture<SzHqDomain> hqDomainCompletableFuture = CompletableFuture.supplyAsync(() -> restTemplate.getHhqForObject(stockDomain)).get();
+//        SzHqDomain hqDomain = hqDomainCompletableFuture.get();
+//    }
 }
