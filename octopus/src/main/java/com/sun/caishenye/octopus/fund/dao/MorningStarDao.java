@@ -97,16 +97,20 @@ public class MorningStarDao {
                     extendDomain.setClosePriceDate("-");
                     // 单位净值
                     extendDomain.setClosePrice("-");
+                    // 基金类型
+                    extendDomain.setType("-");
+                    // 基金规模
+                    extendDomain.setSize("-");
                 } else {
                     extendDomain.setRisk(eastMoneyDetailDomain.getRisk().toString());
                     extendDomain.setClosePriceDate(eastMoneyDetailDomain.getClosePriceDate());
                     extendDomain.setClosePrice(eastMoneyDetailDomain.getClosePrice());
+                    // 基金类型
+                    extendDomain.setType(eastMoneyDetailDomain.getType());
+                    // 基金规模
+                    extendDomain.setSize(eastMoneyDetailDomain.getSize());
                 }
 
-                // 基金类型
-                extendDomain.setType(eastMoneyDetailDomain.getType());
-                // 基金规模
-                extendDomain.setSize(eastMoneyDetailDomain.getSize());
 
                 morningStarDomain.setMorningStarExtendDomain(extendDomain);
                 String s = morningStarDomain.toStr() + "\r\n";
