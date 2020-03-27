@@ -25,8 +25,8 @@ public class EastMoneyDetailDomain {
 
         StringBuilder sbStr = new StringBuilder();
 
-        sbStr.append(Constants.DELIMITING_12.getString()).append(fundName)
-                .append(Constants.DELIMITING_12.getString()).append(fundCode)
+        sbStr.append(Constants.DELIMITING_12.getString()).append(fundCode)
+                .append(Constants.DELIMITING_12.getString()).append(fundName)
                 .append(Constants.DELIMITING_12.getString()).append(type)
                 .append(Constants.DELIMITING_12.getString()).append(size)
                 .append(Constants.DELIMITING_12.getString()).append(closePriceDate)

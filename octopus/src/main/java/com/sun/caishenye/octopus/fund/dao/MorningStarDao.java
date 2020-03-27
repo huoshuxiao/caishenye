@@ -111,7 +111,6 @@ public class MorningStarDao {
                     extendDomain.setSize(eastMoneyDetailDomain.getSize());
                 }
 
-
                 morningStarDomain.setMorningStarExtendDomain(extendDomain);
                 String s = morningStarDomain.toStr() + "\r\n";
                 log.debug("write data >> {}", s);
