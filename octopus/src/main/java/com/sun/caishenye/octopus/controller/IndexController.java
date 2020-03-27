@@ -1,6 +1,7 @@
 package com.sun.caishenye.octopus.controller;
 
 import com.sun.caishenye.octopus.fund.service.EastMoneyService;
+import com.sun.caishenye.octopus.fund.service.FundService;
 import com.sun.caishenye.octopus.fund.service.MorningStarService;
 import com.sun.caishenye.octopus.stock.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,16 +51,25 @@ public class IndexController {
         return morningstarService.extend();
     }
 
-    // 生成最终数据 step4: 扩展数据： 明细数据/年平均回报/风险/净值日期/单位净值
+    // 生成最终数据 step4: 组合数据 晨星 + 东方财富
     @GetMapping("morningstar/detail")
     public Object detail() {
         return morningstarService.detail();
     }
 
-    // step3: 扩展数据：友情提示 风险/净值日期/单位净值，供生成数据用
+    // step3: 扩展数据：友情提示 风险/净值日期/单位净值/基金类型/基金规模，供生成数据用
     @GetMapping("eastmoney/detail")
     public Object detai2l() {
         return eastMoneyService.detail();
+    }
+
+    @Autowired
+    private FundService fundService;
+    // run
+    @GetMapping("fund")
+    public Object fund() {
+        fundService.run();
+        return "fund";
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

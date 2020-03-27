@@ -13,6 +13,7 @@ import us.codecraft.webmagic.pipeline.TextFilePipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Html;
 import us.codecraft.webmagic.selector.Selectable;
+import us.codecraft.webmagic.utils.SelectableUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -65,22 +66,22 @@ public class EastMoneyDetailDataPageProcessor implements PageProcessor {
         Selectable merchandiseDetail = html.css(".wrapper")
                 .css(".wrapper_min")
                 .css(".merchandiseDetail");
-        // 基金代码
-        String fundCode = merchandiseDetail
+        // 基金名称
+        String fundName = merchandiseDetail
                 .css(".fundDetail-header")
                 .css(".fundDetail-tit")
                 .xpath("div/div/text()")
                 .get();
-        eastMoneyDetailDomain.setFundCode(fundCode);
+        eastMoneyDetailDomain.setFundName(fundName);
 
-        // 基金名称
-        String fundName = merchandiseDetail
+        // 基金代码
+        String fundCode = merchandiseDetail
                 .css(".fundDetail-header")
                 .css(".fundDetail-tit")
                 .css(".ui-num")
                 .xpath("span/text()")
                 .get();
-        eastMoneyDetailDomain.setFundName(fundName);
+        eastMoneyDetailDomain.setFundCode(fundCode);
 
         Selectable dataItem02 = merchandiseDetail.css(".fundDetail-main")
                 .css(".fundInfoItem")
@@ -89,16 +90,9 @@ public class EastMoneyDetailDataPageProcessor implements PageProcessor {
                 ;
 
         // 净值日期
-        String closePriceDate = "-";
-        if (StringUtils.isNotEmpty(dataItem02.xpath("dt/p/text()").get())) {
-            closePriceDate = dataItem02.xpath("dt/p/text()").get().replace("(","").replace(")","");
-        }
-        eastMoneyDetailDomain.setClosePriceDate(closePriceDate);
+        eastMoneyDetailDomain.setClosePriceDate(SelectableUtils.getValue(dataItem02.xpath("dt/p/text()")));
         // 单位净值
-        String closePrice = "-";
-        if (StringUtils.isNotEmpty(dataItem02.xpath("dd/span/text()").get())) {
-            closePrice = dataItem02.xpath("dd/span/text()").get();
-        }
+        String closePrice = SelectableUtils.getValue(dataItem02.xpath("dd/span/text()"));
         // 货币基金 7日年华收益率 ，排除此类数据
         if (closePrice.contains("%")) {
             closePrice = "-";
@@ -106,10 +100,22 @@ public class EastMoneyDetailDataPageProcessor implements PageProcessor {
         eastMoneyDetailDomain.setClosePrice(closePrice);
 
         // 基金类型
-        eastMoneyDetailDomain.setType(html.xpath("[@id='body']/div[12]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()").get());
+        eastMoneyDetailDomain.setType(SelectableUtils.getValue(html.xpath("[@id='body']/div[12]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()")));
+        if ("-".equals(eastMoneyDetailDomain.getType())) {
+            eastMoneyDetailDomain.setType(SelectableUtils.getValue(html.xpath("[@id='body']/div[13]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()")));
+        }
+        if ("-".equals(eastMoneyDetailDomain.getType())) {
+            eastMoneyDetailDomain.setType(SelectableUtils.getValue(html.xpath("[@id='body']/div[4]/div[9]/div/div/div[2]/div[1]/div[3]/table/tbody/tr[1]/td[1]/a/text()")));
+        }
         // 基金规模
-        eastMoneyDetailDomain.setSize(html.xpath("[@id='body']/div[12]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()").get());
-
+        eastMoneyDetailDomain.setSize(SelectableUtils.getValue(html.xpath("[@id='body']/div[12]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()")));
+        if ("-".equals(eastMoneyDetailDomain.getSize())) {
+            eastMoneyDetailDomain.setSize(SelectableUtils.getValue(html.xpath("[@id='body']/div[13]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()")));
+        }
+        if ("-".equals(eastMoneyDetailDomain.getSize())) {
+            eastMoneyDetailDomain.setSize(SelectableUtils.getValue(html.xpath("[@id='body']/div[4]/div[9]/div/div/div[2]/div[1]/div[3]/table/tbody/tr[1]/td[2]/text()")));
+        }
+        eastMoneyDetailDomain.setSize(eastMoneyDetailDomain.getSize().replace("：", ""));
         return eastMoneyDetailDomain;
     }
 
