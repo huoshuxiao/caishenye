@@ -335,7 +335,7 @@ public class MorningStarExtendDataPageProcessor implements PageProcessor {
         morningStarSpider
 //                .setScheduler()   // Scheduler包括两个作用： 对待抓取的URL队列进行管理, 对已抓取的URL进行去重。
 //                .setDownloader()  // Downloader负责从互联网上下载页面。如：SeleniumDownloader
-                .addPipeline(new ConsolePipeline()) // 输出结果到控制台
+//                .addPipeline(new ConsolePipeline()) // 输出结果到控制台
                 .addPipeline(new TextFilePipeline(FILE_PATH, FILE_NAME))  // 使用Pipeline保存结果到文件
                 .thread(Constants.THREADS.getInteger())
                 .run();

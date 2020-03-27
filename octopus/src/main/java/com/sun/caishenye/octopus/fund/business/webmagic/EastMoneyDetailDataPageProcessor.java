@@ -128,7 +128,7 @@ public class EastMoneyDetailDataPageProcessor implements PageProcessor {
     public void run(List<String> urls) {
         Spider.create(new EastMoneyDetailDataPageProcessor())
                 .startUrls(urls)
-                .addPipeline(new ConsolePipeline()) // 输出结果到控制台
+//                .addPipeline(new ConsolePipeline()) // 输出结果到控制台
                 .addPipeline(new TextFilePipeline(FILE_PATH, FILE_NAME))  // 使用Pipeline保存结果到文件
                 .thread(Constants.THREADS.getInteger())
                 .run();
