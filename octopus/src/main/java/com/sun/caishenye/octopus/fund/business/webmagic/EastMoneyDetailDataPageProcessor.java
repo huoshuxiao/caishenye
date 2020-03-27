@@ -90,7 +90,7 @@ public class EastMoneyDetailDataPageProcessor implements PageProcessor {
                 ;
 
         // 净值日期
-        eastMoneyDetailDomain.setClosePriceDate(SelectableUtils.getValue(dataItem02.xpath("dt/p/text()")));
+        eastMoneyDetailDomain.setClosePriceDate(SelectableUtils.getValue(dataItem02.xpath("dt/p/text()")).replace("(","").replace(")",""));
         // 单位净值
         String closePrice = SelectableUtils.getValue(dataItem02.xpath("dd/span/text()"));
         // 货币基金 7日年华收益率 ，排除此类数据

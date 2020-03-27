@@ -13,6 +13,8 @@ import reactor.core.publisher.Flux;
 import reactor.util.function.Tuples;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -68,8 +70,10 @@ public class IndexController {
     // run
     @GetMapping("fund")
     public Object fund() {
+        LocalDateTime startTime = LocalDateTime.now();
         fundService.run();
-        return "fund";
+        LocalDateTime endTime = LocalDateTime.now();
+        return "fund " + ChronoUnit.MINUTES.between(startTime, endTime);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
