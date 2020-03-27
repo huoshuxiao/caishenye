@@ -22,6 +22,8 @@ public class FundDomain {
 
         sbStr.append(Constants.DELIMITING_COMMA.getString()).append(morningStarBaseDomain.getFundCode())
                 .append(Constants.DELIMITING_COMMA.getString()).append(morningStarBaseDomain.getFundName())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarExtendDomain.getType())
+                .append(Constants.DELIMITING_COMMA.getString()).append(morningStarExtendDomain.getSize())
                 .append(Constants.DELIMITING_COMMA.getString()).append(morningStarExtendDomain.getClosePriceDate())
                 .append(Constants.DELIMITING_COMMA.getString()).append(morningStarExtendDomain.getClosePrice())
                 .append(Constants.DELIMITING_COMMA.getString()).append(morningStarExtendDomain.getRisk())

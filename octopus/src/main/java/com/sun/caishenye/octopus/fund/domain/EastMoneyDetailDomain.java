@@ -16,6 +16,10 @@ public class EastMoneyDetailDomain {
     private String closePriceDate;
     // 单位净值
     private String closePrice;
+    // 基金类型
+    private String type;
+    // 基金规模
+    private String size;
 
     public String toStr() {
 
@@ -23,7 +27,8 @@ public class EastMoneyDetailDomain {
 
         sbStr.append(Constants.DELIMITING_12.getString()).append(fundName)
                 .append(Constants.DELIMITING_12.getString()).append(fundCode)
-//                .append(Constans.DELIMITING_6.getCode()).append(fundName)
+                .append(Constants.DELIMITING_12.getString()).append(type)
+                .append(Constants.DELIMITING_12.getString()).append(size)
                 .append(Constants.DELIMITING_12.getString()).append(closePriceDate)
                 .append(Constants.DELIMITING_12.getString()).append(closePrice)
                 .append(Constants.DELIMITING_12.getString()).append(risk)

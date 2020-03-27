@@ -21,6 +21,11 @@ public class MorningStarExtendDomain extends MorningStarBaseDomain {
     // 单位净值
     private String closePrice;
 
+    // 基金类型
+    private String type;
+    // 基金规模
+    private String size;
+
     @Override
     public String toStr() {
         StringBuilder sbStr = new StringBuilder();

@@ -105,6 +105,11 @@ public class EastMoneyDetailDataPageProcessor implements PageProcessor {
         }
         eastMoneyDetailDomain.setClosePrice(closePrice);
 
+        // 基金类型
+        eastMoneyDetailDomain.setType(html.xpath("[@id='body']/div[12]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()").get());
+        // 基金规模
+        eastMoneyDetailDomain.setSize(html.xpath("[@id='body']/div[12]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()").get());
+
         return eastMoneyDetailDomain;
     }
 

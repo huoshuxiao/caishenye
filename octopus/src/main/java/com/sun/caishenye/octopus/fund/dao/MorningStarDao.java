@@ -103,6 +103,11 @@ public class MorningStarDao {
                     extendDomain.setClosePrice(eastMoneyDetailDomain.getClosePrice());
                 }
 
+                // 基金类型
+                extendDomain.setType(eastMoneyDetailDomain.getType());
+                // 基金规模
+                extendDomain.setSize(eastMoneyDetailDomain.getSize());
+
                 morningStarDomain.setMorningStarExtendDomain(extendDomain);
                 String s = morningStarDomain.toStr() + "\r\n";
                 log.debug("write data >> {}", s);

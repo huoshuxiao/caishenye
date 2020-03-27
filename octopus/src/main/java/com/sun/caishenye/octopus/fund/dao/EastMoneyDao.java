@@ -38,12 +38,16 @@ public class EastMoneyDao {
                 eastMoneyDetailDomain.setFundCode(extendDomainArray[0]);
                 // 基金名称
                 eastMoneyDetailDomain.setFundName(extendDomainArray[1]);
+                // 基金类型
+                eastMoneyDetailDomain.setType(extendDomainArray[2]);
+                // 基金规模
+                eastMoneyDetailDomain.setSize(extendDomainArray[3]);
                 // 净值日期
-                eastMoneyDetailDomain.setClosePriceDate(extendDomainArray[2]);
+                eastMoneyDetailDomain.setClosePriceDate(extendDomainArray[4]);
                 // 单位净值
-                eastMoneyDetailDomain.setClosePrice(extendDomainArray[3]);
+                eastMoneyDetailDomain.setClosePrice(extendDomainArray[5]);
                 // 风险
-                eastMoneyDetailDomain.setRisk(Boolean.valueOf(extendDomainArray[4]));
+                eastMoneyDetailDomain.setRisk(Boolean.valueOf(extendDomainArray[6]));
 
                 list.add(eastMoneyDetailDomain);
             }
