@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.caishenye.octopus.common.Constants;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
@@ -11,7 +12,9 @@ import java.time.LocalDate;
  *
  */
 @Data
-public class StockDomain {
+public class StockDomain implements Serializable {
+
+    private static final long serialVersionUID = -1063860556029010836L;
 
     // 公司代码
     @JsonProperty("COMPANY_CODE")
@@ -24,6 +27,9 @@ public class StockDomain {
     // 上市日期
     @JsonProperty("LISTING_DATE")
     private String listingDate;
+
+    // 市盈率
+    private String pe;
 
     // 股价
     private String price;

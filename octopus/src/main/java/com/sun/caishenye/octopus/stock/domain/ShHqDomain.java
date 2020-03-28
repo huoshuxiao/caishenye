@@ -3,12 +3,15 @@ package com.sun.caishenye.octopus.stock.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 // 上海证券交易所 实时行情
 @Data
-public class ShHqDomain {
+public class ShHqDomain implements Serializable {
+
+    private static final long serialVersionUID = -7295525306191302663L;
 
     // 公司代码
     private String code;

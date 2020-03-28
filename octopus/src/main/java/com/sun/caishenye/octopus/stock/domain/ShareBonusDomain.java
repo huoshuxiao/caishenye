@@ -2,9 +2,13 @@ package com.sun.caishenye.octopus.stock.domain;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 // 分红配股
 @Data
-public class ShareBonusDomain {
+public class ShareBonusDomain  implements Serializable {
+
+    private static final long serialVersionUID = -6750598900254608557L;
 
     // 公告日期
     private String bonusDate;

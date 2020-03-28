@@ -3,12 +3,16 @@ package com.sun.caishenye.octopus.fund.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * http://cn.morningstar.com/handler/quicktake.ashx?command=manage&fcid=0P0001696E&randomid=0.7770353061521689
  * 返回值 Managers Bean
  */
 @Data
-public class MorningStarDetailManagerDomain {
+public class MorningStarDetailManagerDomain implements Serializable {
+
+    private static final long serialVersionUID = -1016374836486130207L;
 
     // 基金经理
 

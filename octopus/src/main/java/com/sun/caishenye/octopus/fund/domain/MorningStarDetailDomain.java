@@ -14,6 +14,8 @@ import java.util.List;
 @Data
 public class MorningStarDetailDomain implements Serializable {
 
+    private static final long serialVersionUID = 2696515147929520766L;
+
     /* 基金管理 */
     // 成立日期
     @JsonProperty("InceptionDate")

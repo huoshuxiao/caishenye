@@ -4,11 +4,15 @@ import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.Utils;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 基金 总domain
  */
 @Data
-public class FundDomain {
+public class FundDomain implements Serializable {
+
+    private static final long serialVersionUID = 5296550176209015089L;
 
     private MorningStarBaseDomain morningStarBaseDomain;
 

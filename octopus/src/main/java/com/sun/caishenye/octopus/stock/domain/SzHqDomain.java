@@ -3,9 +3,13 @@ package com.sun.caishenye.octopus.stock.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.io.Serializable;
+
 // 深圳证券交易所 实时行情
 @Data
-public class SzHqDomain {
+public class SzHqDomain implements Serializable {
+
+    private static final long serialVersionUID = -4856304376075694879L;
 
     // 时间
     private String datetime;

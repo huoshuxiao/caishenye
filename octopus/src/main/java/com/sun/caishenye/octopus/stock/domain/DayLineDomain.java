@@ -6,10 +6,13 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.List;
 
 // 历史行情 - 日K
-public class DayLineDomain {
+public class DayLineDomain implements Serializable {
+
+    private static final long serialVersionUID = 4371636697825834191L;
 
     @Setter
     @Getter

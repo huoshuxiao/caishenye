@@ -3,11 +3,15 @@ package com.sun.caishenye.octopus.fund.domain;
 import com.sun.caishenye.octopus.common.Constants;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 晨星 自定义domain
  */
 @Data
-public class MorningStarExtendDomain extends MorningStarBaseDomain {
+public class MorningStarExtendDomain extends MorningStarBaseDomain implements Serializable {
+
+    private static final long serialVersionUID = -8012350405578695552L;
 
     // 基金ID
     private String fundId;

@@ -3,8 +3,12 @@ package com.sun.caishenye.octopus.fund.domain;
 import com.sun.caishenye.octopus.common.Constants;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class EastMoneyDetailDomain {
+public class EastMoneyDetailDomain implements Serializable {
+
+    private static final long serialVersionUID = -7580702962885572641L;
 
     // 风险
     private Boolean risk = Boolean.FALSE;

@@ -3,12 +3,16 @@ package com.sun.caishenye.octopus.fund.domain;
 import com.sun.caishenye.octopus.common.Constants;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * http://cn.morningstar.com/quickrank/default.aspx
  * 业绩和风险 Bean
  */
 @Data
-public class MorningStarBaseDomain {
+public class MorningStarBaseDomain implements Serializable {
+
+    private static final long serialVersionUID = -8181973064037731509L;
 
     protected String page = "";
     // 基金代码
