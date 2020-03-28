@@ -30,7 +30,7 @@ public class FinancialReportDataPageProcessor implements PageProcessor {
 
     // home page
     private final String FILE_PATH = "data";
-    private final String FILE_NAME = "FinancialReport.csv";
+    private final String FILE_NAME = Constants.FILE_FINANCIAL_REPORT.getString();
 
     @Override
     public void process(Page page) {

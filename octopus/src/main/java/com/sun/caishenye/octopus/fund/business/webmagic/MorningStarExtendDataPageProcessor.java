@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Morning Star PageProcessor
+ * Morning Star PageProcessor (晨星ID)
  * <p>
  * 分为三个部分，分别是爬虫的配置、页面元素的抽取和链接的发现
  */
@@ -46,7 +46,7 @@ public class MorningStarExtendDataPageProcessor implements PageProcessor {
     private AtomicInteger aiNavPageIndex = new AtomicInteger(1);
 
     private final String FILE_PATH = "data";
-    private final String FILE_NAME = "MorningStarExtend.log";
+    private final String FILE_NAME = Constants.FILE_MORNING_STAR_EXTEND.getString();
 
     // process是定制爬虫逻辑的核心接口，在这里编写抽取逻辑，页面元素的抽取
     // 使用了三种抽取技术：XPath、正则表达式和CSS选择器。另外，对于JSON格式的内容，可使用JsonPath进行解析。

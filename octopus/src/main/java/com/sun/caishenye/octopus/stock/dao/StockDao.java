@@ -20,10 +20,11 @@ import java.util.List;
 @Repository
 public class StockDao {
 
-    protected final String HQ_DATA_FILE = "data/HQ.csv";
-    protected final String HHQ_DATA_FILE = "data/HHQ.csv";
-    protected final String SB_DATA_FILE = "data/ShareBonus.csv";
-    protected final String MM_DATA_FILE = "data/MoneyMoney.csv";
+    private final String FILE_PATH = "data/";
+    protected final String HQ_DATA_FILE = FILE_PATH + Constants.FILE_HQ.getString();
+    protected final String HHQ_DATA_FILE = FILE_PATH + Constants.FILE_HHQ.getString();
+    protected final String SB_DATA_FILE = FILE_PATH + Constants.FILE_SHARE_BONUS.getString();
+    protected final String MM_DATA_FILE = FILE_PATH + Constants.FILE_MONEY_MONEY.getString();
 
     public void writeMoneyMoney(List<StockDomain> data) {
 

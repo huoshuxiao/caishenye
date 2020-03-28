@@ -26,8 +26,8 @@ import java.util.Map;
 @Repository
 public class MorningStarDao {
 
-    protected final String DATA_FILE_NAME_EXTEND = "data/MorningStarExtend.log";
-    protected final String DATA_FILE_NAME = "data/Fund.csv";
+    protected final String DATA_FILE_NAME_EXTEND = "data/" + Constants.FILE_MORNING_STAR_EXTEND.getString();
+    protected final String DATA_FILE_NAME = "data/" + Constants.FILE_FUND.getString();
     private final Double BASE_DAY = 360d;
 
     public List<MorningStarExtendDomain> readExtendData() {

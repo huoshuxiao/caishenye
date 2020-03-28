@@ -32,7 +32,7 @@ public class EastMoneyDetailDataPageProcessor implements PageProcessor {
 
     // home page
     private final String FILE_PATH = "data";
-    private final String FILE_NAME = "EastMoneyDetail.log";
+    private final String FILE_NAME = Constants.FILE_EAST_MONEY_DETAIL.getString();
     private final String RISK_MAEESAGE = "友情提示：该基金可能由于巨额赎回等原因，基金净值和阶段涨幅出现异常波动。";
 
     @Override

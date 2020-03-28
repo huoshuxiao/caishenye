@@ -20,7 +20,7 @@ import java.util.Map;
 @Repository
 public class EastMoneyDao {
 
-    protected final String DATA_FILE_NAME_DETAIL = "data/EastMoneyDetail.log";
+    protected final String DATA_FILE_NAME_DETAIL = "data/" + Constants.FILE_EAST_MONEY_DETAIL.getString();
 
     public List<EastMoneyDetailDomain> readDetailDataList() {
 

@@ -46,7 +46,7 @@ public class MorningStarBaseDataPageProcessor implements PageProcessor {
     private AtomicInteger aiNavPageIndex = new AtomicInteger(1);
 
     private final String FILE_PATH = "data";
-    private final String FILE_NAME = "MorningStarBase.log";
+    private final String FILE_NAME = Constants.FILE_MORNING_STAR_BASE.getString();
 
     // process是定制爬虫逻辑的核心接口，在这里编写抽取逻辑，页面元素的抽取
     // 使用了三种抽取技术：XPath、正则表达式和CSS选择器。另外，对于JSON格式的内容，可使用JsonPath进行解析。

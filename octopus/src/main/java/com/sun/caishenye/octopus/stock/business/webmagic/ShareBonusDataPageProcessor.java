@@ -35,7 +35,7 @@ public class ShareBonusDataPageProcessor implements PageProcessor {
 
     // home page
     private final String FILE_PATH = "data";
-    private final String FILE_NAME = "ShareBonus.csv";
+    private final String FILE_NAME = Constants.FILE_SHARE_BONUS.getString();
 
     private final String DATA_404 = "暂时没有数据！";
 
