@@ -26,6 +26,6 @@ public class FundJob {
         LocalDateTime startTime = LocalDateTime.now();
         fundService.run();
         LocalDateTime endTime = LocalDateTime.now();
-        log.debug("job run :: {} minutes", ChronoUnit.MINUTES.between(startTime, endTime));
+        log.info("job run :: {} minutes", ChronoUnit.MINUTES.between(startTime, endTime));
     }
 }

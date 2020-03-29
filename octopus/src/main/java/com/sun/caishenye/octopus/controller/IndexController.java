@@ -77,17 +77,13 @@ public class IndexController {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//    @Autowired
-//    private ShService shangZhengService;
-
     @Autowired
     private StockService stockService;
 
-//    // step1: 基础数据 TODO unuse download excel
+//    // step1: 基础数据 (公司代码/公司简称/市盈率)
 //    @GetMapping("sh/base")
 //    public Object shBase() throws ExecutionException, InterruptedException {
-//        return shangZhengService.base2();
+//        return stockService.base();
 //    }
 
     // step2: 财务报表
@@ -109,13 +105,16 @@ public class IndexController {
     }
     // step2: 历史行情
     @GetMapping("hhq")
-    public Object hhq() throws ExecutionException, InterruptedException {
+    public Object hhq() {
         return stockService.hhq();
     }
 
     // step3: 钱多多
     @GetMapping("mm")
     public Object moneyMoney() {
-        return stockService.moneyMoney();
+        LocalDateTime startTime = LocalDateTime.now();
+        String tag = stockService.moneyMoney().toString();
+        LocalDateTime endTime = LocalDateTime.now();
+        return tag + " " + ChronoUnit.MINUTES.between(startTime, endTime);
     }
 }

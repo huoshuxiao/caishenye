@@ -92,15 +92,21 @@ public class StockService {
     }
 
     // 历史行情
-    public Object hhq() throws ExecutionException, InterruptedException {
+    public Object hhq() {
+
+        List<DayLineDomain> hhqList = new ArrayList<>();
         // 查询证券基础数据
         List<StockDomain> stockDomainList = readBaseData();
-        List<DayLineDomain> hhqList = new ArrayList<>();
-        for (StockDomain stockDomain: stockDomainList) {
+        stockDomainList.parallelStream().forEach(stockDomain -> {
             // 采集 历史行情
-            List<String[]> dataList = agentHhqData(stockDomain);
+            DayLineDomain hhqData = null;
+            try {
+                hhqData = agentHhqData(stockDomain);
+            } catch (InterruptedException | ExecutionException e) {
+                log.error("hhq call agentHhqData error ", e);
+            }
             // 构建 历史行情 实体 写入用
-            for (String[] data: dataList) {
+            hhqData.getHqs().parallelStream().forEach(data -> {
                 DayLineDomain dayLineDomain = new DayLineDomain();
                 // 公司代码
                 dayLineDomain.setCompanyCode(stockDomain.getCompanyCode());
@@ -112,8 +118,8 @@ public class StockService {
                 dayLineDomain.setPrice(data[2]);
 
                 hhqList.add(dayLineDomain);
-            }
-        }
+            });
+        });
 
         // 写入 历史行情 数据
         writeHhqData(hhqList);
@@ -121,10 +127,10 @@ public class StockService {
         return "hhq";
     }
     // 采集 历史行情
-    public List<String[]> agentHhqData(StockDomain stockDomain) throws ExecutionException, InterruptedException {
+    public DayLineDomain agentHhqData(StockDomain stockDomain) throws ExecutionException, InterruptedException {
         // call rest service
         CompletableFuture<DayLineDomain> hqDomainCompletableFuture = CompletableFuture.supplyAsync(() -> apiRestTemplate.getHhqForObject(stockDomain)).get();
-        return hqDomainCompletableFuture.get().getHqs();
+        return hqDomainCompletableFuture.get();
     }
 
     // 写 历史行情
@@ -173,40 +179,27 @@ public class StockService {
     // 钱多多
     // 扩展 分红配股
     public Object moneyMoney() {
+
         // 分红配股
         List<StockDomain> shareBonusDataList = readShareBonus();
 
         // 实时行情
-        Map<String, StockDomain> hqDataMap = new HashMap<>();
         List<StockDomain> hqDataList = readHqData();
+        Map<String, StockDomain> hqDataMap = new HashMap<>();
         for (StockDomain stockDomain: hqDataList) {
             hqDataMap.put(stockDomain.getCompanyCode(), stockDomain);
         }
 
         // 历史行情
-        List<DayLineDomain> hhqDataList = readHhqData();
-//        int cap = Double.valueOf(hhqDataList.size() / 0.75 + 1).intValue();
-        Map<String, DayLineDomain> hhqDataMap = new HashMap<>(hhqDataList.size() + 1);
-//        int count = 0, sleep = 0;
-//        int max = Double.valueOf(Math.ceil(Double.valueOf(hhqDataList.size()) / Double.valueOf(1000000))).intValue();
-//        try {
-            for (DayLineDomain dayLineDomain: hhqDataList) {
-//                log.debug("max: {}, count: {}, sleep: {}", max, count++, sleep);
-//                if (1000000 == count) {
-//                    sleep++;
-//                    count = 0;
-//                    Thread.sleep(1000);
-//                }
-                hhqDataMap.put(dayLineDomain.getCompanyCode() + dayLineDomain.getDay(), dayLineDomain);
-            }
-//        } catch (InterruptedException e) {
-//            log.error("mm thread sleep error " + e);
-//        }
-
-
+//        List<DayLineDomain> hhqDataList = readHhqData();
+//        int hhqCount = hhqDataList.size();
+//        log.info("hhq data size :: {} sb data size :: {}", hhqCount, shareBonusDataList.size());
+//
+//        // 空间（map）换时间(list)
+//        Map<String, DayLineDomain> hhqDataMap = hhqDataList.parallelStream().collect(Collectors.toMap(t -> t.getCompanyCode() + t.getDay(), t-> t));
 
         // merge指标，计算股息率(扩展分红配股 股价/股息率)
-        for (StockDomain stockDomain: shareBonusDataList) {
+        shareBonusDataList.parallelStream().forEach(stockDomain -> {
 
             log.debug("mm stockDomain value>> {}", stockDomain);
 
@@ -228,37 +221,48 @@ public class StockService {
                     stockDomain.setDividendYield(calDividendYield(stockDomain));
                 }
             // 历史 股息率,用 历史行情 数据 计算
-            } else if (sbDomain.getSchedule().equals(Constants.SB_SCHEDULE_IMPLEMENT.getString())) {
+            } else if (sbDomain.getSchedule().equals(Constants.SB_SCHEDULE_IMPLEMENT.getString())
+                    && Double.valueOf(sbDomain.getDividend()).doubleValue() > 0d) { // 分红金额大于0
                 // 根据 公司代码 + 除权除息日(map) 取得 股价
-                String mapKey = stockDomain.getCompanyCode() + sbDomain.getDividendDate().replaceAll("[-]","");
-                DayLineDomain dayLineDomain = hhqDataMap.get(mapKey);
+                String mapKey = stockDomain.getCompanyCode() + Utils.formatDate2String(sbDomain.getDividendDate());
+//                DayLineDomain dayLineDomain = hhqDataMap.get(mapKey);
+                DayLineDomain dayLineDomain = apiRestTemplate.getHhqByDateForObject(stockDomain);
                 // 历史数据 没有时 不计算股息率
                 if (dayLineDomain == null) {
-                    log.error("mm mapKey :: {}", mapKey);
-                    stockDomain.setDividendYield("-");
-                    stockDomain.setPrice("-");
+                    log.warn("mm mapKey :: {}", mapKey);
+                    stockDomain.setDividendYield("×");
+                    stockDomain.setPrice("×");
                 } else {
                     stockDomain.setPrice(dayLineDomain.getPrice());
                     // 股息率 = 派息(税前)(元) / 股价
                     stockDomain.setDividendYield(calDividendYield(stockDomain));
                 }
+                stockDomain.setDate(sbDomain.getDividendDate());
             // 不分配 股息率=0
             } else if (sbDomain.getSchedule().equals(Constants.SB_SCHEDULE_NOT_ASSIGNED.getString())) {
-                // 根据 公司代码 + 除权除息日(map) 取得 股价
-                String mapKey = stockDomain.getCompanyCode() + sbDomain.getDividendDate().replaceAll("[-]","");
-                DayLineDomain dayLineDomain = hhqDataMap.get(mapKey);
-                // 历史数据 没有时 不计算股息率
-                if (dayLineDomain == null) {
-                    log.error("mm mapKey :: {}", mapKey);
-                    stockDomain.setPrice("-");
-                } else {
-                    stockDomain.setPrice(dayLineDomain.getPrice());
-                }
+//                // 不分配 无除权除息日,取公告日作为除权除息日
+//                // 根据 公司代码 + 公告日(map) 取得 股价
+//                String mapKey = stockDomain.getCompanyCode() + Utils.formatDate2String(sbDomain.getBonusDate());
+//                sbDomain.setDividendDate(Utils.formatDate2String(sbDomain.getBonusDate()));
+////                DayLineDomain dayLineDomain = hhqDataMap.get(mapKey);
+//                DayLineDomain dayLineDomain = apiRestTemplate.getHhqByDateForObject(stockDomain);
+//                // 历史数据 没有时 不计算股息率
+//                if (dayLineDomain == null) {
+//                    log.warn("mm mapKey :: {}", mapKey);
+//                    stockDomain.setPrice("-");
+//                } else {
+//                    stockDomain.setPrice(dayLineDomain.getPrice());
+//                }
+                stockDomain.setPrice("-");
                 stockDomain.setDividendYield("0");
+                stockDomain.setDate(sbDomain.getDividendDate());
+            // 非分红(送股(股)/转增(股))
             } else {
-                log.error("mm cal error :: {}", stockDomain.getCompanyCode());
+                stockDomain.setPrice("-");
+                stockDomain.setDividendYield("0");
+                stockDomain.setDate(sbDomain.getDividendDate());
             }
-        }
+        });
 
         writeMoneyMoney(shareBonusDataList);
 
@@ -267,6 +271,7 @@ public class StockService {
 
     // 计算股息率
     private String calDividendYield(StockDomain stockDomain) {
+        log.debug("calDividendYield {} ::", stockDomain.toString());
         // 股息率 = 派息(税前)(元) / 股价
         String price = String.valueOf(Double.valueOf(stockDomain.getPrice()) * 10);
         return Utils.rate(stockDomain.getSbDomain().getDividend(), price);
