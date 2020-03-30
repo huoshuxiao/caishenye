@@ -40,9 +40,10 @@ public class EastMoneyService {
     public Object detail() {
         List<MorningStarExtendDomain> readDataList = morningStarService.readExtendData();
         List<String> urls = new ArrayList<>(readDataList.size());
-        for (MorningStarExtendDomain morningStarExtendDomain : readDataList) {
+        readDataList.parallelStream().forEach(morningStarExtendDomain -> {
             urls.add(BASE_URL.replace("{fundCode}", morningStarExtendDomain.getFundCode()));
-        }
+        });
+
         // 根据基金code采集数据
         eastMoneyDetailPageProcessor.run(urls);
 

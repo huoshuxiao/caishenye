@@ -32,7 +32,7 @@ public class DayLineDomain implements Serializable {
     //8	:		false
     @Setter
     @Getter
-    private List<String[]> hqs;
+    private List<String[]> hqs = new ArrayList<>();
 
     // 搜狐
     // 603999

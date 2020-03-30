@@ -74,20 +74,24 @@ public class FinancialReportDataPageProcessor implements PageProcessor {
             int j = i + 8;
             String mbi = Utils.formatNumber2String(html.xpath("[@id='FundHoldSharesTable']/tbody/tr["+ j +"]/td[2]/a/text() | [@id='FundHoldSharesTable']/tbody/tr["+ j +"]/td[2]/text()").get().trim().replace(Constants.FR_YUAN.getString(), ""));
             // trim 失败
-            if (mbi.length() == 1) {
-                mbi = "0";
+            if (mbi.length() == 1 || "&nbsp;".equals(mbi)) {
+                mbi = "0.0";
             }
             stockDomain.getFrDomain().setMainBusinessIncome(Utils.formatNumber2String(String.valueOf(Double.valueOf(Utils.formatNumber2String(mbi)) / Constants.FR_10000.getInteger())));
             // 净利润
             int k = i + 10;
             String np = html.xpath("[@id='FundHoldSharesTable']/tbody/tr["+ k +"]/td[2]/a/text() | [@id='FundHoldSharesTable']/tbody/tr["+ k +"]/td[2]/text()").get().trim().replace(Constants.FR_YUAN.getString(), "");
             // trim 失败
-            if (np.length() == 1) {
-                np = "0";
+            if (np.length() == 1 || "&nbsp;".equals(np)) {
+                np = "0.0";
             }
             stockDomain.getFrDomain().setNetProfit(Utils.formatNumber2String(String.valueOf(Double.valueOf(Utils.formatNumber2String(np)) / Constants.FR_10000.getInteger())));
-            // 净利润率
+            // 净利润率(净利润/主营业务收入)
             stockDomain.getFrDomain().setNetMargin(Utils.rate(stockDomain.getFrDomain().getNetProfit(), stockDomain.getFrDomain().getMainBusinessIncome()));
+
+            if ("Infinity".equals(stockDomain.getFrDomain().getNetMargin())) {
+                log.warn("InfinityInfinityInfinityInfinityInfinityInfinityInfinityInfinity");
+            }
 
             dataList.add(stockDomain);
         }
@@ -102,7 +106,7 @@ public class FinancialReportDataPageProcessor implements PageProcessor {
     public void run(List<String> urls) {
         Spider.create(this)
                 .startUrls(urls)
-                .addPipeline(new ConsolePipeline()) // 输出结果到控制台
+//                .addPipeline(new ConsolePipeline()) // 输出结果到控制台
                 .addPipeline(new TextFilePipeline(FILE_PATH, FILE_NAME))  // 使用Pipeline保存结果到文件
                 .thread(Constants.THREADS.getInteger())
                 .run();

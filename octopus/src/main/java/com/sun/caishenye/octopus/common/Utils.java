@@ -16,10 +16,10 @@ public class Utils {
 
     // 百分比
     public static String rate(String numerator, String denominator) {
-        if ("0".equals(denominator) || "0".equals(numerator)) {
+        if ("0".equals(denominator) || "0".equals(numerator) || "0.0".equals(denominator) || "0.0".equals(numerator)) {
             return "0";
         }
-        double returnAvg = Double.valueOf(StringUtils.isEmpty(numerator.trim()) ? "0" : numerator.trim()) / Double.valueOf(StringUtils.isEmpty(denominator.trim()) ? "0" : denominator.trim()) * 100;
+        double returnAvg = Double.valueOf(numerator.trim()) / Double.valueOf(denominator.trim()) * 100;
         return formatNumber2String(String.format("%.2f", returnAvg));
     }
 }

@@ -127,7 +127,7 @@ public class ShareBonusDataPageProcessor implements PageProcessor {
         Spider.create(this)
                 .startUrls(urls)
 //                .setDownloader(httpClientDownloader)
-                .addPipeline(new ConsolePipeline()) // 输出结果到控制台
+//                .addPipeline(new ConsolePipeline()) // 输出结果到控制台
                 .addPipeline(new TextFilePipeline(FILE_PATH, FILE_NAME))  // 使用Pipeline保存结果到文件
                 .thread(Constants.THREADS.getInteger())
                 .run();

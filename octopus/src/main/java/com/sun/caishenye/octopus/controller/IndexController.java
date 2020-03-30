@@ -105,7 +105,7 @@ public class IndexController {
     }
     // step2: 历史行情
     @GetMapping("hhq")
-    public Object hhq() {
+    public Object hhq() throws ExecutionException, InterruptedException {
         return stockService.hhq();
     }
 
@@ -116,5 +116,14 @@ public class IndexController {
         String tag = stockService.moneyMoney().toString();
         LocalDateTime endTime = LocalDateTime.now();
         return tag + " " + ChronoUnit.MINUTES.between(startTime, endTime);
+    }
+
+    // run
+    @GetMapping("stock")
+    public Object stock() throws ExecutionException, InterruptedException {
+        LocalDateTime startTime = LocalDateTime.now();
+        stockService.run();
+        LocalDateTime endTime = LocalDateTime.now();
+        return "stock " + ChronoUnit.MINUTES.between(startTime, endTime);
     }
 }

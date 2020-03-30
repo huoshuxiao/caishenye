@@ -2,6 +2,7 @@ package com.sun.caishenye.octopus.stock.business.api;
 
 import com.alibaba.fastjson.JSONArray;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.Utils;
 import com.sun.caishenye.octopus.stock.domain.DayLineDomain;
@@ -72,7 +73,10 @@ public class ApiRestTemplate {
 
             log.debug("call hhq response value :: {}", hhqDomain);
         } catch (HttpClientErrorException e) {
-            log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
+            log.warn(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
+        } catch (JsonSyntaxException je) {
+            hhqUrlBuilder(stockDomain);
+            log.error(hhqUrlBuilder(stockDomain) + " " + je);
         }
         return CompletableFuture.completedFuture(hhqDomain);
     }

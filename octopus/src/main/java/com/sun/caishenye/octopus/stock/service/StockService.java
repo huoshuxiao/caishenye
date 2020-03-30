@@ -58,7 +58,7 @@ public class StockService {
         financialReport();
         shareBonus();
         hq();
-        hhq();
+//        hhq();
         moneyMoney();
     }
 
@@ -100,21 +100,16 @@ public class StockService {
     }
 
     // 历史行情
-    public Object hhq() {
+    public Object hhq() throws ExecutionException, InterruptedException {
 
-        List<DayLineDomain> hhqList = new ArrayList<>();
         // 查询证券基础数据
         List<StockDomain> stockDomainList = readBaseData();
-        stockDomainList.parallelStream().forEach(stockDomain -> {
+        List<DayLineDomain> hhqList = new ArrayList<>();
+        for (StockDomain stockDomain: stockDomainList) {
             // 采集 历史行情
-            DayLineDomain hhqData = null;
-            try {
-                hhqData = agentHhqData(stockDomain);
-            } catch (InterruptedException | ExecutionException e) {
-                log.error("hhq call agentHhqData error ", e);
-            }
+            List<String[]> hqsList = agentHhqData(stockDomain).getHqs();
             // 构建 历史行情 实体 写入用
-            hhqData.getHqs().parallelStream().forEach(data -> {
+            for (String[] data: hqsList) {
                 DayLineDomain dayLineDomain = new DayLineDomain();
                 // 公司代码
                 dayLineDomain.setCompanyCode(stockDomain.getCompanyCode());
@@ -126,9 +121,8 @@ public class StockService {
                 dayLineDomain.setPrice(data[2]);
 
                 hhqList.add(dayLineDomain);
-            });
-        });
-
+            }
+        }
         // 写入 历史行情 数据
         writeHhqData(hhqList);
 
