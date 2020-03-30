@@ -25,8 +25,18 @@ public class ShHqDomain implements Serializable {
     // 时间
     private int date;
     private int time;
-    // 分时线
+
+    // 600000
+    // 0:   20041026    收盘日
+    // 1:   7.18        开盘
+    // 2:   7.37        最高
+    // 3:   7.13        最低
+    // 4:   7.35        收盘
+    // 5:   6300211     成交量(手)
+    // 分时线(实时)
     private List<Number[]> line = new ArrayList<>();
+    // 分时线(历史)
+    private List<String[]> kline = new ArrayList<>();
     // 实时股价
     private String price;
 }

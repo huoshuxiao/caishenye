@@ -2,9 +2,12 @@ package com.sun.caishenye.octopus.stock.business.api;
 
 import com.alibaba.fastjson.JSONArray;
 import com.google.gson.Gson;
+import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.Utils;
 import com.sun.caishenye.octopus.stock.domain.DayLineDomain;
+import com.sun.caishenye.octopus.stock.domain.ShHqDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
+import com.sun.caishenye.octopus.stock.domain.SzHqDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -35,6 +40,12 @@ public class ApiRestTemplate {
     // 历史行情 搜狐
     // http://q.stock.sohu.com/hisHq?code=cn_603999&start=20091126&end=20200325&stat=1&order=D&period=d&callback=historySearchHandler&rt=jsonp&r=0.028961481283250157&0.037908320278956964
     protected final String SOHU_HHQ_URL = "http://q.stock.sohu.com/hisHq?code=cn_{companyCode}&start={startDay}&end={endDay}&stat=1&order=D&period=d&callback=historySearchHandler&rt=jsonp&r={random1}&{random2}";
+
+    @Autowired
+    private ShRestTemplate shRestTemplate;
+
+    @Autowired
+    private SzRestTemplate szRestTemplate;
 
     @Qualifier("restTemplateText")
     @Autowired
@@ -88,16 +99,52 @@ public class ApiRestTemplate {
             DayLineDomain hhqDomain = new DayLineDomain();
             AtomicBoolean isOK = new AtomicBoolean(false);
             try {
-                getHhqForObject(stockDomain).get().getHqs().parallelStream().forEach(t -> {
-                    if (t[0].equals(getDay(stockDomain))) {
+                String day = getDay(stockDomain);
+                DayLineDomain tDayLineDomain = getHhqForObject(stockDomain).get();
+                tDayLineDomain.getHqs().parallelStream().forEach(t -> {
+                    if (t[0].equals(day)) {
                         isOK.set(true);
                         // 收盘日
-                        hhqDomain.setDay(getDay(stockDomain));
+                        hhqDomain.setDay(day);
                         // 收盘价
                         hhqDomain.setPrice(t[2]);
                         return;
                     }
                 });
+
+                // 从 证券交易所 取数据
+                if (!isOK.get()) {
+
+                    if (tDayLineDomain.getSummary().getId().contains(Constants.EXCHANGE_SZ.getString())) {
+
+                        // call SzRestTemplate
+                        SzHqDomain hqDomain = szRestTemplate.getHhqForObject(stockDomain);
+                        if (hqDomain != null) {
+                            // 收盘价
+                            hhqDomain.setPrice(hqDomain.getPrice());
+                            isOK.set(true);
+                        }
+
+                    } else {
+
+                        // call ShRestTemplate
+                        long days = ChronoUnit.DAYS.between(LocalDate.of(Integer.valueOf(day.substring(0, 4)), Integer.valueOf(day.substring(4, 6)), Integer.valueOf(day.substring(6, 8))),
+                                LocalDate.now());
+                        ShHqDomain shHqDomain = shRestTemplate.getHhqForObject(stockDomain, days);
+                        if (shHqDomain != null) {
+                            // 收盘价
+                            shHqDomain.getKline().stream().forEach(t -> {
+                                if (day.equals(t[0])) {
+                                    hhqDomain.setPrice(t[3]);
+                                    isOK.set(true);
+                                }
+                            });
+                        }
+                    }
+                    // 收盘日
+                    hhqDomain.setDay(day);
+                }
+
             } catch (InterruptedException | ExecutionException e) {
                 log.error("call getHhqForObject error " + e);
                 return null;
@@ -109,6 +156,7 @@ public class ApiRestTemplate {
         JSONArray jsonArray = JSONArray.parseArray(response);
         if (jsonArray.size() > 0) {
             Gson gson = new Gson();
+            log.debug("call hhq response jsonarray value :: {}", jsonArray.get(0).toString());
             hhqDomain = gson.fromJson(jsonArray.get(0).toString(), DayLineDomain.class);
             // 收盘日
             hhqDomain.setDay(Utils.formatDate2String(hhqDomain.getHq().get(0)[0]));

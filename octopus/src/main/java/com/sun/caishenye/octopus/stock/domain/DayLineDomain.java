@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 // 历史行情 - 日K
@@ -16,7 +17,6 @@ public class DayLineDomain implements Serializable {
 
     @Setter
     @Getter
-//    @JsonProperty("summary")
     private BaseDomain summary;
 
     // 金融界
@@ -71,7 +71,8 @@ public class DayLineDomain implements Serializable {
     private String day;
 
     @Data
-    public class BaseDomain {
+    public class BaseDomain implements Serializable {
+        private static final long serialVersionUID = -6793387184944636365L;
         // sh601628
         private String id;
         // 601628
@@ -86,30 +87,6 @@ public class DayLineDomain implements Serializable {
         private String circulationShare;
     }
 
-//    @Data
-//    public class HqDomain {
-//        // 昨  收
-//        private String close;
-//        // 今  开
-//        private String open;
-//        // 实时股价
-//        private String now;
-//        // 最  高
-//        private String high;
-//        // 最  低
-//        private String low;
-//        // 成交量(手)
-//        private Integer volume;
-//        // 成交额(元)
-//        private Double amount;
-//        // 涨跌(元)
-//        private String delta;
-//        // 涨幅(%)
-//        private Double deltaPercent;
-//        // 收盘日
-//        private String day;
-//    }
-
     public String hhqBuilder() {
 
         StringBuilder sbStr = new StringBuilder();
@@ -120,4 +97,34 @@ public class DayLineDomain implements Serializable {
         ;
         return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
     }
+
+    // 数据
+    @Setter
+    @Getter
+    private List<HqDomain> data = new ArrayList<>();
+
+    // SZ hhq
+    @Data
+    public class HqDomain implements Serializable {
+
+        private static final long serialVersionUID = -8053707601458786497L;
+        // hhq
+        // 交易日期
+        private String jyrq;
+        // 公司代码
+        private String zqdm;
+        // 公司名称
+        private String zqjc;
+        // 前收/昨  收
+        private String qss;
+        // 实时股价/收盘价/今  收
+        private String ss;
+        // 涨幅(%)
+        private String sdf;
+        // 成交金额(万)
+        private String cjje;
+        // pe 市盈率
+        private String syl1;
+    }
+
 }

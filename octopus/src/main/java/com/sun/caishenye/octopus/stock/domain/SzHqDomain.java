@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 // 深圳证券交易所 实时行情
 @Data
@@ -44,5 +45,24 @@ public class SzHqDomain implements Serializable {
         private String delta;
         // 涨幅(%)
         private Double deltaPercent;
+
+        // hhq
+        // 交易日期
+        private String jyrq;
+        // 公司代码
+        private String zqdm;
+        // 公司名称
+        private String zqjc;
+        // 前收/昨  收
+        private String qss;
+        // 实时股价/收盘价/今  收
+        private String ss;
+        // 涨幅(%)
+        private String sdf;
+        // 成交金额(万)
+        private String cjje;
+        // pe 市盈率
+        private String syl1;
     }
+
 }

@@ -54,6 +54,14 @@ public class StockService {
     @Autowired
     private StockDao stockDao;
 
+    public void run() throws ExecutionException, InterruptedException {
+        financialReport();
+        shareBonus();
+        hq();
+        hhq();
+        moneyMoney();
+    }
+
     // 分红配股
     public Object shareBonus() {
 
