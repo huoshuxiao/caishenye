@@ -70,16 +70,49 @@ public class StockDomain implements Serializable {
         return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
     }
 
+    // 财务报表 (财务摘要)
+    public String frStep1Builder() {
+
+        StringBuilder sbStr = new StringBuilder();
+        sbStr.append(Constants.DELIMITING_COMMA.getString()).append(companyCode)
+                .append(Constants.DELIMITING_COMMA.getString()).append(companyName)
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getDeadline())              // 截止日期
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getMainBusinessIncome())    // 主营业务收入(亿元)
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getNetProfit())             // 净利润(亿元)
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getNetMargin())             // 净利润率(净利润/主营业务收入)
+        ;
+        return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
+    }
+
+    // 财务报表 (财务指标)
+    public String frStep2Builder() {
+
+        StringBuilder sbStr = new StringBuilder();
+        sbStr.append(Constants.DELIMITING_COMMA.getString()).append(companyCode)
+                .append(Constants.DELIMITING_COMMA.getString()).append(companyName)
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getDeadline())                          // 截止日期
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getMainBusinessIncomeGrowthRate())      // 主营业务收入增长率(%)
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getNetProfitGrowthRate())               // 净利润增长率(%)
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getNetAssetGrowthRate())                // 净资产增长率(%)
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getTotalAssetsGrowthRate())             // 总资产增长率(%)
+        ;
+        return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
+    }
+
     // 财务报表
     public String frBuilder() {
 
         StringBuilder sbStr = new StringBuilder();
         sbStr.append(Constants.DELIMITING_COMMA.getString()).append(companyCode)
                 .append(Constants.DELIMITING_COMMA.getString()).append(companyName)
-                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getDeadline())
-                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getMainBusinessIncome())
-                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getNetProfit())
-                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getNetMargin())
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getDeadline())              // 截止日期
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getMainBusinessIncome())    // 主营业务收入(亿元)
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getNetProfit())             // 净利润(亿元)
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getNetMargin())             // 净利润率(净利润/主营业务收入)
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getMainBusinessIncomeGrowthRate())      // 主营业务收入增长率(%)
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getNetProfitGrowthRate())               // 净利润增长率(%)
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getNetAssetGrowthRate())                // 净资产增长率(%)
+                .append(Constants.DELIMITING_COMMA.getString()).append(frDomain.getTotalAssetsGrowthRate())             // 总资产增长率(%)
         ;
         return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
     }

@@ -10,6 +10,8 @@ public enum Constants {
     FILE_EAST_MONEY_DETAIL("EastMoneyDetail.log"),
     FILE_FUND("Fund.csv"),
 
+    FILE_FINANCIAL_REPORT_STEP1("FinancialReportStep1.csv"),
+    FILE_FINANCIAL_REPORT_STEP2("FinancialReportStep2.csv"),
     FILE_FINANCIAL_REPORT("FinancialReport.csv"),
     FILE_SHARE_BONUS("ShareBonus.csv"),
     FILE_HQ("HQ.csv"),

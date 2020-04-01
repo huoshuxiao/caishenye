@@ -4,13 +4,15 @@ package com.sun.caishenye.octopus.stock.service;
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.Utils;
 import com.sun.caishenye.octopus.stock.business.api.ApiRestTemplate;
-import com.sun.caishenye.octopus.stock.business.webmagic.FinancialReportDataPageProcessor;
+import com.sun.caishenye.octopus.stock.business.webmagic.FinancialReportStep1DataPageProcessor;
+import com.sun.caishenye.octopus.stock.business.webmagic.FinancialReportStep2DataPageProcessor;
 import com.sun.caishenye.octopus.stock.business.webmagic.ShareBonusDataPageProcessor;
 import com.sun.caishenye.octopus.stock.dao.StockDao;
 import com.sun.caishenye.octopus.stock.domain.DayLineDomain;
 import com.sun.caishenye.octopus.stock.domain.ShareBonusDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +33,12 @@ import java.util.stream.Stream;
 public class StockService {
 
     // 财务报表:财务摘要 —新浪财经
+    // https://money.finance.sina.com.cn/corp/go.php/vFD_FinanceSummary/stockid/600647.phtml
     protected final String FR_BASE_URL = "https://money.finance.sina.com.cn/corp/go.php/vFD_FinanceSummary/stockid/{companyCode}.phtml";
+
+    // 财务报表:财务指标 —新浪财经
+    // https://money.finance.sina.com.cn/corp/go.php/vFD_FinancialGuideLine/stockid/600647/ctrl/2019/displaytype/4.phtml
+    protected final String FR_GUIDE_LINE_URL = "https://money.finance.sina.com.cn/corp/go.php/vFD_FinancialGuideLine/stockid/{companyCode}/ctrl/{year}/displaytype/4.phtml";
 
     // 发行与分配:分红配股 — 新浪财经
     protected final String SB_BASE_URL = "https://money.finance.sina.com.cn/corp/go.php/vISSUE_ShareBonus/stockid/{companyCode}.phtml";
@@ -46,7 +53,9 @@ public class StockService {
     private ApiRestTemplate apiRestTemplate;
 
     @Autowired
-    private FinancialReportDataPageProcessor frPageProcessor;
+    private FinancialReportStep1DataPageProcessor frPageProcessor;
+    @Autowired
+    private FinancialReportStep2DataPageProcessor frglPageProcessor;
 
     @Autowired
     private ShareBonusDataPageProcessor sbPageProcessor;
@@ -55,11 +64,13 @@ public class StockService {
     private StockDao stockDao;
 
     public void run() throws ExecutionException, InterruptedException {
-        financialReport();
-        shareBonus();
         hq();
+
+        shareBonus();
 //        hhq();
         moneyMoney();
+
+        financialReport();
     }
 
     // 分红配股
@@ -89,12 +100,59 @@ public class StockService {
         List<StockDomain> stockDomainList = readBaseData();
 
         List<String> urls = new ArrayList<>(stockDomainList.size());
-        for (StockDomain stockDomain: stockDomainList) {
+        for (StockDomain stockDomain : stockDomainList) {
             urls.add(FR_BASE_URL.replace("{companyCode}", stockDomain.getCompanyCode()));
         }
 
-        // 新浪财经 财务报表
+        // 新浪财经 财务摘要
         frPageProcessor.run(urls);
+
+        // 读 新浪财经 财务摘要
+        urls.clear();
+        stockDomainList.clear();
+        stockDomainList = stockDao.readFinancialReportStep1();  // 186151
+
+        // 新浪财经 财务指标
+        Map<String, String> codeAndYearFilterMap = new HashMap<>();
+        Map<String, StockDomain> stockDomainMap = new HashMap<>();
+        stockDomainList.stream().forEach(stockDomain -> {
+//        for (StockDomain stockDomain : stockDomainList) {
+                String code = stockDomain.getCompanyCode();
+            String year = stockDomain.getFrDomain().getDeadline().substring(0, 4);
+            stockDomainMap.put(code + stockDomain.getFrDomain().getDeadline(), stockDomain);
+            // 财年数据为采集
+            if (StringUtils.isEmpty(codeAndYearFilterMap.get(code + year))) {
+                codeAndYearFilterMap.put(code + year, code + year);
+                urls.add(FR_GUIDE_LINE_URL.replace("{companyCode}", code).replace("{year}", year));
+            }
+//        }
+        });
+
+        // 新浪财经 财务指标
+        frglPageProcessor.run(urls);
+
+        // merge fr (step1 -> step2)
+        List<StockDomain> stockDomainList2 = stockDao.readFinancialReportStep2();   // 185749
+        stockDomainList2.parallelStream().forEach(t -> {
+            String key = t.getCompanyCode() + t.getFrDomain().getDeadline();
+            StockDomain stockDomain = stockDomainMap.get(key);
+
+            if (stockDomain == null) {
+
+                t.getFrDomain().setMainBusinessIncome("*");
+                t.getFrDomain().setNetProfit("*");
+                t.getFrDomain().setNetMargin("*");
+                log.warn("fr not found :: {}", key);
+
+            } else {
+
+                t.getFrDomain().setMainBusinessIncome(stockDomain.getFrDomain().getMainBusinessIncome());
+                t.getFrDomain().setNetProfit(stockDomain.getFrDomain().getNetProfit());
+                t.getFrDomain().setNetMargin(stockDomain.getFrDomain().getNetMargin());
+            }
+        });
+
+        stockDao.writeFinancialReport(stockDomainList2);
 
         return "finished";
     }

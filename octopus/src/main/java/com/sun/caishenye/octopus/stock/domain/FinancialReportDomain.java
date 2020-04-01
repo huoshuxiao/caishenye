@@ -21,4 +21,14 @@ public class FinancialReportDomain implements Serializable {
     // 净利润率(净利润/主营业务收入)
     private String netMargin;
 
+    /* 成长能力 */
+    // 主营业务收入增长率(%)
+    private String mainBusinessIncomeGrowthRate;
+    // 净利润增长率(%)
+    private String netProfitGrowthRate;
+    // 净资产增长率(%)
+    private String netAssetGrowthRate;
+    // 总资产增长率(%)
+    private String totalAssetsGrowthRate;
+
 }

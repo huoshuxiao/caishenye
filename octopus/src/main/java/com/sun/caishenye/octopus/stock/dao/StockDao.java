@@ -21,6 +21,10 @@ import java.util.List;
 public class StockDao {
 
     private final String FILE_PATH = "data/";
+
+    protected final String FR_STEP1_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_STEP1.getString();
+    protected final String FR_STEP2_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_STEP2.getString();
+    protected final String FR_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT.getString();
     protected final String HQ_DATA_FILE = FILE_PATH + Constants.FILE_HQ.getString();
     protected final String HHQ_DATA_FILE = FILE_PATH + Constants.FILE_HHQ.getString();
     protected final String SB_DATA_FILE = FILE_PATH + Constants.FILE_SHARE_BONUS.getString();
@@ -39,6 +43,7 @@ public class StockDao {
         }
     }
 
+    // 写 实时行情
     public void writeHqData(List<StockDomain> data) {
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(HQ_DATA_FILE), StandardCharsets.UTF_8)) {
             for (StockDomain stockDomain : data) {
@@ -51,6 +56,7 @@ public class StockDao {
         }
     }
 
+    // 读 实时行情
     public List<StockDomain> readHqData() {
         List<StockDomain> list = new ArrayList<>();
         Path path = Paths.get(HQ_DATA_FILE);
@@ -81,6 +87,95 @@ public class StockDao {
         return list;
     }
 
+    // 写 财报
+    public void writeFinancialReport(List<StockDomain> data) {
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(FR_DATA_FILE), StandardCharsets.UTF_8)) {
+            for (StockDomain stockDomain : data) {
+                String s = stockDomain.frBuilder() + "\r\n";
+                log.debug("write fr data >> {}", s);
+                writer.write(s, 0, s.length());
+            }
+        } catch (IOException x) {
+            log.error(String.format("IOException: %s%n", x));
+        }
+    }
+
+    // 读 财务摘要
+    public List<StockDomain> readFinancialReportStep1() {
+
+        List<StockDomain> list = new ArrayList<>();
+        Path path = Paths.get(FR_STEP1_DATA_FILE);
+
+        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                log.debug("read fr step1 data >> {}", line);
+
+                StockDomain stockDomain = new StockDomain();
+                String[] extendDomainArray = line.split(Constants.DELIMITING_COMMA.getString());
+
+                // 公司代码
+                stockDomain.setCompanyCode(extendDomainArray[0].trim());
+                // 公司简称
+                stockDomain.setCompanyName(extendDomainArray[1].trim());
+                // 截止日期
+                stockDomain.getFrDomain().setDeadline(extendDomainArray[2].trim());
+                // 主营业务收入(亿元)
+                stockDomain.getFrDomain().setMainBusinessIncome(extendDomainArray[3].trim());
+                // 净利润(亿元)
+                stockDomain.getFrDomain().setNetProfit(extendDomainArray[4].trim());
+                // 净利润率(净利润/主营业务收入)
+                stockDomain.getFrDomain().setNetMargin(extendDomainArray[5].trim());
+
+                list.add(stockDomain);
+            }
+        } catch (IOException x) {
+            log.error(String.format("IOException: %s%n", x));
+        }
+
+        return list;
+    }
+
+    // 读 财务指标
+    public List<StockDomain> readFinancialReportStep2() {
+
+        List<StockDomain> list = new ArrayList<>();
+        Path path = Paths.get(FR_STEP2_DATA_FILE);
+
+        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                log.debug("read fr step2 data >> {}", line);
+
+                StockDomain stockDomain = new StockDomain();
+                String[] extendDomainArray = line.split(Constants.DELIMITING_COMMA.getString());
+
+                // 公司代码
+                stockDomain.setCompanyCode(extendDomainArray[0].trim());
+                // 公司简称
+                stockDomain.setCompanyName(extendDomainArray[1].trim());
+                // 截止日期
+                stockDomain.getFrDomain().setDeadline(extendDomainArray[2].trim());
+                // 主营业务收入增长率(%)
+                stockDomain.getFrDomain().setMainBusinessIncomeGrowthRate(extendDomainArray[3].trim());
+                // 净利润增长率(%)
+                stockDomain.getFrDomain().setNetProfitGrowthRate(extendDomainArray[4].trim());
+                // 净资产增长率(%)
+                stockDomain.getFrDomain().setNetAssetGrowthRate(extendDomainArray[5].trim());
+                // 总资产增长率(%)
+                stockDomain.getFrDomain().setTotalAssetsGrowthRate(extendDomainArray[6].trim());
+
+                list.add(stockDomain);
+            }
+        } catch (IOException x) {
+            log.error(String.format("IOException: %s%n", x));
+        }
+
+        return list;
+    }
+
+    // 读 分红
     public List<StockDomain> readShareBonus() {
 
         List<StockDomain> list = new ArrayList<>();
@@ -161,4 +256,5 @@ public class StockDao {
             log.error(String.format("IOException: %s%n", x));
         }
     }
+
 }

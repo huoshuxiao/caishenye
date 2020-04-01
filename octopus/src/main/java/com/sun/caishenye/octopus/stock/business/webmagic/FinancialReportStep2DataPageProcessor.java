@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
-import us.codecraft.webmagic.pipeline.ConsolePipeline;
 import us.codecraft.webmagic.pipeline.TextFilePipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Html;
+import us.codecraft.webmagic.utils.SelectableUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +23,14 @@ import java.util.List;
  */
 @Component
 @Slf4j
-public class FinancialReportDataPageProcessor implements PageProcessor {
+public class FinancialReportStep2DataPageProcessor implements PageProcessor {
 
     /* 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等 */
     private Site site = Site.me().setRetryTimes(3).setSleepTime(100).setTimeOut(Integer.MAX_VALUE).setCharset("gb2312");
 
     // home page
     private final String FILE_PATH = "data";
-    private final String FILE_NAME = Constants.FILE_FINANCIAL_REPORT.getString();
+    private final String FILE_NAME = Constants.FILE_FINANCIAL_REPORT_STEP2.getString();
 
     @Override
     public void process(Page page) {
@@ -45,22 +45,22 @@ public class FinancialReportDataPageProcessor implements PageProcessor {
         List<StockDomain> dataList = dataAgent(html);
         for (StockDomain stockDomain : dataList) {
             // 保存结果至Pipeline，持久化对象结果
-            page.putField(stockDomain.getFrDomain().getDeadline() + "@" + stockDomain.getCompanyCode(), stockDomain.frBuilder());
-            log.debug("FinancialReport value :: {}", stockDomain);
+            page.putField(stockDomain.getFrDomain().getDeadline() + "@" + stockDomain.getCompanyCode(), stockDomain.frStep2Builder());
+            log.debug("FinancialReportStep2DataPageProcessor value :: {}", stockDomain);
         }
     }
 
     private List<StockDomain> dataAgent(Html html) {
-        // 每期财报所占tr的行数
-        int trBlock = 12;
-        int trSize = html.xpath("[@id='FundHoldSharesTable']/tbody/tr").all().size();
+
+        // 每期财报所占td数
+        int tdSize = html.xpath("[@id='BalanceSheetNewTable0']/tbody/tr[1]/td").all().size();
         // 根据财报期数创建list size
-        List<StockDomain> dataList = new ArrayList<>(trSize / trBlock);
+        List<StockDomain> dataList = new ArrayList<>(tdSize);
 
         String companyCode = html.xpath("[@id='toolbar']/div[1]/h2/text()").get();
         String companyName = html.xpath("[@id='toolbar']/div[1]/h1/a/text()").get();
 
-        for (int i = 1; i <= trSize; i = i + trBlock) {
+        for (int i = 2; i <= tdSize; i++) {
 
             StockDomain stockDomain = new StockDomain();
             // 公司代码
@@ -69,29 +69,24 @@ public class FinancialReportDataPageProcessor implements PageProcessor {
             stockDomain.setCompanyName(companyName);
 
             // 截止日期
-            stockDomain.getFrDomain().setDeadline(html.xpath("[@id='FundHoldSharesTable']/tbody/tr["+ i +"]/td[2]/strong/text()").get());
-            // 主营业务收入
-            int j = i + 8;
-            String mbi = Utils.formatNumber2String(html.xpath("[@id='FundHoldSharesTable']/tbody/tr["+ j +"]/td[2]/a/text() | [@id='FundHoldSharesTable']/tbody/tr["+ j +"]/td[2]/text()").get().trim().replace(Constants.FR_YUAN.getString(), ""));
-            // trim 失败
-            if (mbi.length() == 1 || "&nbsp;".equals(mbi)) {
-                mbi = "0.0";
-            }
-            stockDomain.getFrDomain().setMainBusinessIncome(Utils.formatNumber2String(String.valueOf(Double.valueOf(Utils.formatNumber2String(mbi)) / Constants.FR_10000.getInteger())));
-            // 净利润
-            int k = i + 10;
-            String np = html.xpath("[@id='FundHoldSharesTable']/tbody/tr["+ k +"]/td[2]/a/text() | [@id='FundHoldSharesTable']/tbody/tr["+ k +"]/td[2]/text()").get().trim().replace(Constants.FR_YUAN.getString(), "");
-            // trim 失败
-            if (np.length() == 1 || "&nbsp;".equals(np)) {
-                np = "0.0";
-            }
-            stockDomain.getFrDomain().setNetProfit(Utils.formatNumber2String(String.valueOf(Double.valueOf(Utils.formatNumber2String(np)) / Constants.FR_10000.getInteger())));
-            // 净利润率(净利润/主营业务收入)
-            stockDomain.getFrDomain().setNetMargin(Utils.rate(stockDomain.getFrDomain().getNetProfit(), stockDomain.getFrDomain().getMainBusinessIncome()));
+            //*[@id="BalanceSheetNewTable0"]/tbody/tr[1]/td[2]
+            stockDomain.getFrDomain().setDeadline(SelectableUtils.getValue(html.xpath("[@id='BalanceSheetNewTable0']/tbody/tr[1]/td["+ i +"]/text()")));
 
-            if ("Infinity".equals(stockDomain.getFrDomain().getNetMargin())) {
-                log.warn("InfinityInfinityInfinityInfinityInfinityInfinityInfinityInfinity");
-            }
+            /* 成长能力 */
+
+            // 主营业务收入增长率(%)
+            //*[@id="BalanceSheetNewTable0"]/tbody/tr[35]/td[2]
+            stockDomain.getFrDomain().setMainBusinessIncomeGrowthRate(Utils.formatNumber2String(SelectableUtils.getValue(html.xpath("[@id='BalanceSheetNewTable0']/tbody/tr[35]/td["+ i +"]/text()"))));
+
+            // 净利润增长率(%)
+            stockDomain.getFrDomain().setNetAssetGrowthRate(Utils.formatNumber2String(SelectableUtils.getValue(html.xpath("[@id='BalanceSheetNewTable0']/tbody/tr[36]/td["+ i +"]/text()"))));
+
+            // 净资产增长率(%)
+            stockDomain.getFrDomain().setNetProfitGrowthRate(Utils.formatNumber2String(SelectableUtils.getValue(html.xpath("[@id='BalanceSheetNewTable0']/tbody/tr[37]/td["+ i +"]/text()"))));
+
+            // 总资产增长率(%)
+            //*[@id="BalanceSheetNewTable0"]/tbody/tr[38]/td[2]
+            stockDomain.getFrDomain().setTotalAssetsGrowthRate(Utils.formatNumber2String(SelectableUtils.getValue(html.xpath("[@id='BalanceSheetNewTable0']/tbody/tr[38]/td["+ i +"]/text()"))));
 
             dataList.add(stockDomain);
         }
