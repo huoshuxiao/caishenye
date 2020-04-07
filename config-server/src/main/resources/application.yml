@@ -1,0 +1,13 @@
+server:
+  port: 18888
+  servlet:
+    context-path: /${spring.application.name}
+
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/huoshuxiao/springcloud-config-repo
+          default-label: caishenye
+#          search-paths:
