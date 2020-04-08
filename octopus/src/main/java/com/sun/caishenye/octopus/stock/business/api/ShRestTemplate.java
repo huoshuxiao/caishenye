@@ -63,7 +63,7 @@ public class ShRestTemplate {
             shHqDomain = gson.fromJson(response, ShHqDomain.class);
             log.debug("ShRestTemplate call hhq response value :: {}", shHqDomain);
         } catch (HttpClientErrorException e) {
-            log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
+            log.error("hhq "+ stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
         }
         return shHqDomain;
     }
@@ -90,7 +90,7 @@ public class ShRestTemplate {
             shHqDomain = gson.fromJson(response, ShHqDomain.class);
             log.debug("ShRestTemplate call hq response value :: {}", shHqDomain);
         } catch (HttpClientErrorException e) {
-            log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
+            log.error("hq "+ stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
         }
         return CompletableFuture.completedFuture(shHqDomain);
     }

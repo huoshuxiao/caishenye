@@ -69,7 +69,7 @@ public class SzRestTemplate {
                 log.debug("SzRestTemplate call hhq response value :: {}", hqDomain);
             }
         } catch (HttpClientErrorException e) {
-            log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
+            log.error("hhq "+ stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
         }
         return hqDomain;
     }
@@ -99,7 +99,7 @@ public class SzRestTemplate {
             hqDomain = restTemplate.getForObject(SZ_HQ_BASE_URL, SzHqDomain.class, hqUrlBuilder(stockDomain));
             log.debug("SzRestTemplate call hq response value :: {}", hqDomain);
         } catch (HttpClientErrorException e) {
-            log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
+            log.error("hq "+ stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
         }
         return CompletableFuture.completedFuture(hqDomain);
     }
