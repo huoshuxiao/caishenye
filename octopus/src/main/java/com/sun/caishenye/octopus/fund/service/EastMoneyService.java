@@ -40,7 +40,7 @@ public class EastMoneyService {
     public Object detail() {
         List<MorningStarExtendDomain> readDataList = morningStarService.readExtendData();
         List<String> urls = new ArrayList<>(readDataList.size());
-        readDataList.parallelStream().forEach(morningStarExtendDomain -> {
+        readDataList.stream().forEach(morningStarExtendDomain -> {
             urls.add(BASE_URL.replace("{fundCode}", morningStarExtendDomain.getFundCode()));
         });
 
