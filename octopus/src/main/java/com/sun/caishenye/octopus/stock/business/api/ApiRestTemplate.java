@@ -105,6 +105,7 @@ public class ApiRestTemplate {
             try {
                 String day = getDay(stockDomain);
                 DayLineDomain tDayLineDomain = getHhqForObject(stockDomain).get();
+                if (tDayLineDomain.getSummary() == null) {return null;}
                 tDayLineDomain.getHqs().parallelStream().forEach(t -> {
                     if (t[0].equals(day)) {
                         isOK.set(true);
