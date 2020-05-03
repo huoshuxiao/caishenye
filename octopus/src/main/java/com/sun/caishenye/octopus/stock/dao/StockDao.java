@@ -2,6 +2,7 @@ package com.sun.caishenye.octopus.stock.dao;
 
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.stock.domain.DayLineDomain;
+import com.sun.caishenye.octopus.stock.domain.FinancialReport2Domain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -24,7 +25,9 @@ public class StockDao {
 
     protected final String FR_STEP1_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_STEP1.getString();
     protected final String FR_STEP2_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_STEP2.getString();
+    protected final String FR_EASTMONEY_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_EASTMONEY.getString();
     protected final String FR_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT.getString();
+    protected final String FR_DATA2_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT2.getString();
     protected final String HQ_DATA_FILE = FILE_PATH + Constants.FILE_HQ.getString();
     protected final String HHQ_DATA_FILE = FILE_PATH + Constants.FILE_HHQ.getString();
     protected final String SB_DATA_FILE = FILE_PATH + Constants.FILE_SHARE_BONUS.getString();
@@ -175,6 +178,103 @@ public class StockDao {
         return list;
     }
 
+    // 写 财报
+    public void writeFinancialReport2(List<FinancialReport2Domain> data) {
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(FR_DATA2_FILE), StandardCharsets.UTF_8)) {
+            for (FinancialReport2Domain stockDomain : data) {
+                String s = stockDomain.builder() + "\r\n";
+                log.debug("write fr data >> {}", s);
+                writer.write(s, 0, s.length());
+            }
+        } catch (IOException x) {
+            log.error(String.format("IOException: %s%n", x));
+        }
+    }
+
+    // 读 财务报表
+    public List<FinancialReport2Domain> readFinancialReport2() {
+
+        List<FinancialReport2Domain> list = new ArrayList<>();
+        Path path = Paths.get(FR_EASTMONEY_DATA_FILE);
+
+        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                log.debug("read fr eastmoney data >> {}", line);
+
+                FinancialReport2Domain financialDomain = new FinancialReport2Domain();
+                String[] extendDomainArray = line.split(Constants.DELIMITING_COMMA.getString());
+
+                // 公司代码
+                financialDomain.setCompanyCode(extendDomainArray[0].trim());
+                // 公司简称
+                financialDomain.setCompanyName(extendDomainArray[1].trim());
+                // 交易日
+                financialDomain.setDate(extendDomainArray[2].trim());
+                // 股价
+                financialDomain.setPrice(extendDomainArray[3].trim());
+                // 截止日期
+                financialDomain.setDeadline(extendDomainArray[4].trim());
+                // 主营业务收入
+                financialDomain.setMainBusinessIncome(extendDomainArray[5].trim());
+                // 净利润
+                financialDomain.setNetProfit(extendDomainArray[6].trim());
+                // 净利润率(净利润/主营业务收入)
+                financialDomain.setNetMargin(extendDomainArray[7].trim());
+                // 主营业务收入增长率(%)
+                financialDomain.setMainBusinessIncomeGrowthRate(extendDomainArray[8].trim());
+                // 净利润增长率(%)
+                financialDomain.setNetProfitGrowthRate(extendDomainArray[9].trim());
+                // 主营业务收入增长率(%)(环比)
+                financialDomain.setMainBusinessIncomeGrowthRateMoM(extendDomainArray[10].trim());
+                // 净利润增长率(%)(环比)
+                financialDomain.setNetProfitGrowthRateMoM(extendDomainArray[11].trim());
+                // 每股收益(元)
+                financialDomain.setBasicEps(extendDomainArray[12].trim());
+                // 每股收益(扣除)(元)
+                financialDomain.setCutBasicEps(extendDomainArray[13].trim());
+                // 每股净资产(元)
+                financialDomain.setBps(extendDomainArray[14].trim());
+                // 净资产收益率(%)
+                financialDomain.setRoeWeighted(extendDomainArray[15].trim());
+                // 每股经营现金流量(元)
+                financialDomain.setPerShareCashFlowFromOperations(extendDomainArray[16].trim());
+                // 销售毛利率(%)
+                financialDomain.setGrossProfitMargin(extendDomainArray[17].trim());
+                // 利润分配
+                financialDomain.setProfitDistribution(extendDomainArray[18].trim());
+                // 股息率(%)
+                financialDomain.setDividendYield(extendDomainArray[19].trim());
+                // 首次公告日期
+                financialDomain.setFirstNoticeDate(extendDomainArray[20].trim());
+                // 最新公告日期
+                financialDomain.setLatestNoticeDate(extendDomainArray[21].trim());
+
+                list.add(financialDomain);
+            }
+        } catch (IOException x) {
+            log.error(String.format("IOException: %s%n", x));
+        }
+
+        return list;
+    }
+
+//
+//    // 写 财报
+//    public void writeFinancialReport2(List<FinancialReport2Domain> data) {
+//
+//        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(FR_DATA2_FILE), StandardCharsets.UTF_8)) {
+//            for (FinancialReport2Domain stockDomain : data) {
+//                String s = stockDomain.frBuilder() + "\r\n";
+//                log.debug("write fr data >> {}", s);
+//                writer.write(s, 0, s.length());
+//            }
+//        } catch (IOException x) {
+//            log.error(String.format("IOException: %s%n", x));
+//        }
+//    }
+
     // 读 分红
     public List<StockDomain> readShareBonus() {
 
@@ -256,5 +356,4 @@ public class StockDao {
             log.error(String.format("IOException: %s%n", x));
         }
     }
-
 }

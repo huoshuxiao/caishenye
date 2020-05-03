@@ -1,4 +1,4 @@
-package com.sun.caishenye.octopus.stock.business.api;
+package com.sun.caishenye.octopus.stock.agent.api;
 
 import com.google.gson.Gson;
 import com.sun.caishenye.octopus.stock.domain.ShHqDomain;

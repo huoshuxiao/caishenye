@@ -1,8 +1,8 @@
 package com.sun.caishenye.octopus.fund.service;
 
-import com.sun.caishenye.octopus.fund.business.api.MorningStarRestService;
-import com.sun.caishenye.octopus.fund.business.webmagic.MorningStarBaseDataPageProcessor;
-import com.sun.caishenye.octopus.fund.business.webmagic.MorningStarExtendDataPageProcessor;
+import com.sun.caishenye.octopus.fund.agent.api.MorningStarRestService;
+import com.sun.caishenye.octopus.fund.agent.webmagic.MorningStarBasePageProcessor;
+import com.sun.caishenye.octopus.fund.agent.webmagic.MorningStarExtendPageProcessor;
 import com.sun.caishenye.octopus.fund.dao.MorningStarDao;
 import com.sun.caishenye.octopus.fund.domain.EastMoneyDetailDomain;
 import com.sun.caishenye.octopus.fund.domain.FundDomain;
@@ -25,9 +25,9 @@ public class MorningStarService {
     @Autowired
     private MorningStarRestService morningStarRestService;
     @Autowired
-    private MorningStarBaseDataPageProcessor morningStarBasePageProcessor;
+    private MorningStarBasePageProcessor morningStarBasePageProcessor;
     @Autowired
-    private MorningStarExtendDataPageProcessor morningStarExtendPageProcessor;
+    private MorningStarExtendPageProcessor morningStarExtendPageProcessor;
 //    @Autowired
 //    public MorningStarService(MorningStarBasePageProcessor morningStarBasePageProcessor,
 //                              MorningStarExtendPageProcessor morningStarExtendPageProcessor,

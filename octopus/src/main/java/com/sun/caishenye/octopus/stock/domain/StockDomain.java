@@ -9,7 +9,6 @@ import java.time.LocalDate;
 
 /**
  * 股票 基础信息 bean
- *
  */
 @Data
 public class StockDomain implements Serializable {
@@ -40,6 +39,11 @@ public class StockDomain implements Serializable {
 
     // 证券交易所
     private String exchange;
+
+    // 上交所主板
+    private String tradeMarket;
+    // 所属行业
+    private String publishName;
 
     // 财务报表
     private FinancialReportDomain frDomain = new FinancialReportDomain();

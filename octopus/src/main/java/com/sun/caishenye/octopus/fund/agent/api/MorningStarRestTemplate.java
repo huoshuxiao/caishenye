@@ -1,4 +1,4 @@
-package com.sun.caishenye.octopus.fund.business.api;
+package com.sun.caishenye.octopus.fund.agent.api;
 
 import com.sun.caishenye.octopus.fund.domain.FundDomain;
 import com.sun.caishenye.octopus.fund.domain.MorningStarDetailDomain;

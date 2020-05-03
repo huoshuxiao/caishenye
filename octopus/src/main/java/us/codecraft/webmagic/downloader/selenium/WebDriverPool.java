@@ -140,7 +140,7 @@ class WebDriverPool {
 		} else if (driver.equals(DRIVER_CHROME)) {
 			// Selenium在调用Chrome浏览器时，Chrome浏览器默认会弹出界面，可以同时设置 setHeadless() 来避免弹出Chrome浏览器。
 			ChromeOptions options = new ChromeOptions();
-			options.setHeadless(true);
+			options.setHeadless(false);
 			mDriver = new ChromeDriver(options);
 //			mDriver = new ChromeDriver(sCaps);
 		} else if (driver.equals(DRIVER_PHANTOMJS)) {

@@ -1,7 +1,7 @@
 package com.sun.caishenye.octopus.stock.service;
 
 import com.sun.caishenye.octopus.common.Constants;
-import com.sun.caishenye.octopus.stock.business.api.ShRestTemplate;
+import com.sun.caishenye.octopus.stock.agent.api.ShRestTemplate;
 import com.sun.caishenye.octopus.stock.dao.ShDao;
 import com.sun.caishenye.octopus.stock.domain.ShHqDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;

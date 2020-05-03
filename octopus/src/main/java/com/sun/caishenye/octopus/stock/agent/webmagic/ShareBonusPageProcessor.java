@@ -1,4 +1,4 @@
-package com.sun.caishenye.octopus.stock.business.webmagic;
+package com.sun.caishenye.octopus.stock.agent.webmagic;
 
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
-import us.codecraft.webmagic.pipeline.ConsolePipeline;
 import us.codecraft.webmagic.pipeline.TextFilePipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Html;
@@ -22,10 +21,10 @@ import java.util.List;
  */
 @Component
 @Slf4j
-public class ShareBonusDataPageProcessor implements PageProcessor {
+public class ShareBonusPageProcessor implements PageProcessor {
 
     /* 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等 */
-    private Site site = Site.me()
+    protected Site site = Site.me()
             .setRetryTimes(3)
             .setSleepTime(100)
             .setTimeOut(Integer.MAX_VALUE)
@@ -34,10 +33,10 @@ public class ShareBonusDataPageProcessor implements PageProcessor {
             .setCharset("gb2312");
 
     // home page
-    private final String FILE_PATH = "data";
-    private final String FILE_NAME = Constants.FILE_SHARE_BONUS.getString();
+    protected final String FILE_PATH = "data";
+    protected final String FILE_NAME = Constants.FILE_SHARE_BONUS.getString();
 
-    private final String DATA_404 = "暂时没有数据！";
+    protected final String DATA_404 = "暂时没有数据！";
 
     @Override
     public void process(Page page) {
@@ -60,7 +59,7 @@ public class ShareBonusDataPageProcessor implements PageProcessor {
         }
     }
 
-    private List<StockDomain> dataAgent(Html html) {
+    protected List<StockDomain> dataAgent(Html html) {
 
         // 每期数据所占tr的行数
         int trSize = html.xpath("[@id='sharebonus_1']/tbody/tr").all().size();

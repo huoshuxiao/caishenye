@@ -88,7 +88,7 @@ public class IndexController {
 
     // step2: 财务报表
     @GetMapping("fr")
-    public Object financialReport() {
+    public Object financialReport() throws ExecutionException, InterruptedException {
         return stockService.financialReport();
     }
 

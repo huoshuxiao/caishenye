@@ -1,4 +1,4 @@
-package com.sun.caishenye.octopus.fund.business.webmagic;
+package com.sun.caishenye.octopus.fund.agent.webmagic;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

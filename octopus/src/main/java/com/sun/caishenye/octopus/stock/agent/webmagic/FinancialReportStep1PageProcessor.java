@@ -1,4 +1,4 @@
-package com.sun.caishenye.octopus.stock.business.webmagic;
+package com.sun.caishenye.octopus.stock.agent.webmagic;
 
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.Utils;
@@ -22,14 +22,14 @@ import java.util.List;
  */
 @Component
 @Slf4j
-public class FinancialReportStep1DataPageProcessor implements PageProcessor {
+public class FinancialReportStep1PageProcessor implements PageProcessor {
 
     /* 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等 */
-    private Site site = Site.me().setRetryTimes(3).setSleepTime(100).setTimeOut(Integer.MAX_VALUE).setCharset("gb2312");
+    protected Site site = Site.me().setRetryTimes(3).setSleepTime(100).setTimeOut(Integer.MAX_VALUE).setCharset("gb2312");
 
     // home page
-    private final String FILE_PATH = "data";
-    private final String FILE_NAME = Constants.FILE_FINANCIAL_REPORT_STEP1.getString();
+    protected final String FILE_PATH = "data";
+    protected final String FILE_NAME = Constants.FILE_FINANCIAL_REPORT_STEP1.getString();
 
     @Override
     public void process(Page page) {
@@ -45,11 +45,11 @@ public class FinancialReportStep1DataPageProcessor implements PageProcessor {
         for (StockDomain stockDomain : dataList) {
             // 保存结果至Pipeline，持久化对象结果
             page.putField(stockDomain.getFrDomain().getDeadline() + "@" + stockDomain.getCompanyCode(), stockDomain.frStep1Builder());
-            log.debug("FinancialReport value :: {}", stockDomain);
+            log.debug("FinancialReportStep1DataPageProcessor value :: {}", stockDomain);
         }
     }
 
-    private List<StockDomain> dataAgent(Html html) {
+    protected List<StockDomain> dataAgent(Html html) {
         // 每期财报所占tr的行数
         int trBlock = 12;
         int trSize = html.xpath("[@id='FundHoldSharesTable']/tbody/tr").all().size();

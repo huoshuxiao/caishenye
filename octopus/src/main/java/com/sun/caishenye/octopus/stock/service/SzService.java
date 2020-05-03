@@ -1,17 +1,14 @@
 package com.sun.caishenye.octopus.stock.service;
 
 import com.sun.caishenye.octopus.common.Constants;
-import com.sun.caishenye.octopus.stock.business.api.ShRestTemplate;
-import com.sun.caishenye.octopus.stock.business.api.SzRestTemplate;
+import com.sun.caishenye.octopus.stock.agent.api.SzRestTemplate;
 import com.sun.caishenye.octopus.stock.dao.SzDao;
-import com.sun.caishenye.octopus.stock.domain.ShHqDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import com.sun.caishenye.octopus.stock.domain.SzHqDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;

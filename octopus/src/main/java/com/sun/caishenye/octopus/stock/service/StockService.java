@@ -3,29 +3,20 @@ package com.sun.caishenye.octopus.stock.service;
 
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.Utils;
-import com.sun.caishenye.octopus.stock.business.api.ApiRestTemplate;
-import com.sun.caishenye.octopus.stock.business.webmagic.FinancialReportStep1DataPageProcessor;
-import com.sun.caishenye.octopus.stock.business.webmagic.FinancialReportStep2DataPageProcessor;
-import com.sun.caishenye.octopus.stock.business.webmagic.ShareBonusDataPageProcessor;
 import com.sun.caishenye.octopus.stock.dao.StockDao;
 import com.sun.caishenye.octopus.stock.domain.DayLineDomain;
 import com.sun.caishenye.octopus.stock.domain.ShareBonusDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 证券 总服务
@@ -34,219 +25,62 @@ import java.util.stream.Stream;
 @Service
 public class StockService {
 
-    // 财务报表:财务摘要 —新浪财经
-    // https://money.finance.sina.com.cn/corp/go.php/vFD_FinanceSummary/stockid/600647.phtml
-    protected final String FR_BASE_URL = "https://money.finance.sina.com.cn/corp/go.php/vFD_FinanceSummary/stockid/{companyCode}.phtml";
-
-    // 财务报表:财务指标 —新浪财经
-    // https://money.finance.sina.com.cn/corp/go.php/vFD_FinancialGuideLine/stockid/600647/ctrl/2019/displaytype/4.phtml
-    protected final String FR_GUIDE_LINE_URL = "https://money.finance.sina.com.cn/corp/go.php/vFD_FinancialGuideLine/stockid/{companyCode}/ctrl/{year}/displaytype/4.phtml";
-
-    // 发行与分配:分红配股 — 新浪财经
-    protected final String SB_BASE_URL = "https://money.finance.sina.com.cn/corp/go.php/vISSUE_ShareBonus/stockid/{companyCode}.phtml";
-
-    @Autowired
-    private ShService shService;
-
-    @Autowired
-    private SzService szService;
-
-    @Autowired
-    private ApiRestTemplate apiRestTemplate;
-
-    @Autowired
-    private FinancialReportStep1DataPageProcessor frPageProcessor;
-    @Autowired
-    private FinancialReportStep2DataPageProcessor frglPageProcessor;
-
-    @Autowired
-    private ShareBonusDataPageProcessor sbPageProcessor;
-
     @Autowired
     private StockDao stockDao;
 
+    @Autowired
+    private RealHqService realHqService;
+
+    @Autowired
+    private ShareBonusService shareBonusService;
+
+    @Autowired
+    private FinancialService financialService;
+
+    @Autowired
+    private HistoryHqService historyHqService;
+
     public void run() throws ExecutionException, InterruptedException {
         hq();
-
         shareBonus();
 //        hhq();
-        moneyMoney();
-
         financialReport();
+
+        moneyMoney();
+    }
+
+    // 财务报表
+    public Object financialReport() throws ExecutionException, InterruptedException {
+//        financialService.financialReport();
+        return financialService.financialReport2();
     }
 
     // 分红配股
     public Object shareBonus() {
-
-        // 查询证券基础数据
-        List<StockDomain> stockDomainList = readBaseData();
-
-        List<String> urls = new ArrayList<>(stockDomainList.size());
-        for (StockDomain stockDomain: stockDomainList) {
-            urls.add(SB_BASE_URL.replace("{companyCode}", stockDomain.getCompanyCode()));
-        }
-
-        // 新浪财经 分红配股
-        sbPageProcessor.run(urls);
-        return "finished";
-    }
-
-    public List<StockDomain> readShareBonus() {
-        return stockDao.readShareBonus();
-    }
-
-    // 财务报表
-    public Object financialReport() {
-
-        // 查询证券基础数据
-        List<StockDomain> stockDomainList = readBaseData();
-
-        List<String> urls = new ArrayList<>(stockDomainList.size());
-        for (StockDomain stockDomain : stockDomainList) {
-            urls.add(FR_BASE_URL.replace("{companyCode}", stockDomain.getCompanyCode()));
-        }
-
-        // 新浪财经 财务摘要
-        frPageProcessor.run(urls);
-
-        // 读 新浪财经 财务摘要
-        urls.clear();
-        stockDomainList.clear();
-        stockDomainList = stockDao.readFinancialReportStep1();  // 186151
-
-        // 新浪财经 财务指标
-        Map<String, String> codeAndYearFilterMap = new HashMap<>();
-        Map<String, StockDomain> stockDomainMap = new HashMap<>();
-        stockDomainList.stream().forEach(stockDomain -> {
-//        for (StockDomain stockDomain : stockDomainList) {
-                String code = stockDomain.getCompanyCode();
-            String year = stockDomain.getFrDomain().getDeadline().substring(0, 4);
-            stockDomainMap.put(code + stockDomain.getFrDomain().getDeadline(), stockDomain);
-            // 财年数据为采集
-            if (StringUtils.isEmpty(codeAndYearFilterMap.get(code + year))) {
-                codeAndYearFilterMap.put(code + year, code + year);
-                urls.add(FR_GUIDE_LINE_URL.replace("{companyCode}", code).replace("{year}", year));
-            }
-//        }
-        });
-
-        // 新浪财经 财务指标
-        frglPageProcessor.run(urls);
-
-        // merge fr (step1 -> step2)
-        List<StockDomain> stockDomainList2 = stockDao.readFinancialReportStep2();   // 185749
-        stockDomainList2.parallelStream().forEach(t -> {
-            String key = t.getCompanyCode() + t.getFrDomain().getDeadline();
-            StockDomain stockDomain = stockDomainMap.get(key);
-
-            if (stockDomain == null) {
-
-                t.getFrDomain().setMainBusinessIncome("*");
-                t.getFrDomain().setNetProfit("*");
-                t.getFrDomain().setNetMargin("*");
-                log.warn("fr not found :: {}", key);
-
-            } else {
-
-                t.getFrDomain().setMainBusinessIncome(stockDomain.getFrDomain().getMainBusinessIncome());
-                t.getFrDomain().setNetProfit(stockDomain.getFrDomain().getNetProfit());
-                t.getFrDomain().setNetMargin(stockDomain.getFrDomain().getNetMargin());
-            }
-        });
-
-        stockDao.writeFinancialReport(stockDomainList2);
-
-        return "finished";
+        return shareBonusService.shareBonus();
     }
 
     // 历史行情
     public Object hhq() throws ExecutionException, InterruptedException {
 
-        // 查询证券基础数据
-        List<StockDomain> stockDomainList = readBaseData();
-        List<DayLineDomain> hhqList = new ArrayList<>();
-        for (StockDomain stockDomain: stockDomainList) {
-            // 采集 历史行情
-            List<String[]> hqsList = agentHhqData(stockDomain).getHqs();
-            // 构建 历史行情 实体 写入用
-            for (String[] data: hqsList) {
-                DayLineDomain dayLineDomain = new DayLineDomain();
-                // 公司代码
-                dayLineDomain.setCompanyCode(stockDomain.getCompanyCode());
-                // 公司简称
-                dayLineDomain.setCompanyName(stockDomain.getCompanyName());
-                // 收盘日
-                dayLineDomain.setDay(data[0]);
-                // 收盘价
-                dayLineDomain.setPrice(data[2]);
-
-                hhqList.add(dayLineDomain);
-            }
-        }
-        // 写入 历史行情 数据
-        writeHhqData(hhqList);
-
-        return "hhq";
-    }
-    // 采集 历史行情
-    public DayLineDomain agentHhqData(StockDomain stockDomain) throws ExecutionException, InterruptedException {
-        // call rest service
-        CompletableFuture<DayLineDomain> hqDomainCompletableFuture = CompletableFuture.supplyAsync(() -> apiRestTemplate.getHhqForObject(stockDomain)).get();
-        return hqDomainCompletableFuture.get();
-    }
-
-    // 写 历史行情
-    public void writeHhqData(List<DayLineDomain> hhqList) {
-        stockDao.writeHhqData(hhqList);
-    }
-    // 读 历史行情
-    public List<DayLineDomain> readHhqData() {
-        return stockDao.readHhqData();
+        return historyHqService.hhq();
     }
 
     // 实时行情
     public Object hq() throws ExecutionException, InterruptedException {
-        // 查询证券基础数据
-        List<StockDomain> stockDomainList = readBaseData();
-        for (StockDomain stockDomain: stockDomainList) {
-            if (Constants.EXCHANGE_SZ.getString().equals(stockDomain.getExchange())) {
-                szService.hq(stockDomain);
-            } else {
-                shService.hq(stockDomain);
-            }
-        }
-        
-        // 写入 实时行情 数据
-        writeHqData(stockDomainList);
-        
-        return "hq";
+        return realHqService.hq();
     }
 
-    // 写 实时行情
-    public void writeHqData(List<StockDomain> stockDomainList) {
-        stockDao.writeHqData(stockDomainList);
-    }
-
-    private List<StockDomain> readHqData() {
-        return stockDao.readHqData();
-    }
-
-    // 查询证券基础数据
-    public List<StockDomain> readBaseData() {
-        List<StockDomain> shStockDomainList = shService.readBaseData();
-        List<StockDomain> szStockDomainList = szService.readBaseData();
-        return Stream.concat(shStockDomainList.stream(), szStockDomainList.stream()).collect(Collectors.toList());
-    }
-
+    // =================== 计算 =========================================
     // 钱多多
     // 扩展 分红配股
     public Object moneyMoney() {
 
         // 分红配股
-        List<StockDomain> shareBonusDataList = readShareBonus();
+        List<StockDomain> shareBonusDataList = shareBonusService.readShareBonus();
 
         // 实时行情
-        List<StockDomain> hqDataList = readHqData();
+        List<StockDomain> hqDataList = realHqService.readHqData();
         Map<String, StockDomain> hqDataMap = new HashMap<>();
         for (StockDomain stockDomain: hqDataList) {
             hqDataMap.put(stockDomain.getCompanyCode(), stockDomain);
@@ -292,7 +126,7 @@ public class StockService {
                 String mapKey = stockDomain.getCompanyCode() + Utils.formatDate2String(sbDomain.getDividendDate());
                 log.debug("mm mapKey :: {}", mapKey);
 //                DayLineDomain dayLineDomain = hhqDataMap.get(mapKey);
-                DayLineDomain dayLineDomain = apiRestTemplate.getHhqByDateForObject(stockDomain);
+                DayLineDomain dayLineDomain = historyHqService.getHhqByDateForObject(stockDomain);
                 // 历史数据 没有时 不计算股息率
                 if (dayLineDomain == null) {
                     log.warn("mm mapKey :: {}", mapKey);
@@ -337,7 +171,7 @@ public class StockService {
 //                String mapKey = stockDomain.getCompanyCode() + Utils.formatDate2String(sbDomain.getBonusDate());
 //                sbDomain.setDividendDate(Utils.formatDate2String(sbDomain.getBonusDate()));
 ////                DayLineDomain dayLineDomain = hhqDataMap.get(mapKey);
-//                DayLineDomain dayLineDomain = apiRestTemplate.getHhqByDateForObject(stockDomain);
+//                DayLineDomain dayLineDomain = historyHqService.getHhqByDateForObject(stockDomain);
 //                // 历史数据 没有时 不计算股息率
 //                if (dayLineDomain == null) {
 //                    log.warn("mm mapKey :: {}", mapKey);
@@ -369,7 +203,7 @@ public class StockService {
         return Utils.rate(stockDomain.getSbDomain().getDividend(), price);
     }
 
-    public void writeMoneyMoney(List<StockDomain> data) {
+    private void writeMoneyMoney(List<StockDomain> data) {
         stockDao.writeMoneyMoney(data);
     }
 }

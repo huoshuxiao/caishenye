@@ -12,11 +12,15 @@ public enum Constants {
 
     FILE_FINANCIAL_REPORT_STEP1("FinancialReportStep1.csv"),
     FILE_FINANCIAL_REPORT_STEP2("FinancialReportStep2.csv"),
+    FILE_FINANCIAL_REPORT_EASTMONEY("FinancialReportEastMoney.csv"),
     FILE_FINANCIAL_REPORT("FinancialReport.csv"),
+    FILE_FINANCIAL_REPORT2("FinancialReport2.csv"),
     FILE_SHARE_BONUS("ShareBonus.csv"),
     FILE_HQ("HQ.csv"),
     FILE_HHQ("HHQ.csv"),
     FILE_MONEY_MONEY("MoneyMoney.csv"),
+
+    CHROME_DRIVER_PATH("/home/sunwenkun/Developer/gitroot/caishenye.git/octopus/bin/chromedriver"),
 
     THREADS(10),
 

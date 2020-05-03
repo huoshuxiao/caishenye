@@ -1,4 +1,4 @@
-package com.sun.caishenye.octopus.stock.business.webmagic;
+package com.sun.caishenye.octopus.stock.agent.webmagic;
 
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.Utils;
@@ -23,14 +23,14 @@ import java.util.List;
  */
 @Component
 @Slf4j
-public class FinancialReportStep2DataPageProcessor implements PageProcessor {
+public class FinancialReportStep2PageProcessor implements PageProcessor {
 
     /* 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等 */
-    private Site site = Site.me().setRetryTimes(3).setSleepTime(100).setTimeOut(Integer.MAX_VALUE).setCharset("gb2312");
+    protected Site site = Site.me().setRetryTimes(3).setSleepTime(100).setTimeOut(Integer.MAX_VALUE).setCharset("gb2312");
 
     // home page
-    private final String FILE_PATH = "data";
-    private final String FILE_NAME = Constants.FILE_FINANCIAL_REPORT_STEP2.getString();
+    protected final String FILE_PATH = "data";
+    protected final String FILE_NAME = Constants.FILE_FINANCIAL_REPORT_STEP2.getString();
 
     @Override
     public void process(Page page) {
@@ -50,7 +50,7 @@ public class FinancialReportStep2DataPageProcessor implements PageProcessor {
         }
     }
 
-    private List<StockDomain> dataAgent(Html html) {
+    protected List<StockDomain> dataAgent(Html html) {
 
         // 每期财报所占td数
         int tdSize = html.xpath("[@id='BalanceSheetNewTable0']/tbody/tr[1]/td").all().size();

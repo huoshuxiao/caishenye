@@ -1,8 +1,19 @@
 package com.sun.caishenye.octopus.common;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class Utils {
+
+    public static String formatDate(String date, String... fmt) {
+
+        if (date.length() < 10) {
+            return "-";
+        }
+
+        if (fmt != null) {
+            date.substring(0, 10).replace("-", "");
+        }
+
+        return date.substring(0, 10);
+    }
 
     // 去分号
     public static String formatNumber2String(String number) {

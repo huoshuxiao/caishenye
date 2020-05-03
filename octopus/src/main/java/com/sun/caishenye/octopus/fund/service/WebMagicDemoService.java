@@ -1,6 +1,6 @@
 package com.sun.caishenye.octopus.fund.service;
 
-import com.sun.caishenye.octopus.fund.business.webmagic.WebMagicProcessorDemo;
+import com.sun.caishenye.octopus.fund.agent.webmagic.WebMagicProcessorDemo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

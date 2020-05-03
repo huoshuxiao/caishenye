@@ -1,7 +1,6 @@
-package com.sun.caishenye.octopus.fund.business.api;
+package com.sun.caishenye.octopus.fund.agent.api;
 
 import com.sun.caishenye.octopus.fund.domain.FundDomain;
-import com.sun.caishenye.octopus.fund.domain.MorningStarDetailDomain;
 import com.sun.caishenye.octopus.fund.domain.MorningStarExtendDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
