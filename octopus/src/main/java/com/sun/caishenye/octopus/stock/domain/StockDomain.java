@@ -40,7 +40,7 @@ public class StockDomain implements Serializable {
     // 证券交易所
     private String exchange;
 
-    // 上交所主板
+    // 交易市场
     private String tradeMarket;
     // 所属行业
     private String publishName;

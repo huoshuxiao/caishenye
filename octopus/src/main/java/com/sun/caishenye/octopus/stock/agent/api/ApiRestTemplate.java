@@ -45,9 +45,7 @@ public class ApiRestTemplate {
 
     // 财务数据(业绩报表) 东方财富网
     // http://dcfm.eastmoney.com//em_mutisvcexpandinterface/api/js/get?type=YJBB21_YJBB&token=70f12f2f4f091e459a279469fe49eca5&filter=(scode=600000)&st=reportdate&sr=-1&p=1&ps=500&js=var%20ITnKjhqD={pages:(tp),data:%20(x),font:(font)}&rt=52946252
-    protected static final String EASTMONEY_FR_YJBB_URL =
-            //"http://dcfm.eastmoney.com//em_mutisvcexpandinterface/api/js/get?type=YJBB21_YJBB&token=70f12f2f4f091e459a279469fe49eca5&filter=(scode=600000)&st=reportdate&sr=-1&p=1&ps=500&js=var ITnKjhqD={{pages:(tp),data: (x),font:(font)}}&rt=52946252";
-            "http://dcfm.eastmoney.com//em_mutisvcexpandinterface/api/js/get?type=YJBB21_YJBB&token=70f12f2f4f091e459a279469fe49eca5&filter=(scode={companyCode})&st=reportdate&sr=-1&p=1&ps=500&js={js}&rt=52946252";
+    protected static final String EASTMONEY_FR_YJBB_URL = "http://dcfm.eastmoney.com//em_mutisvcexpandinterface/api/js/get?type=YJBB21_YJBB&token=70f12f2f4f091e459a279469fe49eca5&filter=(scode={companyCode})&st=reportdate&sr=-1&p=1&ps=500&js={js}&rt=52946252";
 
     @Autowired
     private ShRestTemplate shRestTemplate;
@@ -102,7 +100,7 @@ public class ApiRestTemplate {
             domain.setCompanyCode(t.get("scode"));
             // 股票名称
             domain.setCompanyName(t.get("sname"));
-            // 上交所主板
+            // 交易市场
             domain.setTradeMarket(t.get("trademarket"));
             // 截止日期
             domain.setDeadline(Utils.formatDate(t.get("reportdate")));

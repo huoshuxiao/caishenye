@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -67,7 +64,7 @@ public class FinancialService {
         List<StockDomain> stockDomainList = baseService.readBaseData();
 
         // 采集 财务数据(业绩报表) 东方财富网
-        List<FinancialReport2Domain> frYjbbList = new ArrayList<>();
+        List<FinancialReport2Domain> frYjbbList = Collections.synchronizedList(new ArrayList<>());
         for (StockDomain stockDomain: stockDomainList) {
             frYjbbList.addAll(agentYjbbData(stockDomain));
         }
@@ -92,7 +89,6 @@ public class FinancialService {
 
     // 采集 财务数据(业绩报表) 东方财富网
     private List<FinancialReport2Domain> agentYjbbData(StockDomain stockDomain) throws ExecutionException, InterruptedException {
-//        Thread.sleep(1000);
         // call rest service
         CompletableFuture<List<FinancialReport2Domain>> future = CompletableFuture.supplyAsync(() -> apiRestTemplate.getFrYjbbForObject(stockDomain)).get();
         return future.get();

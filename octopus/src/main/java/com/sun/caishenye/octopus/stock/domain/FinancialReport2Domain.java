@@ -62,7 +62,7 @@ public class FinancialReport2Domain extends StockDomain implements Serializable 
         StringBuilder sbStr = new StringBuilder();
         sbStr.append(Constants.DELIMITING_COMMA.getString()).append(this.getCompanyCode())
                 .append(Constants.DELIMITING_COMMA.getString()).append(this.getCompanyName())
-                .append(Constants.DELIMITING_COMMA.getString()).append(this.getTradeMarket())   // 上交所主板
+                .append(Constants.DELIMITING_COMMA.getString()).append(this.getTradeMarket())   // 交易市场
                 .append(Constants.DELIMITING_COMMA.getString()).append(this.getPublishName())   // 所属行业
                 .append(Constants.DELIMITING_COMMA.getString()).append(LocalDate.now())         // 交易日 2020-03-26
 //                .append(Constants.DELIMITING_COMMA.getString()).append(this.getPrice())       // 股价
