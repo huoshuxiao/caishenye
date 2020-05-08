@@ -97,11 +97,16 @@ public class EastMoneyDetailPageProcessor implements PageProcessor {
             closePrice = "-";
         }
         eastMoneyDetailDomain.setClosePrice(closePrice);
-
         // 基金类型
         eastMoneyDetailDomain.setType(SelectableUtils.getValue(html.xpath("[@id='body']/div[12]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()")));
         if ("-".equals(eastMoneyDetailDomain.getType())) {
+            eastMoneyDetailDomain.setType(SelectableUtils.getValue(html.xpath("[@id='body']/div[12]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()")));
+        }
+        if ("-".equals(eastMoneyDetailDomain.getType())) {
             eastMoneyDetailDomain.setType(SelectableUtils.getValue(html.xpath("[@id='body']/div[13]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()")));
+        }
+        if ("-".equals(eastMoneyDetailDomain.getType())) {
+            eastMoneyDetailDomain.setType(SelectableUtils.getValue(html.xpath("[@id='body']/div[13]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()")));
         }
         if ("-".equals(eastMoneyDetailDomain.getType())) {
             eastMoneyDetailDomain.setType(SelectableUtils.getValue(html.xpath("[@id='body']/div[4]/div[9]/div/div/div[2]/div[1]/div[3]/table/tbody/tr[1]/td[1]/a/text()")));
@@ -109,7 +114,13 @@ public class EastMoneyDetailPageProcessor implements PageProcessor {
         // 基金规模
         eastMoneyDetailDomain.setSize(SelectableUtils.getValue(html.xpath("[@id='body']/div[12]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()")));
         if ("-".equals(eastMoneyDetailDomain.getSize())) {
+            eastMoneyDetailDomain.setSize(SelectableUtils.getValue(html.xpath("[@id='body']/div[12]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()")));
+        }
+        if ("-".equals(eastMoneyDetailDomain.getSize())) {
             eastMoneyDetailDomain.setSize(SelectableUtils.getValue(html.xpath("[@id='body']/div[13]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()")));
+        }
+        if ("-".equals(eastMoneyDetailDomain.getSize())) {
+            eastMoneyDetailDomain.setSize(SelectableUtils.getValue(html.xpath("[@id='body']/div[13]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()")));
         }
         if ("-".equals(eastMoneyDetailDomain.getSize())) {
             eastMoneyDetailDomain.setSize(SelectableUtils.getValue(html.xpath("[@id='body']/div[4]/div[9]/div/div/div[2]/div[1]/div[3]/table/tbody/tr[1]/td[2]/text()")));
