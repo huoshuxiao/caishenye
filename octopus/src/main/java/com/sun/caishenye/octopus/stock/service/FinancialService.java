@@ -137,7 +137,7 @@ public class FinancialService {
 
         // merge fr (step1 -> step2)
         List<StockDomain> stockDomainList2 = stockDao.readFinancialReportStep2();   // 185749
-        stockDomainList2.parallelStream().forEach(t -> {
+        stockDomainList2.stream().forEach(t -> {
             String key = t.getCompanyCode() + t.getFrDomain().getDeadline();
             StockDomain stockDomain = stockDomainMap.get(key);
 
@@ -146,7 +146,7 @@ public class FinancialService {
                 t.getFrDomain().setMainBusinessIncome("*");
                 t.getFrDomain().setNetProfit("*");
                 t.getFrDomain().setNetMargin("*");
-                log.warn("fr not found :: {}", key);
+                log.error("fr not found :: {}", key);
 
             } else {
 

@@ -135,7 +135,7 @@
 //            innerQueue.clear();
 //        } catch (Exception e) {
 ////            e.printStackTrace();
-//            logger.warn("webdriverpool关闭失败", e);
+//            logger.error("webdriverpool关闭失败", e);
 //        }
 //    }
 //

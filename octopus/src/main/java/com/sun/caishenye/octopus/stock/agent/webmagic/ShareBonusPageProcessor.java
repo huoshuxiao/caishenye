@@ -26,7 +26,7 @@ public class ShareBonusPageProcessor implements PageProcessor {
     /* 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等 */
     protected Site site = Site.me()
             .setRetryTimes(3)
-            .setSleepTime(100)
+            .setSleepTime(2000)
             .setTimeOut(Integer.MAX_VALUE)
             .setCycleRetryTimes(3)//这个重试会换IP重试,是setRetryTimes的上一层的重试,不要怕三次重试解决一切问题。。
             .setUseGzip(true)

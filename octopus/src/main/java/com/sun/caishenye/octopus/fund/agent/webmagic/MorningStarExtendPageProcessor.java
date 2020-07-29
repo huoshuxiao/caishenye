@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MorningStarExtendPageProcessor implements PageProcessor {
 
     /* 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等 */
-    protected Site site = Site.me().setRetryTimes(3).setSleepTime(100).setTimeOut(Integer.MAX_VALUE);
+    protected Site site = Site.me().setRetryTimes(3).setSleepTime(2000).setTimeOut(Integer.MAX_VALUE);
 
     // 基金工具->基金筛选器/
     protected final String URL = "http://cn.morningstar.com/quickrank/default.aspx";

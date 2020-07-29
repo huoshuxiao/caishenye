@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -75,17 +76,26 @@ public class ApiRestTemplate {
             Gson gson = new Gson();
             Map<String, Object> responseMap = gson.fromJson(response, Map.class);
 
-            // font
-            Map<String, Object> fontMap = (Map)responseMap.get("font");
-            List<Map<String, String>> fontList = (List)fontMap.get("FontMapping");
-            Map<String, String> fontMapping = fontList.stream().collect(Collectors.toMap(t -> String.valueOf(t.get("code")), t -> String.valueOf(t.get("value")).replace(".0", "")));
+            // page
+            Double page = (Double)responseMap.get("pages");
+            // 非退市
+            if (page.intValue() != 0) {
+                // font
+                Map<String, Object> fontMap = (Map)responseMap.get("font");
+                List<Map<String, String>> fontList = (List)fontMap.get("FontMapping");
+                Map<String, String> fontMapping = fontList.stream().collect(Collectors.toMap(t -> String.valueOf(t.get("code")), t -> String.valueOf(t.get("value")).replace(".0", "")));
 
-            result = frYjbbResultDataBuilder(fontMapping, (List)responseMap.get("data"));
+                result = frYjbbResultDataBuilder(fontMapping, (List)responseMap.get("data"));
+            }
             log.debug("call fr yjbb response value :: {}", result);
+//            log.info("call fr yjbb response ::  {} size {}", stockDomain.getCompanyCode(), result.size());
         } catch (HttpClientErrorException e) {
-            log.warn(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
+            log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
         } catch (JsonSyntaxException je) {
             log.error(frYjbbUrlBuilder(stockDomain) + " " + je);
+        } catch (ResourceAccessException ae) {
+            // 访问异常 retry
+            getFrYjbbForObject(stockDomain);
         }
         return CompletableFuture.completedFuture(result);
     }
@@ -93,7 +103,7 @@ public class ApiRestTemplate {
     private List<FinancialReport2Domain> frYjbbResultDataBuilder(Map<String, String> fontMapping, List<Map<String, String>> data) {
 
         List<FinancialReport2Domain> result = new ArrayList<>(data.size());
-        data.parallelStream().forEach(t -> {
+        data.stream().forEach(t -> {
 
             FinancialReport2Domain domain = new FinancialReport2Domain();
             // 股票代码
@@ -207,7 +217,7 @@ public class ApiRestTemplate {
 
             log.debug("call hhq response value :: {}", hhqDomain);
         } catch (HttpClientErrorException e) {
-            log.warn(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
+            log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
         } catch (JsonSyntaxException je) {
             hhqUrlBuilder(stockDomain);
             log.error(hhqUrlBuilder(stockDomain) + " " + je);
@@ -240,7 +250,7 @@ public class ApiRestTemplate {
                 String day = getDay(stockDomain);
                 DayLineDomain tDayLineDomain = getHhqForObject(stockDomain).get();
                 if (tDayLineDomain.getSummary() == null) {return null;}
-                tDayLineDomain.getHqs().parallelStream().forEach(t -> {
+                tDayLineDomain.getHqs().stream().forEach(t -> {
                     if (t[0].equals(day)) {
                         isOK.set(true);
                         // 收盘日

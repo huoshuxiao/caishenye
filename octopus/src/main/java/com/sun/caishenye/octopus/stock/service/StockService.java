@@ -92,10 +92,10 @@ public class StockService {
 //        log.info("hhq data size :: {} sb data size :: {}", hhqCount, shareBonusDataList.size());
 //
 //        // 空间（map）换时间(list)
-//        Map<String, DayLineDomain> hhqDataMap = hhqDataList.parallelStream().collect(Collectors.toMap(t -> t.getCompanyCode() + t.getDay(), t-> t));
+//        Map<String, DayLineDomain> hhqDataMap = hhqDataList.stream().collect(Collectors.toMap(t -> t.getCompanyCode() + t.getDay(), t-> t));
 
         // merge指标，计算股息率(扩展分红配股 股价/股息率)
-        shareBonusDataList.parallelStream().forEach(stockDomain -> {
+        shareBonusDataList.stream().forEach(stockDomain -> {
 
             log.debug("mm stockDomain value>> {}", stockDomain);
 
@@ -129,7 +129,7 @@ public class StockService {
                 DayLineDomain dayLineDomain = historyHqService.getHhqByDateForObject(stockDomain);
                 // 历史数据 没有时 不计算股息率
                 if (dayLineDomain == null) {
-                    log.warn("mm mapKey :: {}", mapKey);
+                    log.error("mm mapKey :: {}", mapKey);
                     if ("--".equals(sbDomain.getDividendDate())) {
                         stockDomain.setDividendYield("×");
                         stockDomain.setPrice("×");
@@ -174,7 +174,7 @@ public class StockService {
 //                DayLineDomain dayLineDomain = historyHqService.getHhqByDateForObject(stockDomain);
 //                // 历史数据 没有时 不计算股息率
 //                if (dayLineDomain == null) {
-//                    log.warn("mm mapKey :: {}", mapKey);
+//                    log.error("mm mapKey :: {}", mapKey);
 //                    stockDomain.setPrice("-");
 //                } else {
 //                    stockDomain.setPrice(dayLineDomain.getPrice());
