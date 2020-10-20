@@ -19,7 +19,6 @@ import java.util.List;
 @Repository
 public class ShDao {
 
-    protected final String BASE_DATA_FILE_NAME = "data/ShangZhengBase.csv";
 //
 //    public void writeData(List<StockDomain> data) {
 //        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(BASE_DATA_FILE_NAME), StandardCharsets.UTF_8)) {
@@ -36,7 +35,7 @@ public class ShDao {
     public List<StockDomain> readBaseData() {
 
         List<StockDomain> list = new ArrayList<>();
-        Path path = Paths.get(BASE_DATA_FILE_NAME);
+        Path path = Paths.get(Constants.FILE_STOCK_BASE_SH.getString());
 
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line = null;

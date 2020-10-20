@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 /**
  * RestTemplate 采集 (call api)
@@ -48,6 +47,9 @@ public class ApiRestTemplate {
     // http://dcfm.eastmoney.com//em_mutisvcexpandinterface/api/js/get?type=YJBB21_YJBB&token=70f12f2f4f091e459a279469fe49eca5&filter=(scode=600000)&st=reportdate&sr=-1&p=1&ps=500&js=var%20ITnKjhqD={pages:(tp),data:%20(x),font:(font)}&rt=52946252
     protected static final String EASTMONEY_FR_YJBB_URL = "http://dcfm.eastmoney.com//em_mutisvcexpandinterface/api/js/get?type=YJBB21_YJBB&token=70f12f2f4f091e459a279469fe49eca5&filter=(scode={companyCode})&st=reportdate&sr=-1&p=1&ps=500&js={js}&rt=52946252";
 
+    // http://datacenter.eastmoney.com/api/data/get?type=RPT_LICO_FN_CPD&sty=ALL&p=1&ps=50&st=REPORTDATE&sr=-1&var=fPIShrPs&filter=(SECURITY_CODE=002714)&rt=53437368
+    protected static final String EASTMONEY_FR_YJBB_URL_4 = "http://datacenter.eastmoney.com/api/data/get?type=RPT_LICO_FN_CPD&sty=ALL&p=1&ps=500&st=REPORTDATE&sr=-1&var=ITnKjhqD&filter=(SECURITY_CODE={companyCode})&rt={random}";
+
     @Autowired
     private ShRestTemplate shRestTemplate;
 
@@ -60,94 +62,96 @@ public class ApiRestTemplate {
 
     // 财务数据(业绩报表) 东方财富网
     @Async
-    public CompletableFuture<List<FinancialReport2Domain>> getFrYjbbForObject(StockDomain stockDomain) {
+    public CompletableFuture<List<FinancialReport2Domain>> getFrYjbbForObject4(StockDomain stockDomain) {
 
         log.debug("call fr yjbb request params :: {}", stockDomain);
         List<FinancialReport2Domain> result = new ArrayList<>();
         try {
 
             // call rest service
-            String response = restTemplate.getForObject(EASTMONEY_FR_YJBB_URL, String.class, frYjbbUrlBuilder(stockDomain));
+            String response = restTemplate.getForObject(EASTMONEY_FR_YJBB_URL_4, String.class, hhqUrlBuilder(stockDomain));
             log.debug("call fr yjbb response string :: {}", response);
             // 结构化返回值，对返回值进行fmt
             response = StringUtils.removeStart(response, "var ITnKjhqD=");
+            response = StringUtils.removeEnd(response, ";");
             log.debug("call fr yjbb response :: {}", response);
 
             Gson gson = new Gson();
             Map<String, Object> responseMap = gson.fromJson(response, Map.class);
 
-            // page
-            Double page = (Double)responseMap.get("pages");
-            // 非退市
-            if (page.intValue() != 0) {
-                // font
-                Map<String, Object> fontMap = (Map)responseMap.get("font");
-                List<Map<String, String>> fontList = (List)fontMap.get("FontMapping");
-                Map<String, String> fontMapping = fontList.stream().collect(Collectors.toMap(t -> String.valueOf(t.get("code")), t -> String.valueOf(t.get("value")).replace(".0", "")));
-
-                result = frYjbbResultDataBuilder(fontMapping, (List)responseMap.get("data"));
+            Map<String, Object> resultMap = (Map)responseMap.get("result");
+            if (resultMap != null) {
+                // page
+                Double page = (Double) resultMap.get("pages");
+                // 非退市
+                if (page.intValue() != 0) {
+                    result = frYjbbResultDataBuilder4((List) resultMap.get("data"));
+                }
             }
             log.debug("call fr yjbb response value :: {}", result);
 //            log.info("call fr yjbb response ::  {} size {}", stockDomain.getCompanyCode(), result.size());
         } catch (HttpClientErrorException e) {
             log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
-        } catch (JsonSyntaxException je) {
-            log.error(frYjbbUrlBuilder(stockDomain) + " " + je);
-        } catch (ResourceAccessException ae) {
+        } catch (JsonSyntaxException e) {
+            log.error(hhqUrlBuilder(stockDomain) + " " + e);
+        } catch (ResourceAccessException e) {
             // 访问异常 retry
-            getFrYjbbForObject(stockDomain);
+            getFrYjbbForObject4(stockDomain);
+        } catch (Exception e) {
+            log.error(hhqUrlBuilder(stockDomain) + " " + e);
+            throw e;
         }
         return CompletableFuture.completedFuture(result);
     }
 
-    private List<FinancialReport2Domain> frYjbbResultDataBuilder(Map<String, String> fontMapping, List<Map<String, String>> data) {
+    private List<FinancialReport2Domain> frYjbbResultDataBuilder4(List<Map<String, Object>> data) {
 
         List<FinancialReport2Domain> result = new ArrayList<>(data.size());
         data.stream().forEach(t -> {
 
             FinancialReport2Domain domain = new FinancialReport2Domain();
             // 股票代码
-            domain.setCompanyCode(t.get("scode"));
+            domain.setCompanyCode(parseValue(t.get("SECURITY_CODE")));
             // 股票名称
-            domain.setCompanyName(t.get("sname"));
+            domain.setCompanyName(parseValue(t.get("SECURITY_NAME_ABBR")));
             // 交易市场
-            domain.setTradeMarket(t.get("trademarket"));
+            domain.setTradeMarket(parseValue(t.get("TRADE_MARKET")));
             // 截止日期
-            domain.setDeadline(Utils.formatDate(t.get("reportdate")));
+            domain.setDeadline(Utils.formatDate(parseValue(t.get("REPORTDATE"))));
             // 所属行业
-            domain.setPublishName(t.get("publishname"));
+            domain.setPublishName(parseValue(t.get("PUBLISHNAME")));
             // 首次公告日期
-            domain.setFirstNoticeDate(Utils.formatDate(t.get("firstnoticedate")));
+            domain.setFirstNoticeDate(Utils.formatDate(parseValue(t.get("NOTICE_DATE"))));
             // 最新公告日期
-            domain.setLatestNoticeDate(Utils.formatDate(t.get("latestnoticedate")));
+            domain.setLatestNoticeDate(Utils.formatDate(parseValue(t.get("UPDATE_DATE"))));
             // 每股收益(元)
-            domain.setBasicEps(parseFloat(fontMapping, t.get("basiceps")));
+            domain.setBasicEps(parseValue(t.get("BASIC_EPS")));
             // 每股收益(扣除)(元)
-            domain.setCutBasicEps(parseFloat(fontMapping, t.get("cutbasiceps")));
+            domain.setCutBasicEps(parseValue(t.get("DEDUCT_BASIC_EPS")));
             // 主营业务收入
-            domain.setMainBusinessIncome(parseFloat(fontMapping, t.get("totaloperatereve")));
+            domain.setMainBusinessIncome(parseValue(t.get("TOTAL_OPERATE_INCOME")));
             // 主营业务收入增长率(%)(同比)
-            domain.setMainBusinessIncomeGrowthRate(parseFloat(fontMapping, t.get("ystz")));
+            domain.setMainBusinessIncomeGrowthRate(parseValue(t.get("YSTZ")));
             // 主营业务收入增长率(%)(环比)
-            domain.setMainBusinessIncomeGrowthRateMoM(parseFloat(fontMapping, t.get("yshz")));
+            domain.setMainBusinessIncomeGrowthRateMoM(parseValue(t.get("YSHZ")));
             // 净利润
-            domain.setNetProfit(parseFloat(fontMapping, t.get("parentnetprofit")));
+            domain.setNetProfit(parseValue(t.get("PARENT_NETPROFIT")));
             // 净利润增长率(%)(同比)
-            domain.setNetProfitGrowthRate(parseFloat(fontMapping, t.get("sjltz")));
+            domain.setNetProfitGrowthRate(parseValue(t.get("SJLTZ")));
             // 净利润增长率(%)(环比)
-            domain.setNetProfitGrowthRateMoM(parseFloat(fontMapping, t.get("sjlhz")));
+            domain.setNetProfitGrowthRateMoM(parseValue(t.get("SJLHZ")));
             // 净资产收益率
-            domain.setRoeWeighted(parseFloat(fontMapping, t.get("roeweighted")));
+            domain.setRoeWeighted(parseValue(t.get("WEIGHTAVG_ROE")));
             // 每股净资产
-            domain.setBps(parseFloat(fontMapping, t.get("bps")));
+            domain.setBps(parseValue(t.get("BPS")));
             // 每股现金流量
-            domain.setPerShareCashFlowFromOperations(parseFloat(fontMapping, t.get("mgjyxjje")));
+            domain.setPerShareCashFlowFromOperations(parseValue(t.get("MGJYXJJE")));
             // 销售毛利率
-            domain.setGrossProfitMargin(parseFloat(fontMapping, t.get("xsmll")));
+            domain.setGrossProfitMargin(parseValue(t.get("XSMLL")));
             // 利润分配
-            domain.setProfitDistribution(parseFloat(fontMapping, t.get("assigndscrpt")));
+            domain.setProfitDistribution(parseValue(t.get("ASSIGNDSCRPT")));
             // 股息率
-            domain.setDividendYield(parseFloat(fontMapping, t.get("gxl")));
+            domain.setDividendYield(parseValue(t.get("ZXGXL")));
             // 净利润率(净利润/主营业务收入)
             domain.setNetMargin(Utils.rate(domain.getNetProfit(), domain.getMainBusinessIncome()));
 
@@ -157,44 +161,159 @@ public class ApiRestTemplate {
         return result;
     }
 
-    private String parseFloat(Map<String, String> fontMapping, String value) {
+    private String parseValue(Object value) {
+        String str = null;
+        if (value instanceof String || value instanceof Double) {
+            str = String.valueOf(value);
+        }
 
-        if ("-".equals(value)) {
+        if ("-".equals(str) || StringUtils.isEmpty(str)) {
             return "0";
-        }
-        if ("不分配不转增".equals(value)) {
+        } else if ("不分配不转增".equals(str)) {
             return "不分配";
+        } else {
+            return str;
         }
-
-        String[] values = value.split(";");
-        StringBuilder sbVal = new StringBuilder();
-        for (String val: values) {
-            if (val.contains("-")) {
-                if (val.charAt(0) == '-' || val.charAt(val.length() - 1) == '-') {
-                    sbVal.append("-");
-                }
-                sbVal.append(fontMapping.get(val.replace("-","") + ";"));
-            } else if (val.contains(".")) {
-                if (val.charAt(0) == '.' || val.charAt(val.length() - 1) == '.') {
-                    sbVal.append(".");
-                }
-                sbVal.append(fontMapping.get(val.replace(".","") + ";"));
-            } else if (val.contains("&#x")) {
-                sbVal.append(fontMapping.get(val + ";"));
-            } else {
-                sbVal.append(fontMapping.get(val));
-            }
-        }
-
-        return sbVal.toString();
     }
 
-    private Map<String, Object> frYjbbUrlBuilder(StockDomain stockDomain) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("companyCode", stockDomain.getCompanyCode());
-        params.put("js", "var ITnKjhqD={pages:(tp),data: (x),font:(font)}");
-        return params;
-    }
+//    // TODO 数据延迟，发布日时，无数据
+//    // 财务数据(业绩报表) 东方财富网
+//    @Async
+//    public CompletableFuture<List<FinancialReport2Domain>> getFrYjbbForObject(StockDomain stockDomain) {
+//
+//        log.debug("call fr yjbb request params :: {}", stockDomain);
+//        List<FinancialReport2Domain> result = new ArrayList<>();
+//        try {
+//
+//            // call rest service
+//            String response = restTemplate.getForObject(EASTMONEY_FR_YJBB_URL, String.class, frYjbbUrlBuilder(stockDomain));
+//            log.debug("call fr yjbb response string :: {}", response);
+//            // 结构化返回值，对返回值进行fmt
+//            response = StringUtils.removeStart(response, "var ITnKjhqD=");
+//            log.debug("call fr yjbb response :: {}", response);
+//
+//            Gson gson = new Gson();
+//            Map<String, Object> responseMap = gson.fromJson(response, Map.class);
+//
+//            // page
+//            Double page = (Double)responseMap.get("pages");
+//            // 非退市
+//            if (page.intValue() != 0) {
+//                // font
+//                Map<String, Object> fontMap = (Map)responseMap.get("font");
+//                List<Map<String, String>> fontList = (List)fontMap.get("FontMapping");
+//                Map<String, String> fontMapping = fontList.stream().collect(Collectors.toMap(t -> String.valueOf(t.get("code")), t -> String.valueOf(t.get("value")).replace(".0", "")));
+//
+//                result = frYjbbResultDataBuilder(fontMapping, (List)responseMap.get("data"));
+//            }
+//            log.debug("call fr yjbb response value :: {}", result);
+////            log.info("call fr yjbb response ::  {} size {}", stockDomain.getCompanyCode(), result.size());
+//        } catch (HttpClientErrorException e) {
+//            log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
+//        } catch (JsonSyntaxException je) {
+//            log.error(frYjbbUrlBuilder(stockDomain) + " " + je);
+//        } catch (ResourceAccessException ae) {
+//            // 访问异常 retry
+//            getFrYjbbForObject(stockDomain);
+//        }
+//        return CompletableFuture.completedFuture(result);
+//    }
+//
+//    private List<FinancialReport2Domain> frYjbbResultDataBuilder(Map<String, String> fontMapping, List<Map<String, String>> data) {
+//
+//        List<FinancialReport2Domain> result = new ArrayList<>(data.size());
+//        data.stream().forEach(t -> {
+//
+//            FinancialReport2Domain domain = new FinancialReport2Domain();
+//            // 股票代码
+//            domain.setCompanyCode(t.get("scode"));
+//            // 股票名称
+//            domain.setCompanyName(t.get("sname"));
+//            // 交易市场
+//            domain.setTradeMarket(t.get("trademarket"));
+//            // 截止日期
+//            domain.setDeadline(Utils.formatDate(t.get("reportdate")));
+//            // 所属行业
+//            domain.setPublishName(t.get("publishname"));
+//            // 首次公告日期
+//            domain.setFirstNoticeDate(Utils.formatDate(t.get("firstnoticedate")));
+//            // 最新公告日期
+//            domain.setLatestNoticeDate(Utils.formatDate(t.get("latestnoticedate")));
+//            // 每股收益(元)
+//            domain.setBasicEps(parseValue(fontMapping, t.get("basiceps")));
+//            // 每股收益(扣除)(元)
+//            domain.setCutBasicEps(parseValue(fontMapping, t.get("cutbasiceps")));
+//            // 主营业务收入
+//            domain.setMainBusinessIncome(parseValue(fontMapping, t.get("totaloperatereve")));
+//            // 主营业务收入增长率(%)(同比)
+//            domain.setMainBusinessIncomeGrowthRate(parseValue(fontMapping, t.get("ystz")));
+//            // 主营业务收入增长率(%)(环比)
+//            domain.setMainBusinessIncomeGrowthRateMoM(parseValue(fontMapping, t.get("yshz")));
+//            // 净利润
+//            domain.setNetProfit(parseValue(fontMapping, t.get("parentnetprofit")));
+//            // 净利润增长率(%)(同比)
+//            domain.setNetProfitGrowthRate(parseValue(fontMapping, t.get("sjltz")));
+//            // 净利润增长率(%)(环比)
+//            domain.setNetProfitGrowthRateMoM(parseValue(fontMapping, t.get("sjlhz")));
+//            // 净资产收益率
+//            domain.setRoeWeighted(parseValue(fontMapping, t.get("roeweighted")));
+//            // 每股净资产
+//            domain.setBps(parseValue(fontMapping, t.get("bps")));
+//            // 每股现金流量
+//            domain.setPerShareCashFlowFromOperations(parseValue(fontMapping, t.get("mgjyxjje")));
+//            // 销售毛利率
+//            domain.setGrossProfitMargin(parseValue(fontMapping, t.get("xsmll")));
+//            // 利润分配
+//            domain.setProfitDistribution(parseValue(fontMapping, t.get("assigndscrpt")));
+//            // 股息率
+//            domain.setDividendYield(parseValue(fontMapping, t.get("gxl")));
+//            // 净利润率(净利润/主营业务收入)
+//            domain.setNetMargin(Utils.rate(domain.getNetProfit(), domain.getMainBusinessIncome()));
+//
+//            result.add(domain);
+//        });
+//
+//        return result;
+//    }
+//
+//    private String parseValue(Map<String, String> fontMapping, String value) {
+//
+//        if ("-".equals(value)) {
+//            return "0";
+//        }
+//        if ("不分配不转增".equals(value)) {
+//            return "不分配";
+//        }
+//
+//        String[] values = value.split(";");
+//        StringBuilder sbVal = new StringBuilder();
+//        for (String val: values) {
+//            if (val.contains("-")) {
+//                if (val.charAt(0) == '-' || val.charAt(val.length() - 1) == '-') {
+//                    sbVal.append("-");
+//                }
+//                sbVal.append(fontMapping.get(val.replace("-","") + ";"));
+//            } else if (val.contains(".")) {
+//                if (val.charAt(0) == '.' || val.charAt(val.length() - 1) == '.') {
+//                    sbVal.append(".");
+//                }
+//                sbVal.append(fontMapping.get(val.replace(".","") + ";"));
+//            } else if (val.contains("&#x")) {
+//                sbVal.append(fontMapping.get(val + ";"));
+//            } else {
+//                sbVal.append(fontMapping.get(val));
+//            }
+//        }
+//
+//        return sbVal.toString();
+//    }
+//
+//    private Map<String, Object> frYjbbUrlBuilder(StockDomain stockDomain) {
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("companyCode", stockDomain.getCompanyCode());
+//        params.put("js", "var ITnKjhqD={pages:(tp),data: (x),font:(font)}");
+//        return params;
+//    }
 
     // 历史行情
     @Async

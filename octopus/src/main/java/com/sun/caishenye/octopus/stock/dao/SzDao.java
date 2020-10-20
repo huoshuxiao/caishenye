@@ -18,12 +18,10 @@ import java.util.List;
 @Repository
 public class SzDao {
 
-    protected final String BASE_DATA_FILE_NAME = "data/ShenZhengBase.csv";
-
     public List<StockDomain> readBaseData() {
 
         List<StockDomain> list = new ArrayList<>();
-        Path path = Paths.get(BASE_DATA_FILE_NAME);
+        Path path = Paths.get(Constants.FILE_STOCK_BASE_SZ.getString());
 
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line = null;

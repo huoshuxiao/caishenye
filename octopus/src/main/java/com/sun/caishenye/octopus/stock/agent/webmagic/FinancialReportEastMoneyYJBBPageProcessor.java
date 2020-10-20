@@ -1,6 +1,7 @@
 package com.sun.caishenye.octopus.stock.agent.webmagic;
 
 import com.sun.caishenye.octopus.common.Constants;
+import com.sun.caishenye.octopus.common.Utils;
 import com.sun.caishenye.octopus.stock.domain.FinancialReport2Domain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +19,7 @@ import us.codecraft.webmagic.utils.SelectableUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO 前后端分离，数据爬取失败
 /**
  * 东方财富网 财务报表 PageProcessor
  * <p>
@@ -28,7 +30,7 @@ import java.util.List;
 public class FinancialReportEastMoneyYJBBPageProcessor implements PageProcessor {
 
     /* 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等 */
-    protected Site site = Site.me().setRetryTimes(1).setSleepTime(2000).setTimeOut(Integer.MAX_VALUE).setCharset("gb2312")
+    protected Site site = Site.me().setRetryTimes(1).setSleepTime(5000).setTimeOut(Integer.MAX_VALUE).setCharset("gb2312")
             .addHeader("Connection", "keep-alive")
             .addHeader("Content-Type", "text/html; charset=gb2312")
             .addHeader("Cache-Control", "max-age=0")
@@ -113,8 +115,8 @@ public class FinancialReportEastMoneyYJBBPageProcessor implements PageProcessor 
             // 最新公告日期
             financialDomain.setLatestNoticeDate(SelectableUtils.getValue(html.xpath("[@id='dt_1']/tbody/tr["+ i +"]/td[17]/span/@title")));
             // 净利润率(净利润/主营业务收入)
-            financialDomain.setNetMargin("-");
-//            financialDomain.setNetMargin(Utils.rate(financialDomain.getNetProfit(), financialDomain.getMainBusinessIncome()));
+//            financialDomain.setNetMargin("-");
+            financialDomain.setNetMargin(Utils.rate(financialDomain.getNetProfit(), financialDomain.getMainBusinessIncome()));
 
             dataList.add(financialDomain);
         }
@@ -130,12 +132,12 @@ public class FinancialReportEastMoneyYJBBPageProcessor implements PageProcessor 
     public void run(List<String> urls) {
 
         // 设置延时(waiting HTML call API render)
-        SeleniumDownloader downloader = new SeleniumDownloader(Constants.CHROME_DRIVER_PATH.getString()).setSleepTime(2000);
+//        SeleniumDownloader downloader = new SeleniumDownloader(Constants.CHROME_DRIVER_PATH.getString()).setSleepTime(2000);
 
         Spider.create(this)
-                .startUrls(urls.subList(0, 1))
-                .setDownloader(downloader)
-                .addPipeline(new ConsolePipeline()) // 输出结果到控制台
+                .startUrls(urls)
+//                .setDownloader(downloader)
+//                .addPipeline(new ConsolePipeline()) // 输出结果到控制台
                 .addPipeline(new TextFilePipeline(FILE_PATH, FILE_NAME))  // 使用Pipeline保存结果到文件
                 .thread(Constants.THREADS.getInteger())
                 .run();

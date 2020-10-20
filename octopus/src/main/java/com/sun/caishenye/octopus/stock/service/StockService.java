@@ -52,7 +52,10 @@ public class StockService {
     // 财务报表
     public Object financialReport() throws ExecutionException, InterruptedException {
 //        financialService.financialReport();
-        return financialService.financialReport2();
+//        return financialService.financialReport2();
+//        return financialService.financialReport3();
+
+        return financialService.financialReport4();
     }
 
     // 分红配股

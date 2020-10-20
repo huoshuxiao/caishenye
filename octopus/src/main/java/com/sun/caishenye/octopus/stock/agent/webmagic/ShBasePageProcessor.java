@@ -43,8 +43,6 @@ public class ShBasePageProcessor implements PageProcessor {
     protected final String URL = "http://www.sse.com.cn/assortment/stock/list/share/";
     // 提取数据 保存地址
     protected final String FILE_PATH = "data";
-    // 提取数据 保存文件名
-    protected final String FILE_NAME = "ShangZhengBase.log";
 
     @Override
     public void process(Page page) {
@@ -142,7 +140,7 @@ public class ShBasePageProcessor implements PageProcessor {
                 .addUrl(URL)   // add url to Scheduler
                 .setDownloader(sDownloader)
                 .addPipeline(new ConsolePipeline()) // 输出结果到控制台
-                .addPipeline(new TextFilePipeline(FILE_PATH, FILE_NAME))  // 使用Pipeline保存结果到文件
+                .addPipeline(new TextFilePipeline(FILE_PATH, Constants.FILE_STOCK_BASE_SH.getString()))  // 使用Pipeline保存结果到文件
                 .thread(Constants.THREADS.getInteger())
                 .run();
     }
