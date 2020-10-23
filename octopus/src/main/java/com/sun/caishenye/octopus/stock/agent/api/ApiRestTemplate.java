@@ -19,6 +19,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -349,6 +350,23 @@ public class ApiRestTemplate {
         params.put("companyCode", stockDomain.getCompanyCode());
         params.put("random", RandomUtils.nextInt());
         return params;
+    }
+
+    // 历史行情(指定日期)
+    public DayLineDomain getHhqByDateForObjectByDividendYield(StockDomain stockDomain) {
+
+        int dd = 0;
+        LocalDate dividendYield = LocalDate.parse(stockDomain.getDividendYield());
+        DayLineDomain hhq = null;
+        while (hhq == null) {
+            dividendYield = dividendYield.minusDays(dd--);
+            stockDomain.setDividendYield(dividendYield.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+            hhq = getHhqByDateForObject(stockDomain);
+            if (hhq != null) {
+                return hhq;
+            }
+        }
+        return hhq;
     }
 
     // 历史行情(指定日期)

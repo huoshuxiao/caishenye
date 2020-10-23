@@ -29,8 +29,18 @@ public class HistoryHqService {
     @Autowired
     private BaseService baseService;
 
+    // 历史行情(指定日期)
     public DayLineDomain getHhqByDateForObject(StockDomain stockDomain) {
         return apiRestTemplate.getHhqByDateForObject(stockDomain);
+    }
+    // 历史行情(指定日期)
+    public DayLineDomain getHhqByDateForObjectByDividendYield(StockDomain stockDomain) {
+        return apiRestTemplate.getHhqByDateForObjectByDividendYield(stockDomain);
+    }
+
+    // 历史行情
+    public DayLineDomain getHhqForObject(StockDomain stockDomain) throws ExecutionException, InterruptedException {
+        return agentHhqData(stockDomain);
     }
 
     // 历史行情

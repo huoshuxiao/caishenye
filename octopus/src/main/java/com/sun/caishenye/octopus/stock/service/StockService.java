@@ -12,11 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 /**
  * 证券 总服务
@@ -130,9 +132,9 @@ public class StockService {
                 log.debug("mm mapKey :: {}", mapKey);
 //                DayLineDomain dayLineDomain = hhqDataMap.get(mapKey);
                 DayLineDomain dayLineDomain = historyHqService.getHhqByDateForObject(stockDomain);
-                // 历史数据 没有时 不计算股息率
+                // 历史数据 没有时 动态动计算股息率
                 if (dayLineDomain == null) {
-                    log.error("mm mapKey :: {}", mapKey);
+                    log.debug("mm mapKey :: {}", mapKey);
                     if ("--".equals(sbDomain.getDividendDate())) {
                         stockDomain.setDividendYield("×");
                         stockDomain.setPrice("×");
@@ -156,9 +158,47 @@ public class StockService {
                                 stockDomain.setDividendYield(calDividendYield(stockDomain));
                             }
                         } else {
-                            stockDomain.setDividendYield("×");
-                            stockDomain.setPrice("×");
-                            stockDomain.setDate(sbDomain.getDividendDate());
+                            try {
+                                // 从历史数据 取最近的股价计算股息率
+                                DayLineDomain tDayLineDomain = historyHqService.getHhqForObject(stockDomain);
+                                if (tDayLineDomain.getSummary() != null) {
+
+                                    boolean isExits = false;
+                                    int dd = 0;
+                                    String[] hhq = null;
+                                    while (!isExits) {
+                                        String day = dividendLocalDate.minusDays(dd++).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+                                        isExits = tDayLineDomain.getHqs().stream().anyMatch(t-> t[0].equals(day));
+                                        if (isExits) {
+                                            hhq = tDayLineDomain.getHqs().stream().filter(t-> t[0].equals(day)).findFirst().get();
+                                        }
+                                    }
+
+                                    // 收盘价
+                                    stockDomain.setPrice(hhq[2]);
+                                    stockDomain.setDate(sbDomain.getDividendDate());
+                                    // 股息率 = 派息(税前)(元) / 股价
+                                    stockDomain.setDividendYield(calDividendYield(stockDomain));
+
+                                } else {
+                                    // 根据最近除权除息日的股价计算股息率
+                                    DayLineDomain dayLineDomain2 = historyHqService.getHhqByDateForObjectByDividendYield(stockDomain);
+                                    if (dayLineDomain2 != null) {
+                                        stockDomain.setPrice(dayLineDomain2.getPrice());
+                                        stockDomain.setDate(sbDomain.getDividendDate());
+                                        // 股息率 = 派息(税前)(元) / 股价
+                                        stockDomain.setDividendYield(calDividendYield(stockDomain));
+                                    } else {
+
+                                        log.error("mm mapKey :: {}", mapKey);
+                                        stockDomain.setDividendYield("×");
+                                        stockDomain.setPrice("×");
+                                        stockDomain.setDate(sbDomain.getDividendDate());
+                                    }
+                                }
+                            } catch (ExecutionException | InterruptedException e) {
+                                log.error("mm mapKey2 :: {}", mapKey);
+                            }
                         }
                     }
                 } else {
