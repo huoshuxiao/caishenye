@@ -33,10 +33,10 @@ public class SzDao {
                     count++;
                     continue;
                 }
-                // 排除B股
-                if (line.contains("B") || line.contains("Ｂ")) {
-                    continue;
-                }
+//                // 排除B股
+//                if (line.contains("B") || line.contains("Ｂ")) {
+//                    continue;
+//                }
                 count++;
 
                 StockDomain stockDomain = new StockDomain();
@@ -47,7 +47,7 @@ public class SzDao {
                 // 公司简称
                 stockDomain.setCompanyName(extendDomainArray[1].trim());
                 // 上市日期
-                stockDomain.setListingDate(extendDomainArray[4].trim());
+                stockDomain.setListingDate(extendDomainArray[7].trim());
                 // 证券交易所
                 stockDomain.setExchange(Constants.EXCHANGE_SZ.getString());
 

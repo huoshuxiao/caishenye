@@ -353,14 +353,14 @@ public class ApiRestTemplate {
     }
 
     // 历史行情(指定日期)
-    public DayLineDomain getHhqByDateForObjectByDividendYield(StockDomain stockDomain) {
+    public DayLineDomain getHhqByDateForObject(StockDomain stockDomain, String dividendDateStr) {
 
         int dd = 0;
-        LocalDate dividendYield = LocalDate.parse(stockDomain.getDividendYield());
+        LocalDate dividendDate = LocalDate.parse(dividendDateStr);
         DayLineDomain hhq = null;
         while (hhq == null) {
-            dividendYield = dividendYield.minusDays(dd--);
-            stockDomain.setDividendYield(dividendYield.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+            dividendDate = dividendDate.minusDays(dd--);
+            stockDomain.getSbDomain().setDividendDate(dividendDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
             hhq = getHhqByDateForObject(stockDomain);
             if (hhq != null) {
                 return hhq;
@@ -449,10 +449,21 @@ public class ApiRestTemplate {
                 hhqDomain.setDay(Utils.formatDate2String(hhqDomain.getHq().get(0)[0]));
                 // 收盘价
                 hhqDomain.setPrice(hhqDomain.getHq().get(0)[2]);
+
+                // 数据问题 call jrj
+                if (Double.parseDouble(hhqDomain.getPrice()) >= 2000) {
+                    String day = getDay(stockDomain);
+                    DayLineDomain tDayLineDomain = getHhqForObject(stockDomain).toCompletableFuture().get();
+                    String[] hqs = tDayLineDomain.getHqs().stream().filter(t-> t[0].equals(day)).findFirst().orElse(new String[3]);
+                    // 收盘价
+                    hhqDomain.setPrice(hqs[2]);
+                }
             }
         } catch (JSONException je) {
             hhqUrlBuilder(stockDomain);
             log.error(hhqUrlBuilder(stockDomain) + " " + je);
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("call getHhqForObject error " + e);
         }
         log.debug("call hhq response value :: {}", hhqDomain);
         return hhqDomain;

@@ -182,10 +182,10 @@ public class StockService {
 
                                 } else {
                                     // 根据最近除权除息日的股价计算股息率
-                                    DayLineDomain dayLineDomain2 = historyHqService.getHhqByDateForObjectByDividendYield(stockDomain);
+                                    DayLineDomain dayLineDomain2 = historyHqService.getHhqByDateForObject(stockDomain, sbDomain.getDividendDate());
                                     if (dayLineDomain2 != null) {
                                         stockDomain.setPrice(dayLineDomain2.getPrice());
-                                        stockDomain.setDate(sbDomain.getDividendDate());
+                                        stockDomain.setDate(dividendLocalDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
                                         // 股息率 = 派息(税前)(元) / 股价
                                         stockDomain.setDividendYield(calDividendYield(stockDomain));
                                     } else {

@@ -34,8 +34,8 @@ public class HistoryHqService {
         return apiRestTemplate.getHhqByDateForObject(stockDomain);
     }
     // 历史行情(指定日期)
-    public DayLineDomain getHhqByDateForObjectByDividendYield(StockDomain stockDomain) {
-        return apiRestTemplate.getHhqByDateForObjectByDividendYield(stockDomain);
+    public DayLineDomain getHhqByDateForObject(StockDomain stockDomain, String dividendDate) {
+        return apiRestTemplate.getHhqByDateForObject(stockDomain, dividendDate);
     }
 
     // 历史行情
