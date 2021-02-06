@@ -31,6 +31,9 @@ public class StockService {
     private StockDao stockDao;
 
     @Autowired
+    private BaseService baseService;
+
+    @Autowired
     private RealHqService realHqService;
 
     @Autowired
@@ -43,12 +46,19 @@ public class StockService {
     private HistoryHqService historyHqService;
 
     public void run() throws ExecutionException, InterruptedException {
+        base();
+
         hq();
         shareBonus();
 //        hhq();
         financialReport();
 
         moneyMoney();
+    }
+
+    // 基础数据
+    public Object base() throws ExecutionException, InterruptedException {
+        return baseService.base();
     }
 
     // 财务报表

@@ -85,7 +85,7 @@ public class ShService {
     public void hq(StockDomain stockDomain) throws ExecutionException, InterruptedException {
 
         // call rest service
-        CompletableFuture<ShHqDomain> hqDomainCompletableFuture = CompletableFuture.supplyAsync(() -> restTemplate.getHqForObject(stockDomain)).get();
+        CompletableFuture<ShHqDomain> hqDomainCompletableFuture = CompletableFuture.supplyAsync(() -> restTemplate.getHqData(stockDomain)).get();
         ShHqDomain shHqDomain = hqDomainCompletableFuture.get();
         // 停牌
         if (shHqDomain.getLine().size() == 0) {

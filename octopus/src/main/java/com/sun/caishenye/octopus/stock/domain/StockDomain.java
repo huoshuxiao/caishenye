@@ -51,13 +51,14 @@ public class StockDomain implements Serializable {
     // 分红配股
     private ShareBonusDomain sbDomain = new ShareBonusDomain();
 
+    // 基础数据
     public String baseBuilder() {
 
         StringBuilder sbStr = new StringBuilder();
-        sbStr.append(Constants.DELIMITING_COMMA.getString()).append(exchange)
-                .append(Constants.DELIMITING_COMMA.getString()).append(companyCode)
-                .append(Constants.DELIMITING_COMMA.getString()).append(companyName)
-                .append(Constants.DELIMITING_COMMA.getString()).append(listingDate)
+        sbStr.append(Constants.DELIMITING_COMMA.getString()).append(companyCode)
+            .append(Constants.DELIMITING_COMMA.getString()).append(companyName)
+            .append(Constants.DELIMITING_COMMA.getString()).append(exchange)
+//            .append(Constants.DELIMITING_COMMA.getString()).append(listingDate)
                 ;
         return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
     }

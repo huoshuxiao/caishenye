@@ -21,10 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,6 +32,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @Slf4j
 public class ApiRestTemplate {
+
+    // 沪深A股 东方财富网
+    private static final String EASTMONEY_BASE_LIST_URL = "http://10.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112408506576043032625_1612278160710&pn=1&pz=10000&po=0&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f12&fs=m:0+t:6,m:0+t:13,m:0+t:80,m:1+t:2,m:1+t:23&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152&_=1612278160715";
 
     // 历史行情 金融界
     // http://flashdata2.jrj.com.cn/history/js/share/601628/other/dayk_ex.js?random=1585145121921
@@ -60,6 +60,62 @@ public class ApiRestTemplate {
     @Qualifier("restTemplateText")
     @Autowired
     private RestTemplate restTemplate;
+
+    // 沪深A股 东方财富网
+    @Async
+    public CompletableFuture<List<StockDomain>> getBaseForObject() {
+
+        log.debug("stock base data");
+        // call rest service
+        String response = restTemplate.getForObject(EASTMONEY_BASE_LIST_URL, String.class);
+        log.debug("call base data response string :: {}", response);
+        // 结构化返回值，对返回值进行fmt
+        response = StringUtils.removeStart(response, "jQuery112408506576043032625_1612278160710(");
+        response = StringUtils.removeEnd(response, ");");
+        log.debug("call base data response :: {}", response);
+
+        Gson gson = new Gson();
+        Map<String, Object> responseMap = gson.fromJson(response, Map.class);
+        Map<String, Object> data = (Map)responseMap.get("data");
+        log.debug("call base data response :: {}", data);
+        List<Map<String, String>> diffs = (List)data.get("diff");
+        log.debug("call base diffs response :: {}", diffs);
+        List<StockDomain> bases = new ArrayList<>();
+        for (Map<String, String> diff : diffs) {
+            String companyCode = diff.get("f12");
+//            StockDomain tempBase = null;
+//            // 证券交易所
+//            if (StringUtils.startsWith(companyCode, "6")) {
+//                // 600001/686868
+//                tempBase = shRestTemplate.getBaseData(companyCode);
+//            } else {
+//                // 000002/300002
+//                tempBase = szRestTemplate.getBaseData(companyCode);
+//            }
+//            if (Objects.isNull(tempBase)) {
+//                continue;
+//            }
+            if ("-".equals(diff.get("f2"))) {
+                continue;
+            }
+
+            StockDomain base = new StockDomain();
+            // 公司代码
+            base.setCompanyCode(companyCode);
+            // 公司简称
+            base.setCompanyName(diff.get("f14"));
+            // 证券交易所
+            if (StringUtils.startsWith(companyCode, "6")) {
+                // 600001/686868
+                base.setExchange(Constants.EXCHANGE_SH.getString());
+            } else {
+                // 000002/300002
+                base.setExchange(Constants.EXCHANGE_SZ.getString());
+            }
+            bases.add(base);
+        }
+        return CompletableFuture.completedFuture(bases);
+    }
 
     // 财务数据(业绩报表) 东方财富网
     @Async
@@ -203,7 +259,8 @@ public class ApiRestTemplate {
 //                // font
 //                Map<String, Object> fontMap = (Map)responseMap.get("font");
 //                List<Map<String, String>> fontList = (List)fontMap.get("FontMapping");
-//                Map<String, String> fontMapping = fontList.stream().collect(Collectors.toMap(t -> String.valueOf(t.get("code")), t -> String.valueOf(t.get("value")).replace(".0", "")));
+//                Map<String, String> fontMapping = fontList.stream().collect(
+//                Collectors.toMap(t -> String.valueOf(t.get("code")), t -> String.valueOf(t.get("value")).replace(".0", "")));
 //
 //                result = frYjbbResultDataBuilder(fontMapping, (List)responseMap.get("data"));
 //            }
@@ -339,7 +396,6 @@ public class ApiRestTemplate {
         } catch (HttpClientErrorException e) {
             log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
         } catch (JsonSyntaxException je) {
-            hhqUrlBuilder(stockDomain);
             log.error(hhqUrlBuilder(stockDomain) + " " + je);
         }
         return CompletableFuture.completedFuture(hhqDomain);
@@ -375,6 +431,7 @@ public class ApiRestTemplate {
         // call rest service
         String response = restTemplate.getForObject(SOHU_HHQ_URL, String.class, hhqUrlBuilderWithSohu(stockDomain));
         log.debug("call hhq response string :: {}", response);
+
         // 结构化返回值，对返回值进行fmt
         response = StringUtils.substringBetween(response, "(",")");
         log.debug("call hhq response :: {}", response);
@@ -404,7 +461,7 @@ public class ApiRestTemplate {
                     if (tDayLineDomain.getSummary().getId().contains(Constants.EXCHANGE_SZ.getString())) {
 
                         // call SzRestTemplate
-                        SzHqDomain hqDomain = szRestTemplate.getHhqForObject(stockDomain);
+                        SzHqDomain hqDomain = szRestTemplate.getHhqData(stockDomain);
                         if (hqDomain != null) {
                             // 收盘价
                             hhqDomain.setPrice(hqDomain.getPrice());
@@ -416,7 +473,7 @@ public class ApiRestTemplate {
                         // call ShRestTemplate
                         long days = ChronoUnit.DAYS.between(LocalDate.of(Integer.valueOf(day.substring(0, 4)), Integer.valueOf(day.substring(4, 6)), Integer.valueOf(day.substring(6, 8))),
                                 LocalDate.now());
-                        ShHqDomain shHqDomain = shRestTemplate.getHhqForObject(stockDomain, days);
+                        ShHqDomain shHqDomain = shRestTemplate.getHhqData(stockDomain, days);
                         if (shHqDomain != null) {
                             // 收盘价
                             shHqDomain.getKline().stream().forEach(t -> {
@@ -436,6 +493,8 @@ public class ApiRestTemplate {
                 return null;
             }
             return isOK.get() == true ? hhqDomain : null;
+        } else if ("{\"status\":3,\"msg\":\"begin time invalid\"}".equals(response)) {
+            return null;
         }
 
         DayLineDomain hhqDomain = null;
@@ -445,23 +504,27 @@ public class ApiRestTemplate {
                 Gson gson = new Gson();
                 log.debug("call hhq response jsonarray value :: {}", jsonArray.get(0).toString());
                 hhqDomain = gson.fromJson(jsonArray.get(0).toString(), DayLineDomain.class);
-                // 收盘日
-                hhqDomain.setDay(Utils.formatDate2String(hhqDomain.getHq().get(0)[0]));
-                // 收盘价
-                hhqDomain.setPrice(hhqDomain.getHq().get(0)[2]);
-
-                // 数据问题 call jrj
-                if (Double.parseDouble(hhqDomain.getPrice()) >= 2000) {
-                    String day = getDay(stockDomain);
-                    DayLineDomain tDayLineDomain = getHhqForObject(stockDomain).toCompletableFuture().get();
-                    String[] hqs = tDayLineDomain.getHqs().stream().filter(t-> t[0].equals(day)).findFirst().orElse(new String[3]);
+                // 有历史数据
+                if (hhqDomain.getHq() != null) {
+                    // 收盘日
+                    hhqDomain.setDay(Utils.formatDate2String(hhqDomain.getHq().get(0)[0]));
                     // 收盘价
-                    hhqDomain.setPrice(hqs[2]);
+                    hhqDomain.setPrice(hhqDomain.getHq().get(0)[2]);
+
+                    // 数据问题 call jrj
+                    if (Double.parseDouble(hhqDomain.getPrice()) >= 2000) {
+                        String day = getDay(stockDomain);
+                        DayLineDomain tDayLineDomain = getHhqForObject(stockDomain).toCompletableFuture().get();
+                        String[] hqs = tDayLineDomain.getHqs().stream().filter(t -> t[0].equals(day)).findFirst().orElse(new String[3]);
+                        // 收盘价
+                        hhqDomain.setPrice(hqs[2]);
+                    }
+                } else {
+                    return null;
                 }
             }
         } catch (JSONException je) {
-            hhqUrlBuilder(stockDomain);
-            log.error(hhqUrlBuilder(stockDomain) + " " + je);
+            log.error(hhqUrlBuilderWithSohu(stockDomain) + " " + je);
         } catch (InterruptedException | ExecutionException e) {
             log.error("call getHhqForObject error " + e);
         }
@@ -480,6 +543,8 @@ public class ApiRestTemplate {
     }
 
     private String getDay(StockDomain stockDomain) {
-        return Utils.formatDate2String("--".equals(stockDomain.getSbDomain().getDividendDate()) ? stockDomain.getSbDomain().getRegistrationDate() : stockDomain.getSbDomain().getDividendDate());
+        return Utils.formatDate2String("--".equals(stockDomain.getSbDomain().getDividendDate())
+                ? stockDomain.getSbDomain().getRegistrationDate()
+                : stockDomain.getSbDomain().getDividendDate());
     }
 }

@@ -10,6 +10,7 @@ public enum Constants {
     FILE_EAST_MONEY_DETAIL("EastMoneyDetail.log"),
     FILE_FUND("Fund.csv"),
 
+    FILE_STOCK_BASE("Stock_Base.log"),
     FILE_STOCK_BASE_SH("data/SH.log"),
     FILE_STOCK_BASE_SZ("data/SZ.log"),
     FILE_FINANCIAL_REPORT_STEP1("FinancialReportStep1.log"),

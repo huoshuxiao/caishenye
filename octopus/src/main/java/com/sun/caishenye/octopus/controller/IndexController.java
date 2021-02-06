@@ -35,6 +35,7 @@ public class IndexController {
                         .build());
     }
 
+    ////////////////////////////////////////// fund ////////////////////////////////////////////////////////////////////
     @Autowired
     private MorningStarService morningstarService;
 
@@ -76,15 +77,15 @@ public class IndexController {
         return "fund " + ChronoUnit.MINUTES.between(startTime, endTime);
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////// stock /////////////////////////////////////////////////////////
     @Autowired
     private StockService stockService;
 
-//    // step1: 基础数据 (公司代码/公司简称/市盈率)
-//    @GetMapping("sh/base")
-//    public Object shBase() throws ExecutionException, InterruptedException {
-//        return stockService.base();
-//    }
+    // step1: 基础数据 (公司代码/公司简称)
+    @GetMapping("base")
+    public Object stockBase() throws ExecutionException, InterruptedException {
+        return stockService.base();
+    }
 
     // step2: 财务报表
     @GetMapping("fr")

@@ -23,6 +23,7 @@ public class StockDao {
 
     private final String FILE_PATH = "data/";
 
+    protected final String BASE_FILE = FILE_PATH + Constants.FILE_STOCK_BASE.getString();
     protected final String FR_STEP1_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_STEP1.getString();
     protected final String FR_STEP2_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_STEP2.getString();
     protected final String FR_EASTMONEY_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_EASTMONEY.getString();
@@ -32,6 +33,48 @@ public class StockDao {
     protected final String HHQ_DATA_FILE = FILE_PATH + Constants.FILE_HHQ.getString();
     protected final String SB_DATA_FILE = FILE_PATH + Constants.FILE_SHARE_BONUS.getString();
     protected final String MM_DATA_FILE = FILE_PATH + Constants.FILE_MONEY_MONEY.getString();
+
+    // 写 基础数据
+    public void writeBaseData(List<StockDomain> data) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(BASE_FILE), StandardCharsets.UTF_8)) {
+            for (StockDomain stockDomain : data) {
+                String s = stockDomain.baseBuilder() + "\r\n";
+                log.debug("write base data >> {}", s);
+                writer.write(s, 0, s.length());
+            }
+        } catch (IOException x) {
+            log.error(String.format("IOException: %s%n", x));
+        }
+    }
+
+    // 读 基础数据
+    public List<StockDomain> readBaseData() {
+
+        List<StockDomain> list = new ArrayList<>();
+        Path path = Paths.get(BASE_FILE);
+
+        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                log.debug("read base data >> {}", line);
+
+                StockDomain stockDomain = new StockDomain();
+                String[] extendDomainArray = line.split(Constants.DELIMITING_COMMA.getString());
+                // 公司代码
+                stockDomain.setCompanyCode(extendDomainArray[0].trim());
+                // 公司简称
+                stockDomain.setCompanyName(extendDomainArray[1].trim());
+                // 证券交易所
+                stockDomain.setExchange(extendDomainArray[2].trim());
+
+                list.add(stockDomain);
+            }
+        } catch (IOException x) {
+            log.error(String.format("IOException: %s%n", x));
+        }
+
+        return list;
+    }
 
     public void writeMoneyMoney(List<StockDomain> data) {
 

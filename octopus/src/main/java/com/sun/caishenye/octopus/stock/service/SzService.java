@@ -35,7 +35,7 @@ public class SzService {
     public void hq(StockDomain stockDomain) throws ExecutionException, InterruptedException {
 
         // call rest service
-        CompletableFuture<SzHqDomain> hqDomainCompletableFuture = CompletableFuture.supplyAsync(() -> restTemplate.getHqForObject(stockDomain)).get();
+        CompletableFuture<SzHqDomain> hqDomainCompletableFuture = CompletableFuture.supplyAsync(() -> restTemplate.getHqData(stockDomain)).get();
         SzHqDomain hqDomain = hqDomainCompletableFuture.get();
         hqDomain.setPrice(hqDomain.getData().getNow() == null ? Constants.HQ_SUSPENSION.getString() : hqDomain.getData().getNow());
         stockDomain.setPrice(hqDomain.getPrice());
