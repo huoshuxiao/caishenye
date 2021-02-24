@@ -150,7 +150,7 @@ public class ApiRestTemplate {
         } catch (HttpClientErrorException e) {
             log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
         } catch (JsonSyntaxException e) {
-            log.error(hhqUrlBuilder(stockDomain) + " " + e);
+            log.error("getFrYjbbForObject4 :: " + hhqUrlBuilder(stockDomain) + " " + e);
         } catch (ResourceAccessException e) {
             // 访问异常 retry
             getFrYjbbForObject4(stockDomain);
@@ -269,7 +269,7 @@ public class ApiRestTemplate {
 //        } catch (HttpClientErrorException e) {
 //            log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
 //        } catch (JsonSyntaxException je) {
-//            log.error(frYjbbUrlBuilder(stockDomain) + " " + je);
+//            log.error("getFrYjbbForObject :: "+ frYjbbUrlBuilder(stockDomain) + " " + je);
 //        } catch (ResourceAccessException ae) {
 //            // 访问异常 retry
 //            getFrYjbbForObject(stockDomain);
@@ -396,7 +396,7 @@ public class ApiRestTemplate {
         } catch (HttpClientErrorException e) {
             log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
         } catch (JsonSyntaxException je) {
-            log.error(hhqUrlBuilder(stockDomain) + " " + je);
+            log.error("getHhqForObject :: " + hhqUrlBuilder(stockDomain) + " " + je);
         }
         return CompletableFuture.completedFuture(hhqDomain);
     }
