@@ -34,6 +34,39 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ApiRestTemplate {
 
     // 沪深A股 东方财富网
+    /*
+    f1:
+    f2:昨收
+    f3:涨跌幅
+    f4:涨跌额
+    f5:成交量
+    f6:成交额
+    f7:振幅
+    f8:换手率
+    f9:市盈率(动)
+    f10:量比
+    f11:
+    f12:公司代码
+    f13:证券交易所
+    f14:公司简称
+    f15:最高
+    f16:最低
+    f17:今开
+    f18:昨收
+    f20:总市值
+    f21:流通市值
+    f22:
+    f23:市净率
+    f24:
+    f25:
+    f62:今日主力净流入
+    f115:市盈率(TTM)
+    f128:
+    f140:
+    f141:
+    f136:
+    f152:
+     */
     private static final String EASTMONEY_BASE_LIST_URL = "http://10.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112408506576043032625_1612278160710&pn=1&pz=10000&po=0&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f12&fs=m:0+t:6,m:0+t:13,m:0+t:80,m:1+t:2,m:1+t:23&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152&_=1612278160715";
 
     // 历史行情 金融界
@@ -82,6 +115,7 @@ public class ApiRestTemplate {
         log.debug("call base diffs response :: {}", diffs);
         List<StockDomain> bases = new ArrayList<>();
         for (Map<String, String> diff : diffs) {
+            // 公司代码
             String companyCode = diff.get("f12");
 //            StockDomain tempBase = null;
 //            // 证券交易所
@@ -95,7 +129,9 @@ public class ApiRestTemplate {
 //            if (Objects.isNull(tempBase)) {
 //                continue;
 //            }
-            if ("-".equals(diff.get("f2"))) {
+            // 流通市值
+            if ("-".equals(diff.get("f21"))) {
+                log.debug("退市->{},{}", companyCode, diff.get("f14"));
                 continue;
             }
 
@@ -471,12 +507,12 @@ public class ApiRestTemplate {
                     } else {
 
                         // call ShRestTemplate
-                        long days = ChronoUnit.DAYS.between(LocalDate.of(Integer.valueOf(day.substring(0, 4)), Integer.valueOf(day.substring(4, 6)), Integer.valueOf(day.substring(6, 8))),
+                        long days = ChronoUnit.DAYS.between(LocalDate.of(Integer.parseInt(day.substring(0, 4)), Integer.parseInt(day.substring(4, 6)), Integer.parseInt(day.substring(6, 8))),
                                 LocalDate.now());
                         ShHqDomain shHqDomain = shRestTemplate.getHhqData(stockDomain, days);
                         if (shHqDomain != null) {
                             // 收盘价
-                            shHqDomain.getKline().stream().forEach(t -> {
+                            shHqDomain.getKline().forEach(t -> {
                                 if (day.equals(t[0])) {
                                     hhqDomain.setPrice(t[3]);
                                     isOK.set(true);
@@ -492,7 +528,7 @@ public class ApiRestTemplate {
                 log.error("call getHhqForObject error " + e);
                 return null;
             }
-            return isOK.get() == true ? hhqDomain : null;
+            return isOK.get() ? hhqDomain : null;
         } else if ("{\"status\":3,\"msg\":\"begin time invalid\"}".equals(response)) {
             return null;
         }
