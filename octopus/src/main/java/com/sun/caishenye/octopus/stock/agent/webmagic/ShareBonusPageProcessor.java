@@ -11,6 +11,7 @@ import us.codecraft.webmagic.pipeline.TextFilePipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Html;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,6 +96,14 @@ public class ShareBonusPageProcessor implements PageProcessor {
             stockDomain.setCompanyCode(companyCode);
             // 公司简称
             stockDomain.setCompanyName(companyName);
+
+            // 解决：除权除息日 大于 当前日期时(还未分红)，进度为实施的问题。
+            if (Constants.SB_SCHEDULE_IMPLEMENT.getString().equals(schedule)
+                    && dividendDate.length() >= 10
+                    && LocalDate.now().isBefore(LocalDate.of(Integer.parseInt(dividendDate.substring(0,4)), Integer.parseInt(dividendDate.substring(5,7)), Integer.parseInt(dividendDate.substring(8,10))))) {
+
+                    schedule = Constants.SB_SCHEDULE_PLAN.getString();
+            }
 
             stockDomain.getSbDomain().setBonusDate(bonusDate);
             stockDomain.getSbDomain().setBonus(bonus);
