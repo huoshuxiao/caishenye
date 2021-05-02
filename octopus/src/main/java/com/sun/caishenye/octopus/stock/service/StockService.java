@@ -110,7 +110,7 @@ public class StockService {
 //        Map<String, DayLineDomain> hhqDataMap = hhqDataList.stream().collect(Collectors.toMap(t -> t.getCompanyCode() + t.getDay(), t-> t));
 
         // merge指标，计算股息率(扩展分红配股 股价/股息率)
-        shareBonusDataList.stream().forEach(stockDomain -> {
+        shareBonusDataList.forEach(stockDomain -> {
 
             log.debug("mm stockDomain value>> {}", stockDomain);
 
@@ -120,22 +120,12 @@ public class StockService {
             log.debug("mm sbDomain value>> {}", sbDomain);
             if (sbDomain.getSchedule().equals(Constants.SB_SCHEDULE_PLAN.getString())) {
 
-                // 实时行情 股价
-                String price = hqDataMap.get(stockDomain.getCompanyCode()).getPrice();
-                stockDomain.setPrice(price);
-                stockDomain.setDate(hqDataMap.get(stockDomain.getCompanyCode()).getDate());
-
-                // 停牌时 不计算股息率
-                if (Constants.HQ_SUSPENSION.getString().equals(price)) {
-                    stockDomain.setDividendYield("-");
-                } else {
-                    // 股息率 = 派息(税前)(元) / 股价
-                    stockDomain.setDividendYield(calDividendYield(stockDomain));
-                }
+                // 计算股息率
+                calDividendYield(stockDomain, hqDataMap);
             // 实施
             // 历史 股息率,用 历史行情 数据 计算
             } else if (sbDomain.getSchedule().equals(Constants.SB_SCHEDULE_IMPLEMENT.getString())
-                    && Double.valueOf(sbDomain.getDividend()).doubleValue() > 0d) { // 分红金额大于0
+                    && Double.parseDouble(sbDomain.getDividend()) > 0d) { // 分红金额大于0
 
                 // 根据 公司代码 + 除权除息日(map) 取得 股价
                 String mapKey = stockDomain.getCompanyCode() + Utils.formatDate2String(sbDomain.getDividendDate());
@@ -152,21 +142,12 @@ public class StockService {
                     } else {
                         // 除权除息日 大于等于 当日（数据问题） 取实时行情
                         LocalDate today = LocalDate.now();
-                        LocalDate dividendLocalDate = LocalDate.of(Integer.valueOf(sbDomain.getDividendDate().substring(0, 4)).intValue(),
-                                Integer.valueOf(sbDomain.getDividendDate().substring(5, 7)).intValue(),
-                                Integer.valueOf(sbDomain.getDividendDate().substring(8, 10)).intValue());
+                        LocalDate dividendLocalDate = LocalDate.of(Integer.parseInt(sbDomain.getDividendDate().substring(0, 4)),
+                                Integer.parseInt(sbDomain.getDividendDate().substring(5, 7)),
+                                Integer.parseInt(sbDomain.getDividendDate().substring(8, 10)));
                         if (ChronoUnit.DAYS.between(dividendLocalDate, today) <= 0) {
-                            // 实时行情 股价
-                            String price = hqDataMap.get(stockDomain.getCompanyCode()).getPrice();
-                            stockDomain.setPrice(price);
-                            stockDomain.setDate(hqDataMap.get(stockDomain.getCompanyCode()).getDate());
-                            // 停牌时 不计算股息率
-                            if (Constants.HQ_SUSPENSION.getString().equals(price)) {
-                                stockDomain.setDividendYield("-");
-                            } else {
-                                // 股息率 = 派息(税前)(元) / 股价
-                                stockDomain.setDividendYield(calDividendYield(stockDomain));
-                            }
+                            // 计算股息率
+                            calDividendYield(stockDomain, hqDataMap);
                         } else {
                             try {
                                 // 从历史数据 取最近的股价计算股息率
@@ -249,10 +230,26 @@ public class StockService {
     }
 
     // 计算股息率
+    private void calDividendYield(StockDomain stockDomain, Map<String, StockDomain> hqDataMap) {
+        // 实时行情 股价
+        String price = hqDataMap.get(stockDomain.getCompanyCode()).getPrice();
+        stockDomain.setPrice(price);
+        stockDomain.setDate(hqDataMap.get(stockDomain.getCompanyCode()).getDate());
+
+        // 停牌时 不计算股息率
+        if (Constants.HQ_SUSPENSION.getString().equals(price)) {
+            stockDomain.setDividendYield("-");
+        } else {
+            // 股息率 = 派息(税前)(元) / 股价
+            stockDomain.setDividendYield(calDividendYield(stockDomain));
+        }
+    }
+
+    // 计算股息率
     private String calDividendYield(StockDomain stockDomain) {
         log.debug("calDividendYield {} ::", stockDomain.toString());
         // 股息率 = 派息(税前)(元) / 股价
-        String price = String.valueOf(Double.valueOf(stockDomain.getPrice()) * 10);
+        String price = String.valueOf(Double.parseDouble(stockDomain.getPrice()) * 10);
         return Utils.rate(stockDomain.getSbDomain().getDividend(), price);
     }
 
