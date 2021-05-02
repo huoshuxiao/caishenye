@@ -123,7 +123,7 @@
 <!--            <appender-ref ref="logstash"/>-->
         </root>
         <!-- business log -->
-        <logger name="com.sun.caishenye" level="DEBUG">
+        <logger name="com.sun.caishenye" level="INFO">
 <!--            <appender-ref ref="filebeat"/>-->
         </logger>
     </springProfile>
