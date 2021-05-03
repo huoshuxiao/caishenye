@@ -2,6 +2,7 @@ package com.sun.caishenye.octopus.fund.agent.webmagic;
 
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.fund.domain.MorningStarExtendDomain;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,7 @@ import us.codecraft.webmagic.selector.Html;
 import us.codecraft.webmagic.selector.Selectable;
 import us.codecraft.webmagic.utils.HttpConstant;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,23 +38,23 @@ public class MorningStarExtendPageProcessor implements PageProcessor {
     protected Site site = Site.me().setRetryTimes(3).setSleepTime(2000).setTimeOut(Integer.MAX_VALUE);
 
     // 基金工具->基金筛选器/
-    protected final String URL = "http://cn.morningstar.com/quickrank/default.aspx";
+    protected static final String URL = "http://cn.morningstar.com/quickrank/default.aspx";
     // 快照页面 ID
-    private final String EL_ID_CTL00_CPHMAIN_LBSNAPSHOT = "ctl00_cphMain_lbSnapshot";
+    private static final String EL_ID_CTL00_CPHMAIN_LBSNAPSHOT = "ctl00_cphMain_lbSnapshot";
     // 业绩和风险页面 ID
-    private final String EL_ID_CTL00_CPHMAIN_LBPERFORMANCE = "ctl00_cphMain_lbPerformance";
+    private static final String EL_ID_CTL00_CPHMAIN_LBPERFORMANCE = "ctl00_cphMain_lbPerformance";
 
     private AtomicInteger aiNavPageIndex = new AtomicInteger(1);
 
-    protected final String FILE_PATH = "data";
-    protected final String FILE_NAME = Constants.FILE_MORNING_STAR_EXTEND.getString();
+    protected static final String FILE_PATH = "data";
+    protected static final String FILE_NAME = Constants.FILE_MORNING_STAR_EXTEND.getString();
 
     // process是定制爬虫逻辑的核心接口，在这里编写抽取逻辑，页面元素的抽取
     // 使用了三种抽取技术：XPath、正则表达式和CSS选择器。另外，对于JSON格式的内容，可使用JsonPath进行解析。
+    @SneakyThrows
     @Override
     public void process(Page page) {
 
-        Request request = null;
         /* 部分二：定义如何抽取页面信息，并保存下来 */
         // Selectable相关的抽取元素链式API是WebMagic的一个核心功能。抽取是支持链式调用的
         // 使用Selectable抽取元素，分为两类：抽取部分和获取结果部分。
@@ -62,10 +64,14 @@ public class MorningStarExtendPageProcessor implements PageProcessor {
         // active tab check
         Selectable activeTabSelectable = html.xpath("div[@id='qr_tabcommand']/div[@id='qr_tab']/a[@class='active']");
         String activeTabId = activeTabSelectable.xpath("a/@id").get();
+        if (StringUtils.isEmpty(activeTabId)) {
+            throw new IOException("Morning Star Extend Data Agent fail.");
+        }
         log.debug("active tab id is {} ", activeTabId);
+        Request request;
         // 翻页阀值，最大值
-        int navPageMaxValue = (int) Math.ceil(Double.valueOf(html.xpath("div[@id='qr_pager']/*/span[@id='ctl00_cphMain_TotalResultLabel']/text()").get())
-                / Double.valueOf(html.xpath("select[@name='ctl00$cphMain$ddlPageSite']/option[@selected='selected']/@value").get()));
+        int navPageMaxValue = (int) Math.ceil(Double.parseDouble(html.xpath("div[@id='qr_pager']/*/span[@id='ctl00_cphMain_TotalResultLabel']/text()").get())
+                / Double.parseDouble(html.xpath("select[@name='ctl00$cphMain$ddlPageSite']/option[@selected='selected']/@value").get()));
 
         // 快照 页面
         // <a id="ctl00_cphMain_lbSnapshot" class="active" href="javascript:__doPostBack('ctl00$cphMain$lbSnapshot','')">快照</a>
@@ -143,7 +149,7 @@ public class MorningStarExtendPageProcessor implements PageProcessor {
      */
     protected List<MorningStarExtendDomain> dataAgent(Html html) {
         // 根据每页数量定义List大小
-        List<MorningStarExtendDomain> morningStarDTOList = new ArrayList<>(Integer.valueOf(html.xpath("select[@name='ctl00$cphMain$ddlPageSite']/option[@selected='selected']/@value").get()));
+        List<MorningStarExtendDomain> morningStarDTOList = new ArrayList<>(Integer.parseInt(html.xpath("select[@name='ctl00$cphMain$ddlPageSite']/option[@selected='selected']/@value").get()));
 
         /*
         <td class="msDataText" width="60"><a href="/quicktake/0P0001696E" target="_blank">001410</a></td>

@@ -2,6 +2,7 @@ package com.sun.caishenye.octopus.fund.agent.webmagic;
 
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.fund.domain.MorningStarBaseDomain;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,7 @@ import us.codecraft.webmagic.selector.Html;
 import us.codecraft.webmagic.selector.Selectable;
 import us.codecraft.webmagic.utils.HttpConstant;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,23 +38,23 @@ public class MorningStarBasePageProcessor implements PageProcessor {
     protected Site site = Site.me().setRetryTimes(3).setSleepTime(2000).setTimeOut(Integer.MAX_VALUE);
 
     // 基金工具->基金筛选器/
-    protected final String URL = "http://cn.morningstar.com/quickrank/default.aspx";
+    protected static final String URL = "https://www.morningstar.cn/quickrank/default.aspx";
     // 快照页面 ID
-    private final String EL_ID_CTL00_CPHMAIN_LBSNAPSHOT = "ctl00_cphMain_lbSnapshot";
+    private static final String EL_ID_CTL00_CPHMAIN_LBSNAPSHOT = "ctl00_cphMain_lbSnapshot";
     // 业绩和风险页面 ID
-    private final String EL_ID_CTL00_CPHMAIN_LBPERFORMANCE = "ctl00_cphMain_lbPerformance";
+    private static final String EL_ID_CTL00_CPHMAIN_LBPERFORMANCE = "ctl00_cphMain_lbPerformance";
 
     private AtomicInteger aiNavPageIndex = new AtomicInteger(1);
 
-    protected final String FILE_PATH = "data";
-    protected final String FILE_NAME = Constants.FILE_MORNING_STAR_BASE.getString();
+    protected static final String FILE_PATH = "data";
+    protected static final String FILE_NAME = Constants.FILE_MORNING_STAR_BASE.getString();
 
     // process是定制爬虫逻辑的核心接口，在这里编写抽取逻辑，页面元素的抽取
     // 使用了三种抽取技术：XPath、正则表达式和CSS选择器。另外，对于JSON格式的内容，可使用JsonPath进行解析。
+    @SneakyThrows
     @Override
     public void process(Page page) {
 
-        Request request = null;
         /* 部分二：定义如何抽取页面信息，并保存下来 */
         // Selectable相关的抽取元素链式API是WebMagic的一个核心功能。抽取是支持链式调用的
         // 使用Selectable抽取元素，分为两类：抽取部分和获取结果部分。
@@ -62,10 +64,14 @@ public class MorningStarBasePageProcessor implements PageProcessor {
         // active tab check
         Selectable activeTabSelectable = html.xpath("div[@id='qr_tabcommand']/div[@id='qr_tab']/a[@class='active']");
         String activeTabId = activeTabSelectable.xpath("a/@id").get();
+        if (StringUtils.isEmpty(activeTabId)) {
+            throw new IOException("Morning Star Base Data Agent fail.");
+        }
         log.debug("active tab id is {} ", activeTabId);
+        Request request;
         // 翻页阀值，最大值
-        int navPageMaxValue = (int) Math.ceil(Double.valueOf(html.xpath("div[@id='qr_pager']/*/span[@id='ctl00_cphMain_TotalResultLabel']/text()").get())
-                / Double.valueOf(html.xpath("select[@name='ctl00$cphMain$ddlPageSite']/option[@selected='selected']/@value").get()));
+        int navPageMaxValue = (int) Math.ceil(Double.parseDouble(html.xpath("div[@id='qr_pager']/*/span[@id='ctl00_cphMain_TotalResultLabel']/text()").get())
+                / Double.parseDouble(html.xpath("select[@name='ctl00$cphMain$ddlPageSite']/option[@selected='selected']/@value").get()));
 
         // 快照 页面
         // <a id="ctl00_cphMain_lbSnapshot" class="active" href="javascript:__doPostBack('ctl00$cphMain$lbSnapshot','')">快照</a>
@@ -318,9 +324,18 @@ public class MorningStarBasePageProcessor implements PageProcessor {
         return site;
     }
 
+    private Request addRequests() {
+        Request request = new Request(URL);
+        request.setMethod(HttpConstant.Method.POST);
+        request.addHeader("Cookie", "ASP.NET_SessionId=cw1sut45rknepbafqsktvh55; Hm_lvt_eca85e284f8b74d1200a42c9faa85464=1619941377; Hm_lpvt_eca85e284f8b74d1200a42c9faa85464=1619942027; authWeb=54EA13BA341BB24FA051BD2863809E9F36A60D11F32BD64E79D13AC4E0376C7D971037C13F1F0EDFC81024EB8079D25E58B70C29E74FAE481D2CBDA3398F60265324E7AEF0650F9DB9CD267FB918EF4504B6B0291F6A610B50463F74C5947EA85558C5BB699FC0AF1DCFBC22C7EC4E0B80C08392; MS_LocalEmailAddr=ejhmva46320@chacuo.net=; Hm_lvt_eca85e284f8b74d1200a42c9faa85464=1619941377; user=username=ejhmva46320@chacuo.net&nickname=ejhmva46320&status=Free&password=dWXLVve2O29qk8zV0Xr9Ng==; MSCC=pNoIvAwLqSs=; Hm_lpvt_eca85e284f8b74d1200a42c9faa85464=1619942455");
+
+        return request;
+    }
+
     public void run() {
 
         Spider morningStarSpider = Spider.create(new MorningStarBasePageProcessor())
+//                .addRequest(addRequests())
                 .addUrl(URL);   // add url to Scheduler
 
         // Monitor for JMX
