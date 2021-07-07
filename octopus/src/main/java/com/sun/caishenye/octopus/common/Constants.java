@@ -5,9 +5,11 @@ import lombok.Setter;
 
 public enum Constants {
 
+    FILE_EAST_MONEY_BASE("EastMoneyBase.log"),
     FILE_MORNING_STAR_BASE("MorningStarBase.log"),
     FILE_MORNING_STAR_EXTEND("MorningStarExtend.log"),
     FILE_EAST_MONEY_DETAIL("EastMoneyDetail.log"),
+    FILE_FUND_EXTEND("FundExtend.log"),
     FILE_FUND("Fund.csv"),
 
     FILE_STOCK_BASE("Stock_Base.log"),

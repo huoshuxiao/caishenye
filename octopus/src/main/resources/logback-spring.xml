@@ -120,11 +120,11 @@
     <!-- env -->
     <springProfile name="default">
         <root level="INFO">
-<!--            <appender-ref ref="logstash"/>-->
+            <appender-ref ref="logstash"/>
         </root>
         <!-- business log -->
         <logger name="com.sun.caishenye" level="INFO">
-<!--            <appender-ref ref="filebeat"/>-->
+            <appender-ref ref="filebeat"/>
         </logger>
     </springProfile>
 

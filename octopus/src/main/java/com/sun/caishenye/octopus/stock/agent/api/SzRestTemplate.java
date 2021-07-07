@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -98,6 +99,9 @@ public class SzRestTemplate {
             }
         } catch (HttpClientErrorException e) {
             log.error("hhq "+ stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
+        } catch (ResourceAccessException e) {
+            // 访问异常 retry
+            getHhqData(stockDomain);
         }
         return hqDomain;
     }

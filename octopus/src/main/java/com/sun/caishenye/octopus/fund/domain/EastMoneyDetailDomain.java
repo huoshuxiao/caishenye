@@ -24,19 +24,28 @@ public class EastMoneyDetailDomain implements Serializable {
     private String type;
     // 基金规模
     private String size;
+    // 基金经理
+    private String managerName;
+    // 管理期间 2016-06-24~至今
+    private String managementRange;
+    // 管理时间 4年又315天
+    private String managementTime;
+    // 管理回报(%) 80.58%
+    private String managementReturn;
 
-    public String toStr() {
+    public String builder() {
 
-        StringBuilder sbStr = new StringBuilder();
-
-        sbStr.append(Constants.DELIMITING_12.getString()).append(fundCode)
-                .append(Constants.DELIMITING_12.getString()).append(fundName)
-                .append(Constants.DELIMITING_12.getString()).append(type)
-                .append(Constants.DELIMITING_12.getString()).append(size)
-                .append(Constants.DELIMITING_12.getString()).append(closePriceDate)
-                .append(Constants.DELIMITING_12.getString()).append(closePrice)
-                .append(Constants.DELIMITING_12.getString()).append(risk)
-        ;
-        return sbStr.toString().replaceFirst(Constants.DELIMITING_12.getString(), "");
+        String sbStr = Constants.DELIMITING_COMMA.getString() + fundCode +
+                Constants.DELIMITING_COMMA.getString() + fundName +
+                Constants.DELIMITING_COMMA.getString() + type +
+                Constants.DELIMITING_COMMA.getString() + size +
+                Constants.DELIMITING_COMMA.getString() + managerName +
+                Constants.DELIMITING_COMMA.getString() + managementRange +
+                Constants.DELIMITING_COMMA.getString() + managementTime +
+                Constants.DELIMITING_COMMA.getString() + managementReturn +
+                Constants.DELIMITING_COMMA.getString() + closePriceDate +
+                Constants.DELIMITING_COMMA.getString() + closePrice +
+                Constants.DELIMITING_COMMA.getString() + risk;
+        return sbStr.replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
     }
 }

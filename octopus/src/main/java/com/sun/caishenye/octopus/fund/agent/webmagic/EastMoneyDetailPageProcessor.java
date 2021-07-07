@@ -51,7 +51,7 @@ public class EastMoneyDetailPageProcessor implements PageProcessor {
         }
 
         // 保存结果至Pipeline，持久化对象结果
-        page.putField(eastMoneyDetailDomain.getFundCode() + "@" + eastMoneyDetailDomain.getFundName(), eastMoneyDetailDomain.toStr());
+        page.putField(eastMoneyDetailDomain.getFundCode() + "@" + eastMoneyDetailDomain.getFundName(), eastMoneyDetailDomain.builder());
         log.debug("EastMoneyDetailDomain value :: {}", eastMoneyDetailDomain.toString());
     }
 
@@ -97,36 +97,55 @@ public class EastMoneyDetailPageProcessor implements PageProcessor {
             closePrice = "-";
         }
         eastMoneyDetailDomain.setClosePrice(closePrice);
+
         // 基金类型
-        eastMoneyDetailDomain.setType(SelectableUtils.getValue(html.xpath("[@id='body']/div[12]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()")));
-        if ("-".equals(eastMoneyDetailDomain.getType())) {
-            eastMoneyDetailDomain.setType(SelectableUtils.getValue(html.xpath("[@id='body']/div[12]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()")));
-        }
-        if ("-".equals(eastMoneyDetailDomain.getType())) {
-            eastMoneyDetailDomain.setType(SelectableUtils.getValue(html.xpath("[@id='body']/div[13]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()")));
-        }
-        if ("-".equals(eastMoneyDetailDomain.getType())) {
-            eastMoneyDetailDomain.setType(SelectableUtils.getValue(html.xpath("[@id='body']/div[13]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()")));
-        }
-        if ("-".equals(eastMoneyDetailDomain.getType())) {
-            eastMoneyDetailDomain.setType(SelectableUtils.getValue(html.xpath("[@id='body']/div[4]/div[9]/div/div/div[2]/div[1]/div[3]/table/tbody/tr[1]/td[1]/a/text()")));
-        }
+        String val = getValue(html, "[@id='body']/div[11]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()",
+                "[@id='body']/div[11]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()",
+                "[@id='body']/div[12]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()",
+                "[@id='body']/div[12]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()",
+                "[@id='body']/div[13]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()",
+                "[@id='body']/div[13]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[1]/a/text()",
+                "[@id='body']/div[4]/div[9]/div/div/div[2]/div[1]/div[3]/table/tbody/tr[1]/td[1]/a/text()");
+        eastMoneyDetailDomain.setType(val);
+
         // 基金规模
-        eastMoneyDetailDomain.setSize(SelectableUtils.getValue(html.xpath("[@id='body']/div[12]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()")));
-        if ("-".equals(eastMoneyDetailDomain.getSize())) {
-            eastMoneyDetailDomain.setSize(SelectableUtils.getValue(html.xpath("[@id='body']/div[12]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()")));
-        }
-        if ("-".equals(eastMoneyDetailDomain.getSize())) {
-            eastMoneyDetailDomain.setSize(SelectableUtils.getValue(html.xpath("[@id='body']/div[13]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()")));
-        }
-        if ("-".equals(eastMoneyDetailDomain.getSize())) {
-            eastMoneyDetailDomain.setSize(SelectableUtils.getValue(html.xpath("[@id='body']/div[13]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()")));
-        }
-        if ("-".equals(eastMoneyDetailDomain.getSize())) {
-            eastMoneyDetailDomain.setSize(SelectableUtils.getValue(html.xpath("[@id='body']/div[4]/div[9]/div/div/div[2]/div[1]/div[3]/table/tbody/tr[1]/td[2]/text()")));
-        }
-        eastMoneyDetailDomain.setSize(eastMoneyDetailDomain.getSize().replace("：", ""));
+        val = getValue(html, "[@id='body']/div[11]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()",
+                "[@id='body']/div[11]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()",
+                "[@id='body']/div[12]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()",
+                "[@id='body']/div[12]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()",
+                "[@id='body']/div[13]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()",
+                "[@id='body']/div[13]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[2]/text()",
+                "[@id='body']/div[4]/div[9]/div/div/div[2]/div[1]/div[3]/table/tbody/tr[1]/td[2]/text()");
+        eastMoneyDetailDomain.setSize(val.replace("：", ""));
+
+        // 基金经理
+        val = getValue(html, "[@id='body']/div[11]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[3]/a/text()",
+                "[@id='body']/div[11]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[3]/a/text()",
+                "[@id='body']/div[12]/div/div/div[2]/div[1]/div[2]/table/tbody/tr[1]/td[3]/a/text()",
+                "[@id='body']/div[12]/div/div/div[3]/div[1]/div[2]/table/tbody/tr[1]/td[3]/a/text()");
+        eastMoneyDetailDomain.setManagerName(val);
+
+        // 管理期间
+        eastMoneyDetailDomain.setManagementRange(SelectableUtils.getValue(html.xpath("[@id='fundManagerTab']/div[1]/table/tbody/tr[2]/td[1]/text()")));
+        // 基金经理
+//        log.debug(SelectableUtils.getValue(html.xpath("[@id='fundManagerTab']/div[1]/table/tbody/tr[2]/td[2]/a/text()")));
+        // 管理时间
+        eastMoneyDetailDomain.setManagementTime(SelectableUtils.getValue(html.xpath("[@id='fundManagerTab']/div[1]/table/tbody/tr[2]/td[3]/text()")));
+        // 管理回报(%)
+        eastMoneyDetailDomain.setManagementReturn(SelectableUtils.getValue(html.xpath("[@id='fundManagerTab']/div[1]/table/tbody/tr[2]/td[4]/text()")).replace("%", ""));
+
         return eastMoneyDetailDomain;
+    }
+
+    private String getValue(Html html, String... xpaths) {
+        String val = "-";
+        for (String xpath: xpaths) {
+            val = SelectableUtils.getValue(html.xpath(xpath));
+            if (!"-".equals(val) && StringUtils.isNotEmpty(val)) {
+                return val;
+            }
+        }
+        return val;
     }
 
     @Override

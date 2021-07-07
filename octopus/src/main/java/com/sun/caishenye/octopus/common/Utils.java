@@ -15,7 +15,7 @@ public class Utils {
         return date.substring(0, 10);
     }
 
-    // 去分号
+    // 去数值格式化
     public static String formatNumber2String(String number) {
         return number.trim().replaceAll(Constants.REGEX_DELIMITING_COMMA.getString(), "");
     }

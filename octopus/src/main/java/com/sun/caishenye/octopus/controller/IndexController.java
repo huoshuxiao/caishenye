@@ -2,7 +2,6 @@ package com.sun.caishenye.octopus.controller;
 
 import com.sun.caishenye.octopus.fund.service.EastMoneyService;
 import com.sun.caishenye.octopus.fund.service.FundService;
-import com.sun.caishenye.octopus.fund.service.MorningStarService;
 import com.sun.caishenye.octopus.stock.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.ServerSentEvent;
@@ -36,38 +35,57 @@ public class IndexController {
     }
 
     ////////////////////////////////////////// fund ////////////////////////////////////////////////////////////////////
-    @Autowired
-    private MorningStarService morningstarService;
+//    @Autowired
+//    private MorningStarService morningstarService;
 
     @Autowired
     private EastMoneyService eastMoneyService;
 
+    @Autowired
+    private FundService fundService;
+
+//    // step1: 基础数据
+//    @GetMapping("morningstar/base")
+//    public Object base() {
+//        return morningstarService.base();
+//    }
+
     // step1: 基础数据
-    @GetMapping("morningstar/base")
+    @GetMapping("eastmoney/base")
     public Object base() {
-        return morningstarService.base();
+        return eastMoneyService.base();
     }
 
-    // step2: 扩展数据：基金ID，供采集明细用
-    @GetMapping("morningstar/extend")
-    public Object extend() {
-        return morningstarService.extend();
-    }
-
-    // 生成最终数据 step4: 组合数据 晨星 + 东方财富
-    @GetMapping("morningstar/detail")
-    public Object detail() {
-        return morningstarService.detail();
-    }
+//    // step2: 扩展数据：基金ID，供采集明细用
+//    @GetMapping("morningstar/extend")
+//    public Object extend() {
+//        return morningstarService.extend();
+//    }
 
     // step3: 扩展数据：友情提示 风险/净值日期/单位净值/基金类型/基金规模，供生成数据用
     @GetMapping("eastmoney/detail")
-    public Object detai2l() {
+    public Object detail() {
         return eastMoneyService.detail();
     }
 
-    @Autowired
-    private FundService fundService;
+    // step4: 添加自定义数据 如：年平均回报(%)
+    @GetMapping("fund/extend")
+    public Object extend() {
+        return fundService.customer();
+    }
+
+    // 生成最终数据 step4
+    @GetMapping("fund/step4")
+    public Object step4() {
+        return fundService.fund();
+    }
+
+//    // 生成最终数据 step4: 组合数据 晨星 + 东方财富
+//    @GetMapping("morningstar/detail")
+//    public Object mDetail() {
+//        return morningstarService.detail();
+//    }
+
     // run
     @GetMapping("fund")
     public Object fund() {
@@ -104,6 +122,7 @@ public class IndexController {
     public Object hq() throws ExecutionException, InterruptedException {
         return stockService.hq();
     }
+
     // step2: 历史行情
     @GetMapping("hhq")
     public Object hhq() throws ExecutionException, InterruptedException {

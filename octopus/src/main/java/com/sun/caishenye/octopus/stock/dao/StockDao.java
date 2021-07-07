@@ -21,18 +21,18 @@ import java.util.List;
 @Repository
 public class StockDao {
 
-    private final String FILE_PATH = "data/";
+    private static final String FILE_PATH = "data/";
 
-    protected final String BASE_FILE = FILE_PATH + Constants.FILE_STOCK_BASE.getString();
-    protected final String FR_STEP1_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_STEP1.getString();
-    protected final String FR_STEP2_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_STEP2.getString();
-    protected final String FR_EASTMONEY_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_EASTMONEY.getString();
-    protected final String FR_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT.getString();
-    protected final String FR_DATA2_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT2.getString();
-    protected final String HQ_DATA_FILE = FILE_PATH + Constants.FILE_HQ.getString();
-    protected final String HHQ_DATA_FILE = FILE_PATH + Constants.FILE_HHQ.getString();
-    protected final String SB_DATA_FILE = FILE_PATH + Constants.FILE_SHARE_BONUS.getString();
-    protected final String MM_DATA_FILE = FILE_PATH + Constants.FILE_MONEY_MONEY.getString();
+    private static final String BASE_FILE = FILE_PATH + Constants.FILE_STOCK_BASE.getString();
+    private static final String FR_STEP1_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_STEP1.getString();
+    private static final String FR_STEP2_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_STEP2.getString();
+    private static final String FR_EASTMONEY_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_EASTMONEY.getString();
+    private static final String FR_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT.getString();
+    private static final String FR_DATA2_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT2.getString();
+    private static final String HQ_DATA_FILE = FILE_PATH + Constants.FILE_HQ.getString();
+    private static final String HHQ_DATA_FILE = FILE_PATH + Constants.FILE_HHQ.getString();
+    private static final String SB_DATA_FILE = FILE_PATH + Constants.FILE_SHARE_BONUS.getString();
+    private static final String MM_DATA_FILE = FILE_PATH + Constants.FILE_MONEY_MONEY.getString();
 
     // 写 基础数据
     public void writeBaseData(List<StockDomain> data) {
