@@ -36,6 +36,7 @@ public class StockDao {
 
     // 写 基础数据
     public void writeBaseData(List<StockDomain> data) {
+        log.info("基础数据::{}",data.size());
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(BASE_FILE), StandardCharsets.UTF_8)) {
             for (StockDomain stockDomain : data) {
                 String s = stockDomain.baseBuilder() + "\r\n";
