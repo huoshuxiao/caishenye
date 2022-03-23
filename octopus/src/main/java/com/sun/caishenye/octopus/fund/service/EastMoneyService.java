@@ -11,6 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -104,13 +106,13 @@ public class EastMoneyService {
             baseDomain.setReturn3Year(data10.get(13));
             // 5年回报(%)
             // 数据无 跳过
-            if (data5.size() > 18) {
+            if (data5.size() > 18 && LocalDate.parse(data5.get(16)).until(LocalDate.now(), ChronoUnit.YEARS) >= 5) {
                 log.debug("5年回报 {}", String.join(",", data5));
                 baseDomain.setReturn5Year(data5.get(18));
             }
             // 10年回报(%)
             // 数据无 跳过
-            if (data10.size() > 18) {
+            if (data10.size() > 18 && LocalDate.parse(data10.get(16)).until(LocalDate.now(), ChronoUnit.YEARS) >= 10) {
                 log.debug("10年回报 {}", String.join(",", data10));
                 baseDomain.setReturn10Year(data10.get(18));
             }

@@ -1,7 +1,6 @@
 package com.sun.caishenye.octopus.fund.dao;
 
 import com.sun.caishenye.octopus.common.Constants;
-import com.sun.caishenye.octopus.fund.domain.EastMoneyBaseDomain;
 import com.sun.caishenye.octopus.fund.domain.FundDomain;
 import com.sun.caishenye.octopus.fund.domain.FundExtendDomain;
 import lombok.extern.slf4j.Slf4j;

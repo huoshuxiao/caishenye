@@ -50,9 +50,12 @@ public class FundService {
 
     public Object fund() {
 
-        List<EastMoneyBaseDomain> baseDataList = eastMoneyService.readBaseData().stream().sorted(Comparator.comparing(EastMoneyBaseDomain::getFundCode)).collect(Collectors.toList());
-        List<EastMoneyDetailDomain> detailDataList = eastMoneyService.readDetailData().stream().sorted(Comparator.comparing(EastMoneyDetailDomain::getFundCode)).collect(Collectors.toList());
-        List<FundExtendDomain> extendDomainList = fundDao.readExtendData().stream().sorted(Comparator.comparing(FundExtendDomain::getFundCode)).collect(Collectors.toList());
+        List<EastMoneyBaseDomain> baseDataList = eastMoneyService.readBaseData().stream().sorted(
+                Comparator.comparing(EastMoneyBaseDomain::getFundCode)).collect(Collectors.toList());
+        List<EastMoneyDetailDomain> detailDataList = eastMoneyService.readDetailData().stream().sorted(
+                Comparator.comparing(EastMoneyDetailDomain::getFundCode)).collect(Collectors.toList());
+        List<FundExtendDomain> extendDomainList = fundDao.readExtendData().stream().sorted(
+                Comparator.comparing(FundExtendDomain::getFundCode)).collect(Collectors.toList());
 
         List<FundDomain> fundDomainList = new ArrayList<>(baseDataList.size());
         for (int i = 0; i < baseDataList.size(); i++) {

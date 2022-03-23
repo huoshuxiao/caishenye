@@ -47,7 +47,6 @@ public class FundDomain implements Serializable {
                 Constants.DELIMITING_COMMA.getString() + format(extendDomain.getReturnAvg()) +      // 管理期间 年平均回报(%)
                 Constants.DELIMITING_COMMA.getString() + detailDomain.getRisk() +                   // 风险
                 Constants.DELIMITING_COMMA.getString() + detailDomain.getClosePriceDate() +         // 净值日期
-                Constants.DELIMITING_COMMA.getString() + format(detailDomain.getClosePrice()) +     // 单位净值
                 Constants.DELIMITING_COMMA.getString() + format(baseDomain.getReturnThisYear()) +   // 今年以来(%)
                 Constants.DELIMITING_COMMA.getString() + format(baseDomain.getReturn1Day()) +       // 1天回报(%)
                 Constants.DELIMITING_COMMA.getString() + format(baseDomain.getReturn1Week()) +      // 1周回报(%)
@@ -60,6 +59,7 @@ public class FundDomain implements Serializable {
                 Constants.DELIMITING_COMMA.getString() + format(baseDomain.getReturn5Year()) +      // 5年回报(%)
                 Constants.DELIMITING_COMMA.getString() + format(baseDomain.getReturn10Year()) +     // 10年回报(%)
                 Constants.DELIMITING_COMMA.getString() + format(baseDomain.getReturnInception()) +  // 设立以来(%)
+                Constants.DELIMITING_COMMA.getString() + format(detailDomain.getClosePrice()) +     // 单位净值
                 Constants.DELIMITING_COMMA.getString() + format(baseDomain.getTotalPrice());        // 累计净值;
         return sbStr.replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
     }
