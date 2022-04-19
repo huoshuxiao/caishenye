@@ -57,6 +57,12 @@ public class FundService {
         List<FundExtendDomain> extendDomainList = fundDao.readExtendData().stream().sorted(
                 Comparator.comparing(FundExtendDomain::getFundCode)).collect(Collectors.toList());
 
+        // retry
+        if (baseDataList.size() != detailDataList.size() && baseDataList.size() != extendDomainList.size()) {
+            log.info("fund run retry");
+            run();
+        }
+
         List<FundDomain> fundDomainList = new ArrayList<>(baseDataList.size());
         for (int i = 0; i < baseDataList.size(); i++) {
             FundDomain fundDomain = new FundDomain(baseDataList.get(i), detailDataList.get(i), extendDomainList.get(i));
