@@ -497,7 +497,7 @@ public class ApiRestTemplate {
                     if (tDayLineDomain.getSummary().getId().contains(Constants.EXCHANGE_SZ.getString())) {
 
                         // call SzRestTemplate
-                        SzHqDomain hqDomain = szRestTemplate.getHhqData(stockDomain);
+                        SzHqDomain hqDomain = szRestTemplate.getHhqData(stockDomain, "");
                         if (hqDomain != null) {
                             // 收盘价
                             hhqDomain.setPrice(hqDomain.getPrice());

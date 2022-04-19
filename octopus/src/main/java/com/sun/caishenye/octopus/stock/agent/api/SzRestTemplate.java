@@ -4,6 +4,7 @@ import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import com.sun.caishenye.octopus.stock.domain.SzHqDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -74,13 +75,13 @@ public class SzRestTemplate {
     }
 
     // 历史行情
-    public SzHqDomain getHhqData(StockDomain stockDomain) {
+    public SzHqDomain getHhqData(StockDomain stockDomain, String date) {
 
         log.debug("SzRestTemplate call hhq request params :: {}", stockDomain);
         SzHqDomain hqDomain = new SzHqDomain();
         try {
             // call rest service
-            List<Map<String, List<Map<String, String>>>> responseList = restTemplate.getForObject(SZ_HHQ_BASE_URL, List.class, builderHhqDataUrl(stockDomain));
+            List<Map<String, List<Map<String, String>>>> responseList = restTemplate.getForObject(SZ_HHQ_BASE_URL, List.class, builderHhqDataUrl(stockDomain, date));
             Map<String, List<Map<String, String>>> mapList = responseList.get(0);
             List<Map<String, String>> dataList = mapList.get("data");
             if (dataList.size() == 0) {
@@ -101,18 +102,23 @@ public class SzRestTemplate {
             log.error("hhq "+ stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
         } catch (ResourceAccessException e) {
             // 访问异常 retry
-            getHhqData(stockDomain);
+            getHhqData(stockDomain, date);
         }
         return hqDomain;
     }
 
-    private Map<String, Object> builderHhqDataUrl(StockDomain stockDomain) {
+    private Map<String, Object> builderHhqDataUrl(StockDomain stockDomain, String date) {
 
         Map<String, Object> params = new HashMap<>();
         params.put("companyCode", stockDomain.getCompanyCode());
         params.put("random", RandomUtils.nextInt());
-        params.put("beginDate", getDay(stockDomain));
-        params.put("endDate", getDay(stockDomain));
+        if (StringUtils.isEmpty(date)) {
+            params.put("beginDate", getDay(stockDomain));
+            params.put("endDate", getDay(stockDomain));
+        } else {
+            params.put("beginDate", date);
+            params.put("endDate", date);
+        }
         return params;
     }
 
