@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -39,16 +41,18 @@ public class SzService {
         CompletableFuture<SzHqDomain> hqDomainCompletableFuture = CompletableFuture.supplyAsync(() -> restTemplate.getHqData(stockDomain)).get();
         SzHqDomain hqDomain = hqDomainCompletableFuture.get();
         if (StringUtils.isEmpty(hqDomain.getData().getNow())) {
-            hqDomain = hhq(stockDomain, hqDomain.getDatetime().substring(0, 10));
+            if (hqDomain.getDatetime().length() >= 10) {
+                hqDomain = hhq(stockDomain, hqDomain.getDatetime().substring(0, 10));
+            } else {
+                log.error("hq {} 404 :: {}", stockDomain.getCompanyCode(), hqDomain);
+                hqDomain = hhq(stockDomain, LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            }
         } else {
             hqDomain.setPrice(hqDomain.getData().getNow() == null ? Constants.HQ_SUSPENSION.getString() : hqDomain.getData().getNow());
         }
         if (hqDomain == null) {
             hqDomain = new SzHqDomain();
             hqDomain.setPrice(Constants.HQ_SUSPENSION.getString());
-        }
-        if (Constants.HQ_SUSPENSION.getString().equals(hqDomain.getPrice())) {
-            log.info("hq {} 404", stockDomain.getCompanyCode());
         }
         stockDomain.setPrice(hqDomain.getPrice());
     }
