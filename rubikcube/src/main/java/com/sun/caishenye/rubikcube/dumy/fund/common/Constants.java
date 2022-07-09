@@ -1,4 +1,4 @@
-package com.sun.caishenye.rubikcube.fund.common;
+package com.sun.caishenye.rubikcube.dumy.fund.common;
 
 import lombok.Getter;
 import lombok.Setter;

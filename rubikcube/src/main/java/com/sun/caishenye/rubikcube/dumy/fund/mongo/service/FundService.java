@@ -1,7 +1,7 @@
-package com.sun.caishenye.rubikcube.fund.mongo.service;
+package com.sun.caishenye.rubikcube.dumy.fund.mongo.service;
 
-import com.sun.caishenye.rubikcube.fund.mongo.dao.IFundDao;
-import com.sun.caishenye.rubikcube.fund.mongo.entity.FundEntity;
+import com.sun.caishenye.rubikcube.dumy.fund.mongo.dao.IFundDao;
+import com.sun.caishenye.rubikcube.dumy.fund.mongo.entity.FundEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;

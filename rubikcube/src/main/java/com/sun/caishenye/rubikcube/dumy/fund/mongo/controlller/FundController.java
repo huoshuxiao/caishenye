@@ -1,7 +1,7 @@
-package com.sun.caishenye.rubikcube.fund.mongo.controlller;
+package com.sun.caishenye.rubikcube.dumy.fund.mongo.controlller;
 
-import com.sun.caishenye.rubikcube.fund.mongo.entity.FundEntity;
-import com.sun.caishenye.rubikcube.fund.mongo.service.FundService;
+import com.sun.caishenye.rubikcube.dumy.fund.mongo.entity.FundEntity;
+import com.sun.caishenye.rubikcube.dumy.fund.mongo.service.FundService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

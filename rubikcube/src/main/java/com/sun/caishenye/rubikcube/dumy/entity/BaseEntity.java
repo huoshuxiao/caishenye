@@ -1,4 +1,4 @@
-package com.sun.caishenye.rubikcube.common.entity;
+package com.sun.caishenye.rubikcube.dumy.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.CreatedBy;

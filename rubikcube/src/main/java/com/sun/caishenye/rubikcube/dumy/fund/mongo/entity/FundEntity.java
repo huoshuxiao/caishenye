@@ -1,6 +1,6 @@
-package com.sun.caishenye.rubikcube.fund.mongo.entity;
+package com.sun.caishenye.rubikcube.dumy.fund.mongo.entity;
 
-import com.sun.caishenye.rubikcube.common.entity.BaseEntity;
+import com.sun.caishenye.rubikcube.dumy.entity.BaseEntity;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

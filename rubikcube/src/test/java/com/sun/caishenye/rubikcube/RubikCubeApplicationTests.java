@@ -1,7 +1,7 @@
 package com.sun.caishenye.rubikcube;
 
-import com.sun.caishenye.rubikcube.fund.mongo.entity.FundEntity;
-import com.sun.caishenye.rubikcube.fund.mongo.service.FundService;
+import com.sun.caishenye.rubikcube.dumy.fund.mongo.entity.FundEntity;
+import com.sun.caishenye.rubikcube.dumy.fund.mongo.service.FundService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
