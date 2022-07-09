@@ -126,7 +126,7 @@ public class EastMoneyDetailPageProcessor implements PageProcessor {
         eastMoneyDetailDomain.setManagerName(val);
 
         // 管理期间
-        eastMoneyDetailDomain.setManagementRange(SelectableUtils.getValue(html.xpath("[@id='fundManagerTab']/div[1]/table/tbody/tr[2]/td[1]/text()")));
+        eastMoneyDetailDomain.setManagementRange(SelectableUtils.getValue(html.xpath("[@id='fundManagerTab']/div[1]/table/tbody/tr[2]/td[1]/text()")).replace("~至今", ""));
         // 基金经理
 //        log.debug(SelectableUtils.getValue(html.xpath("[@id='fundManagerTab']/div[1]/table/tbody/tr[2]/td[2]/a/text()")));
         // 管理时间

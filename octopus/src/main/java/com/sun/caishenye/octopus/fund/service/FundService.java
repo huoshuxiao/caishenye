@@ -105,7 +105,7 @@ public class FundService {
         // 管理回报(%)
         String returnInception = Utils.formatNumber2String(detailDomain.getManagementReturn()).replace("%", "");
         // 管理期间
-        String inceptionDate = detailDomain.getManagementRange().replace("~至今", "");
+        String inceptionDate = detailDomain.getManagementRange();
 
         if ("--".equals(returnInception) || "-".equals(returnInception) || StringUtils.isEmpty(returnInception) || StringUtils.isEmpty(inceptionDate)) {
             return "-";
