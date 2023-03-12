@@ -5,12 +5,14 @@ import com.sun.caishenye.octopus.common.Constants;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 // 历史行情 - 日K
+@ToString
 public class DayLineDomain implements Serializable {
 
     private static final long serialVersionUID = 4371636697825834191L;

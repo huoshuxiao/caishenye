@@ -2,6 +2,10 @@ package com.sun.caishenye.octopus.common;
 
 public class Utils {
 
+    public static String getYear(String date) {
+        return date.substring(0, 4);
+    }
+
     public static String formatDate(String date, String... fmt) {
 
         if (date.length() < 10) {

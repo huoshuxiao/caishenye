@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -80,6 +80,7 @@ public class SzRestTemplate {
         log.debug("SzRestTemplate call hhq request params :: {}", stockDomain);
         SzHqDomain hqDomain = new SzHqDomain();
         try {
+            Thread.sleep(1000*5);
             // call rest service
             List<Map<String, List<Map<String, String>>>> responseList = restTemplate.getForObject(SZ_HHQ_BASE_URL, List.class, builderHhqDataUrl(stockDomain, date));
             Map<String, List<Map<String, String>>> mapList = responseList.get(0);
@@ -93,14 +94,13 @@ public class SzRestTemplate {
             if (dataMap == null) {
                 return null;
             } else {
-                log.debug("SzRestTemplate call hhq response :: {}", dataMap.toString());
+                log.debug("SzRestTemplate call hhq response :: {}", dataMap);
                 // 收盘价
                 hqDomain.setPrice(dataMap.get("ss"));
                 log.debug("SzRestTemplate call hhq response value :: {}", hqDomain);
             }
-        } catch (HttpClientErrorException e) {
-            log.error("hhq "+ stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
-        } catch (ResourceAccessException e) {
+        } catch (RestClientException | InterruptedException e) {
+            log.error("sz hhq retry {} :: {}", stockDomain.getCompanyCode(), e.getMessage());
             // 访问异常 retry
             getHhqData(stockDomain, date);
         }
@@ -133,11 +133,12 @@ public class SzRestTemplate {
         log.debug("SzRestTemplate call hq request params :: {}", stockDomain);
         SzHqDomain hqDomain = new SzHqDomain();
         try {
+            Thread.sleep(300*5);
             // call rest service
             hqDomain = restTemplate.getForObject(SZ_HQ_BASE_URL, SzHqDomain.class, builderHqDataUrl(stockDomain));
             log.debug("SzRestTemplate call hq response value :: {}", hqDomain);
-        } catch (HttpClientErrorException e) {
-            log.error("hq "+ stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
+        } catch (HttpClientErrorException | InterruptedException e) {
+            log.error("hq "+ stockDomain.getCompanyCode() + " " + e.getMessage());
         }
         return CompletableFuture.completedFuture(hqDomain);
     }

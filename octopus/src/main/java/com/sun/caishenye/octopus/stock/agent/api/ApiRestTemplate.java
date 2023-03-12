@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -183,11 +184,10 @@ public class ApiRestTemplate {
             }
             log.debug("call fr yjbb response value :: {}", result);
 //            log.info("call fr yjbb response ::  {} size {}", stockDomain.getCompanyCode(), result.size());
-        } catch (HttpClientErrorException e) {
-            log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
         } catch (JsonSyntaxException e) {
             log.error("getFrYjbbForObject4 :: " + hhqUrlBuilder(stockDomain) + " " + e);
-        } catch (ResourceAccessException e) {
+        } catch (RestClientException e) {
+            log.error("fr yjbb retry {} :: {}", stockDomain.getCompanyCode(), e.getMessage());
             // 访问异常 retry
             getFrYjbbForObject4(stockDomain);
         } catch (Exception e) {
@@ -428,7 +428,7 @@ public class ApiRestTemplate {
             Gson gson = new Gson();
             hhqDomain = gson.fromJson(response, DayLineDomain.class);
 
-            log.debug("call hhq response value :: {}", hhqDomain);
+//            log.debug("call hhq response value :: {}", hhqDomain);
         } catch (HttpClientErrorException e) {
             log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
         } catch (JsonSyntaxException je) {
@@ -564,7 +564,7 @@ public class ApiRestTemplate {
         } catch (InterruptedException | ExecutionException e) {
             log.error("call getHhqForObject error " + e);
         }
-        log.debug("call hhq response value :: {}", hhqDomain);
+//        log.debug("call hhq response value :: {}", hhqDomain);
         return hhqDomain;
     }
 

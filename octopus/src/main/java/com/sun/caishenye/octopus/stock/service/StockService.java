@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -221,6 +222,29 @@ public class StockService {
                 stockDomain.setPrice("-");
                 stockDomain.setDividendYield("0");
                 stockDomain.setDate(sbDomain.getDividendDate());
+            }
+        });
+
+        // 二次计算
+        shareBonusDataList.stream().forEach(s -> {
+
+            List<StockDomain> sbList = shareBonusDataList.stream().filter(t -> t.getCompanyCode().equals(s.getCompanyCode()))
+                    .filter(t -> t.getSbDomain().getSchedule().equals(Constants.SB_SCHEDULE_IMPLEMENT.getString()))
+                    .filter(t -> t.getSbDomain().getBonusDate().length() > 4)
+                    .filter(t -> Utils.getYear(t.getSbDomain().getBonusDate()).equals(Utils.getYear(s.getSbDomain().getBonusDate())))
+                    .filter(t -> Float.parseFloat(t.getSbDomain().getDividend()) > 0f)
+                    .collect(Collectors.toList());
+
+            // 1年多次分红
+            if (sbList.size() > 1) {
+                String maxBonusDate = sbList.stream().map(StockDomain::getSbDomain)
+                        .max(Comparator.comparing(ShareBonusDomain::getBonusDate)).get().getBonusDate();
+                if (s.getSbDomain().getBonusDate().equals(maxBonusDate)) {
+                    s.setDividendYield(String.format(sbList.stream().map(StockDomain::getDividendYield)
+                            .reduce((x, y) -> String.valueOf(Float.parseFloat(x) + Float.parseFloat(y))).get(), "%0.2f"));
+                } else {
+                    s.getSbDomain().setSchedule(Constants.SB_SCHEDULE_IMPLEMENT_MID.getString());
+                }
             }
         });
 

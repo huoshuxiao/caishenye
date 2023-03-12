@@ -35,6 +35,7 @@ public enum Constants {
     EXCHANGE_SZ("sz"),
     HQ_SUSPENSION("停牌"),
     SB_SCHEDULE_IMPLEMENT("实施"),
+    SB_SCHEDULE_IMPLEMENT_MID("实施[年中]"),
     SB_SCHEDULE_PLAN("预案"),
     SB_SCHEDULE_NOT_ASSIGNED("不分配"),
 
