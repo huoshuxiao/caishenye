@@ -15,14 +15,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -189,7 +191,7 @@ public class ApiRestTemplate {
         } catch (RestClientException e) {
             log.error("fr yjbb retry {} :: {}", stockDomain.getCompanyCode(), e.getMessage());
             // 访问异常 retry
-            getFrYjbbForObject4(stockDomain);
+//            getFrYjbbForObject4(stockDomain);
         } catch (Exception e) {
             log.error(hhqUrlBuilder(stockDomain) + " " + e);
             throw e;

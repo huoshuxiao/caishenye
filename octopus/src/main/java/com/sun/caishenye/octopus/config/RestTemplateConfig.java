@@ -1,12 +1,12 @@
 package com.sun.caishenye.octopus.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.sun.caishenye.octopus.interceptor.LoggingRequestInterceptor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -37,8 +37,10 @@ public class RestTemplateConfig {
 
         RestTemplate restTemplate = restTemplateBuilder.messageConverters()
                 .additionalMessageConverters(messageConverters)
+                .additionalInterceptors(new LoggingRequestInterceptor())
                 .build();
 
+        restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory()));
         return restTemplate;
     }
 
@@ -47,9 +49,10 @@ public class RestTemplateConfig {
     public RestTemplate restTemplateText(RestTemplateBuilder restTemplateBuilder) {
 
         RestTemplate restTemplate = restTemplateBuilder.messageConverters()
+                .additionalInterceptors(new LoggingRequestInterceptor())
                 .build();
 
+        restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory()));
         return restTemplate;
     }
-
 }
