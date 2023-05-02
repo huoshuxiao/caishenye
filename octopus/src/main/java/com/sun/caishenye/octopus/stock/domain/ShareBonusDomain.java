@@ -27,4 +27,6 @@ public class ShareBonusDomain  implements Serializable {
     // 红股上市日 fmt: 2016-06-03
     private String listingDate;
 
+    // 报告期 2022三季报(雪球)
+    private String dividendYear;
 }

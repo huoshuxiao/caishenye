@@ -31,6 +31,7 @@ public class StockDao {
     private static final String FR_DATA2_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT2.getString();
     private static final String HQ_DATA_FILE = FILE_PATH + Constants.FILE_HQ.getString();
     private static final String HHQ_DATA_FILE = FILE_PATH + Constants.FILE_HHQ.getString();
+    private static final String SB_DATA_FILE1 = FILE_PATH + Constants.FILE_SHARE_BONUS1.getString();
     private static final String SB_DATA_FILE = FILE_PATH + Constants.FILE_SHARE_BONUS.getString();
     private static final String MM_DATA_FILE = FILE_PATH + Constants.FILE_MONEY_MONEY.getString();
 
@@ -321,10 +322,10 @@ public class StockDao {
 //    }
 
     // 读 分红
-    public List<StockDomain> readShareBonus() {
+    public List<StockDomain> readShareBonus1() {
 
         List<StockDomain> list = new ArrayList<>();
-        Path path = Paths.get(SB_DATA_FILE);
+        Path path = Paths.get(SB_DATA_FILE1);
 
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line = null;
@@ -358,13 +359,67 @@ public class StockDao {
         return list;
     }
 
+    // 读 分红
+    public List<StockDomain> readShareBonus() {
+
+        List<StockDomain> list = new ArrayList<>();
+        Path path = Paths.get(SB_DATA_FILE);
+
+        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                log.debug("read sb data >> {}", line);
+
+                StockDomain stockDomain = new StockDomain();
+                String[] extendDomainArray = line.split(Constants.DELIMITING_COMMA.getString());
+
+                // 公司代码
+                stockDomain.setCompanyCode(extendDomainArray[0].trim());
+                // 公司简称
+                stockDomain.setCompanyName(extendDomainArray[1].trim());
+                // 公告日期
+                stockDomain.getSbDomain().setBonusDate(extendDomainArray[2].trim());
+                // 派息(税前)(元)
+                stockDomain.getSbDomain().setDividend(extendDomainArray[3].trim());
+                // 进度
+                stockDomain.getSbDomain().setSchedule(extendDomainArray[4].trim());
+                // 除权除息日
+                stockDomain.getSbDomain().setDividendDate(extendDomainArray[5].trim());
+                // 股权登记日
+                stockDomain.getSbDomain().setRegistrationDate(extendDomainArray[6].trim());
+                // 股权登记日
+                stockDomain.getSbDomain().setDividendYear(extendDomainArray[7].trim());
+
+                list.add(stockDomain);
+            }
+        } catch (IOException x) {
+            log.error(String.format("IOException: %s%n", x));
+        }
+
+        return list;
+    }
+
+    // 写 财报
+    public void writeShareBonus(List<StockDomain> data) {
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(SB_DATA_FILE), StandardCharsets.UTF_8)) {
+            for (StockDomain stockDomain : data) {
+                String s = stockDomain.sbBuilder() + "\r\n";
+                log.debug("write sb data >> {}", s);
+                writer.write(s, 0, s.length());
+            }
+        } catch (IOException x) {
+            log.error(String.format("IOException: %s%n", x));
+        }
+    }
+
     // 读 历史行情
     public List<DayLineDomain> readHhqData() {
         List<DayLineDomain> list = new ArrayList<>();
         Path path = Paths.get(HHQ_DATA_FILE);
 
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
-            String line = null;
+            String line;
             while ((line = reader.readLine()) != null) {
                 log.debug("read hhq data >> {}", line);
 

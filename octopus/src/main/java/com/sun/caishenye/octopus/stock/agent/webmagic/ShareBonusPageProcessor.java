@@ -35,7 +35,7 @@ public class ShareBonusPageProcessor implements PageProcessor {
 
     // home page
     protected final String FILE_PATH = "data";
-    protected final String FILE_NAME = Constants.FILE_SHARE_BONUS.getString();
+    protected final String FILE_NAME = Constants.FILE_SHARE_BONUS1.getString();
 
     protected final String DATA_404 = "暂时没有数据！";
 
@@ -55,7 +55,7 @@ public class ShareBonusPageProcessor implements PageProcessor {
                 continue;
             }
             // 保存结果至Pipeline，持久化对象结果
-            page.putField(stockDomain.getSbDomain().getBonusDate() + "@" + stockDomain.getCompanyCode(), stockDomain.sbBuilder());
+            page.putField(stockDomain.getSbDomain().getBonusDate() + "@" + stockDomain.getCompanyCode(), stockDomain.sbBuilder1());
             log.debug("ShareBonus value :: {}", stockDomain);
         }
     }

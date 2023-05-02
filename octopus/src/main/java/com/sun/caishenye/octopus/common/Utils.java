@@ -1,6 +1,14 @@
 package com.sun.caishenye.octopus.common;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Utils {
+
+    public static String number2Date(Long date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
+        return date == null ? "--" : dateFormat.format(new Date(date));
+    }
 
     public static String getYear(String date) {
         return date.substring(0, 4);

@@ -12,6 +12,10 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -35,6 +39,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @Slf4j
 public class ApiRestTemplate {
+
+    // 雪球 分红配股
+    // https://stock.xueqiu.com/v5/stock/f10/cn/bonus.json?symbol=SZ002032&size=1000&page=1&extend=true
+    private static final String XUEQIU_BONUS_URL = "http://stock.xueqiu.com/v5/stock/f10/cn/bonus.json?symbol={location}{companyCode}&size=1000&page=1&extend=true";
 
     // 沪深A股 东方财富网
     /*
@@ -95,6 +103,9 @@ public class ApiRestTemplate {
 
     @Qualifier("restTemplateText")
     @Autowired
+    private RestTemplate restTemplateText;
+
+    @Autowired
     private RestTemplate restTemplate;
 
     // 沪深A股 东方财富网
@@ -103,7 +114,7 @@ public class ApiRestTemplate {
 
         log.debug("stock base data");
         // call rest service
-        String response = restTemplate.getForObject(EASTMONEY_BASE_LIST_URL, String.class);
+        String response = restTemplateText.getForObject(EASTMONEY_BASE_LIST_URL, String.class);
         log.debug("call base data response string :: {}", response);
         // 结构化返回值，对返回值进行fmt
         response = StringUtils.removeStart(response, "jQuery112408506576043032625_1612278160710(");
@@ -165,7 +176,7 @@ public class ApiRestTemplate {
         try {
 
             // call rest service
-            String response = restTemplate.getForObject(EASTMONEY_FR_YJBB_URL_4, String.class, hhqUrlBuilder(stockDomain));
+            String response = restTemplateText.getForObject(EASTMONEY_FR_YJBB_URL_4, String.class, hhqUrlBuilder(stockDomain));
             log.debug("call fr yjbb response string :: {}", response);
             // 结构化返回值，对返回值进行fmt
             response = StringUtils.removeStart(response, "var ITnKjhqD=");
@@ -419,7 +430,7 @@ public class ApiRestTemplate {
         try {
 
             // call rest service
-            String response = restTemplate.getForObject(JRJ_HHQ_URL, String.class, hhqUrlBuilder(stockDomain));
+            String response = restTemplateText.getForObject(JRJ_HHQ_URL, String.class, hhqUrlBuilder(stockDomain));
             log.debug("call hhq response string :: {}", response);
             // 结构化返回值，对返回值进行fmt
             response = StringUtils.removeStart(response, "var s_d_ex_" + stockDomain.getCompanyCode() + "=");
@@ -467,7 +478,7 @@ public class ApiRestTemplate {
     public DayLineDomain getHhqByDateForObject(StockDomain stockDomain) {
         log.debug("call hhq request params :: {}", stockDomain);
         // call rest service
-        String response = restTemplate.getForObject(SOHU_HHQ_URL, String.class, hhqUrlBuilderWithSohu(stockDomain));
+        String response = restTemplateText.getForObject(SOHU_HHQ_URL, String.class, hhqUrlBuilderWithSohu(stockDomain));
         log.debug("call hhq response string :: {}", response);
 
         // 结构化返回值，对返回值进行fmt
@@ -584,5 +595,33 @@ public class ApiRestTemplate {
         return Utils.formatDate2String("--".equals(stockDomain.getSbDomain().getDividendDate())
                 ? stockDomain.getSbDomain().getRegistrationDate()
                 : stockDomain.getSbDomain().getDividendDate());
+    }
+
+    // 雪球 分红配股
+    public List<ShareBonusDomain> getXueqiuShareBonus(String companyCode, String exchange) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cookie", "xq_a_token=bf4ca35131318f0118658f3f4790584a66d8bb83; xqat=bf4ca35131318f0118658f3f4790584a66d8bb83; xq_r_token=3374a327172eff6197f4933bdfe11278fc6234ee; xq_id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1aWQiOi0xLCJpc3MiOiJ1YyIsImV4cCI6MTY4NTE0NzQzMywiY3RtIjoxNjgyOTIwNTYyOTkwLCJjaWQiOiJkOWQwbjRBWnVwIn0.B4-9BmQHoRuig7iFLXfObyyd0z6GGeg2esXCv0JsvxO1nxOvZoBXgKLdVBsL9ZqMfA7agdwDiTwSoa9yTHpsVcA5uJnDFrn98lYBsB5wH-ewsWzJb7xEebCmjQAW1F4nWKoDuziaCzwB2JvhoDNohkDf37Es4UG3l9yKV_RuW1HzXnEojOaaVn9nNVufK94hYysDiMA4tVPP96sl4WJ7UoEOUo8RaV3YBgYwjMVoKT1S9RFMj5SZuoRa3MqooeCm7YKjezQj4UGKdNabbsAp3xaBDxzuZuH__HVISNWtQCwNijOhHh5LrANQ19wRe26hxhoHEFnT5jiGTmLn4w-4KQ; u=121682920563375; Hm_lvt_1db88642e346389874251b5a1eded6e3=1682920565; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1682921997; device_id=49fc31e05932a9a26557f3f2a77406e4; s=cp15r1q1m8");
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<Map> responseEntity = restTemplate.exchange(XUEQIU_BONUS_URL, HttpMethod.GET, entity, Map.class, builderXueqiuShareBonusUrl(companyCode, exchange));
+        Map<String, Object> responseMap = responseEntity.getBody();
+        Map<String, Object> dataMap = (Map)responseMap.get("data");
+        List<Map<String, Object>> items = (List)dataMap.get("items");
+
+        List<ShareBonusDomain> sbList = new ArrayList<>();
+        for (Map item: items) {
+            ShareBonusDomain sb = new ShareBonusDomain();
+            sb.setDividendYear(item.get("dividend_year").toString());
+            sb.setDividendDate(Utils.number2Date((Long)item.get("ex_dividend_date")));
+
+            sbList.add(sb);
+        }
+        return sbList;
+    }
+    private Map<String, Object> builderXueqiuShareBonusUrl(String companyCode, String exchange) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("location", exchange.toUpperCase());
+        params.put("companyCode", companyCode);
+        return params;
     }
 }

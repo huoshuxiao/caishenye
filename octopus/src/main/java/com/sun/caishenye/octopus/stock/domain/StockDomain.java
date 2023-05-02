@@ -123,7 +123,7 @@ public class StockDomain implements Serializable {
     }
 
     // 分红配股
-    public String sbBuilder() {
+    public String sbBuilder1() {
         StringBuilder sbStr = new StringBuilder();
 
         sbStr.append(Constants.DELIMITING_COMMA.getString()).append(companyCode)
@@ -136,6 +136,21 @@ public class StockDomain implements Serializable {
         ;
         return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
     }
+    // 分红配股
+    public String sbBuilder() {
+        StringBuilder sbStr = new StringBuilder();
+
+        sbStr.append(Constants.DELIMITING_COMMA.getString()).append(companyCode)
+                .append(Constants.DELIMITING_COMMA.getString()).append(companyName)
+                .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getBonusDate())         // 公告日期
+                .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getDividend())          // 派息(税前)(元)
+                .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getSchedule())          // 进度
+                .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getDividendDate())      // 除权除息日
+                .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getRegistrationDate())  // 股权登记日
+                .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getDividendYear())      // 报告期
+        ;
+        return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
+    }
 
     // 钱多多
     public String mmBuilder() {
@@ -144,7 +159,7 @@ public class StockDomain implements Serializable {
 
         sbStr.append(Constants.DELIMITING_COMMA.getString()).append(companyCode)
                 .append(Constants.DELIMITING_COMMA.getString()).append(companyName)
-                .append(Constants.DELIMITING_COMMA.getString()).append(date)                           // 交易日
+                .append(Constants.DELIMITING_COMMA.getString()).append(date)                            // 交易日
                 .append(Constants.DELIMITING_COMMA.getString()).append(price)                           // 股价
                 .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getBonusDate())         // 公告日期
                 .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getDividend())          // 派息(税前)(元)
@@ -152,6 +167,7 @@ public class StockDomain implements Serializable {
                 .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getSchedule())          // 进度
                 .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getDividendDate())      // 除权除息日
                 .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getRegistrationDate())  // 股权登记日
+                .append(Constants.DELIMITING_COMMA.getString()).append(sbDomain.getDividendYear())      // 报告期
                 ;
         return sbStr.toString().replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
     }

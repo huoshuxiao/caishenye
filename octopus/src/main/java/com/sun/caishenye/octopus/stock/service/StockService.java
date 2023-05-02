@@ -9,6 +9,7 @@ import com.sun.caishenye.octopus.stock.domain.ShareBonusDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,6 +28,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class StockService {
+
+    @Value("${mm.cal2}")
+    private boolean cal2;
 
     @Autowired
     private StockDao stockDao;
@@ -92,9 +96,6 @@ public class StockService {
     // 扩展 分红配股
     public Object moneyMoney() {
 
-        // 分红配股
-        List<StockDomain> shareBonusDataList = shareBonusService.readShareBonus();
-
         // 实时行情
         List<StockDomain> hqDataList = realHqService.readHqData();
         Map<String, StockDomain> hqDataMap = new HashMap<>();
@@ -110,6 +111,8 @@ public class StockService {
 //        // 空间（map）换时间(list)
 //        Map<String, DayLineDomain> hhqDataMap = hhqDataList.stream().collect(Collectors.toMap(t -> t.getCompanyCode() + t.getDay(), t-> t));
 
+        // 分红配股
+        List<StockDomain> shareBonusDataList = shareBonusService.readShareBonus();
         // merge指标，计算股息率(扩展分红配股 股价/股息率)
         shareBonusDataList.forEach(stockDomain -> {
 
@@ -226,27 +229,28 @@ public class StockService {
         });
 
         // 二次计算
-        shareBonusDataList.stream().forEach(s -> {
-
-            List<StockDomain> sbList = shareBonusDataList.stream().filter(t -> t.getCompanyCode().equals(s.getCompanyCode()))
-                    .filter(t -> t.getSbDomain().getSchedule().equals(Constants.SB_SCHEDULE_IMPLEMENT.getString()))
-                    .filter(t -> t.getSbDomain().getBonusDate().length() > 4)
-                    .filter(t -> Utils.getYear(t.getSbDomain().getBonusDate()).equals(Utils.getYear(s.getSbDomain().getBonusDate())))
-                    .filter(t -> Float.parseFloat(t.getSbDomain().getDividend()) > 0f)
-                    .collect(Collectors.toList());
-
-            // 1年多次分红
-            if (sbList.size() > 1) {
-                String maxBonusDate = sbList.stream().map(StockDomain::getSbDomain)
-                        .max(Comparator.comparing(ShareBonusDomain::getBonusDate)).get().getBonusDate();
-                if (s.getSbDomain().getBonusDate().equals(maxBonusDate)) {
-                    s.setDividendYield(String.format(sbList.stream().map(StockDomain::getDividendYield)
-                            .reduce((x, y) -> String.valueOf(Float.parseFloat(x) + Float.parseFloat(y))).get(), "%0.2f"));
-                } else {
-                    s.getSbDomain().setSchedule(Constants.SB_SCHEDULE_IMPLEMENT_MID.getString());
+        if (cal2) {
+            shareBonusDataList.stream().forEach(s -> {
+                List<StockDomain> sbList = shareBonusDataList.stream().filter(t -> t.getCompanyCode().equals(s.getCompanyCode()))
+                        .filter(t -> t.getSbDomain().getSchedule().equals(Constants.SB_SCHEDULE_IMPLEMENT.getString()))
+                        .filter(t -> t.getSbDomain().getBonusDate().length() > 4)
+                        .filter(t -> Float.parseFloat(t.getSbDomain().getDividend()) > 0f)
+                        // 相同财年
+                        .filter(t -> Utils.getYear(t.getSbDomain().getDividendYear()).equals(Utils.getYear(s.getSbDomain().getDividendYear())))
+                        .collect(Collectors.toList());
+                // 1年多次分红
+                if (sbList.size() > 1) {
+                    String maxBonusDate = sbList.stream().map(StockDomain::getSbDomain)
+                            .max(Comparator.comparing(ShareBonusDomain::getBonusDate)).get().getBonusDate();
+                    if (s.getSbDomain().getBonusDate().equals(maxBonusDate)) {
+                        s.setDividendYield(String.format(sbList.stream().map(StockDomain::getDividendYield)
+                                .reduce((x, y) -> String.valueOf(Float.parseFloat(x) + Float.parseFloat(y))).get(), "%0.2f"));
+                    } else {
+                        s.getSbDomain().setSchedule(Constants.SB_SCHEDULE_IMPLEMENT_MID.getString());
+                    }
                 }
-            }
-        });
+            });
+        }
 
         writeMoneyMoney(shareBonusDataList);
 
