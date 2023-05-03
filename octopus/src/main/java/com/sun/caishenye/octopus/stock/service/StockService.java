@@ -246,7 +246,10 @@ public class StockService {
                         s.setDividendYield(String.format(sbList.stream().map(StockDomain::getDividendYield)
                                 .reduce((x, y) -> String.valueOf(Float.parseFloat(x) + Float.parseFloat(y))).get(), "%0.2f"));
                     } else {
-                        s.getSbDomain().setSchedule(Constants.SB_SCHEDULE_IMPLEMENT_MID.getString());
+                        // 年中分红： 实施 -> 实施[年中]
+                        if (s.getSbDomain().getSchedule().equals(Constants.SB_SCHEDULE_IMPLEMENT.getString())) {
+                            s.getSbDomain().setSchedule(Constants.SB_SCHEDULE_IMPLEMENT_MID.getString());
+                        }
                     }
                 }
             });
