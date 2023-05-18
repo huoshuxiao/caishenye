@@ -22,13 +22,13 @@ public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
         return response;
     }
 
-    private void traceRequest(HttpRequest request, byte[] body) throws IOException {
-        log.debug("===========================①request begin================================================");
-        log.debug("URI         : {}", request.getURI());
+    private void traceRequest(HttpRequest request, byte[] body) {
+        log.info("===========================①request begin================================================");
+        log.info("URI         : {}", request.getURI());
         log.debug("Method      : {}", request.getMethod());
         log.debug("Headers     : {}", request.getHeaders());
         log.debug("Request body: {}", new String(body, StandardCharsets.UTF_8));
-        log.debug("===========================①request end==================================================");
+        log.info("===========================①request end==================================================");
     }
 
     private void traceResponse(ClientHttpResponse response) throws IOException {
@@ -42,11 +42,11 @@ public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
             line = bufferedReader.readLine();
         }
 
-        log.debug("============================②response begin=========================================");
-        log.debug("Status code  : {}", response.getStatusCode());
+        log.info("============================②response begin=========================================");
+        log.info("Status code  : {}", response.getStatusCode());
         log.debug("Status text  : {}", response.getStatusText());
         log.debug("Headers      : {}", response.getHeaders());
         log.debug("Response body: {}", inputStringBuilder);
-        log.debug("============================②response end===========================================");
+        log.info("============================②response end===========================================");
     }
 }
