@@ -12,6 +12,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -41,6 +42,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ApiRestTemplate {
 
     // 雪球 分红配股
+
+    @Value("${cookie.xueqiu}")
+    private String xueqiuCookie;
     // https://stock.xueqiu.com/v5/stock/f10/cn/bonus.json?symbol=SZ002032&size=1000&page=1&extend=true
     private static final String XUEQIU_BONUS_URL = "http://stock.xueqiu.com/v5/stock/f10/cn/bonus.json?symbol={location}{companyCode}&size=1000&page=1&extend=true";
 
@@ -520,7 +524,8 @@ public class ApiRestTemplate {
                     } else {
 
                         // call ShRestTemplate
-                        long days = ChronoUnit.DAYS.between(LocalDate.of(Integer.parseInt(day.substring(0, 4)), Integer.parseInt(day.substring(4, 6)), Integer.parseInt(day.substring(6, 8))),
+                        long days = ChronoUnit.DAYS.between(LocalDate.of(Integer.parseInt(day.substring(0, 4)),
+                                        Integer.parseInt(day.substring(4, 6)), Integer.parseInt(day.substring(6, 8))),
                                 LocalDate.now());
                         ShHqDomain shHqDomain = shRestTemplate.getHhqData(stockDomain, days);
                         if (shHqDomain != null) {
@@ -601,9 +606,10 @@ public class ApiRestTemplate {
     public List<ShareBonusDomain> getXueqiuShareBonus(String companyCode, String exchange) {
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Cookie", "Hm_lvt_1db88642e346389874251b5a1eded6e3=1682920565; device_id=49fc31e05932a9a26557f3f2a77406e4; s=cp15r1q1m8; xq_a_token=ebd3592a6f07cb960b9cb980e00fbb4dce12da70; xqat=ebd3592a6f07cb960b9cb980e00fbb4dce12da70; xq_r_token=f8a19d1fe4aeeb1605c79b4c4037ed3110905745; xq_id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1aWQiOi0xLCJpc3MiOiJ1YyIsImV4cCI6MTY4NjQ0MzQ1NCwiY3RtIjoxNjg0MzY0NDYzMjgxLCJjaWQiOiJkOWQwbjRBWnVwIn0.ndM6WamZ5QlXoHecBNZsOEl2RIQP331e8-GhKNjDHEzHdpXpR2Z3LpFiUusC6B6mpmuZwvcWXzPjcoWYCE7uJdezPZMgVFnx5scZjek4Gs7NOS-7cNpib53w_NvBlBXJAnBzKOU8zxdfvyOcR4pG2RQ1VH1lJfQKI_b--MfrGPGE5xPRgS-cxTfgr1Nh-JKZ0zQvqS4VgUELKPmkfSeYpAZ9w3T_nFRARCw6j7-5ZmzNbW-bXy92sJR5zjHK1tMhATgc14YgpIKbPVP6fI9zVgXj7FAcbiRVCcwPu6OOpcYMpTFW-exiLRwpOv3MGyMx9zkeoEP5bMTw_iQlhZH0Xw; u=651684364471896; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1684364475");
+        headers.add("Cookie", xueqiuCookie);
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<Map> responseEntity = restTemplate.exchange(XUEQIU_BONUS_URL, HttpMethod.GET, entity, Map.class, builderXueqiuShareBonusUrl(companyCode, exchange));
+        ResponseEntity<Map> responseEntity = restTemplate.exchange(XUEQIU_BONUS_URL, HttpMethod.GET, entity, Map.class,
+                builderXueqiuShareBonusUrl(companyCode, exchange));
         Map<String, Object> responseMap = responseEntity.getBody();
         Map<String, Object> dataMap = (Map)responseMap.get("data");
         List<Map<String, Object>> items = (List)dataMap.get("items");
