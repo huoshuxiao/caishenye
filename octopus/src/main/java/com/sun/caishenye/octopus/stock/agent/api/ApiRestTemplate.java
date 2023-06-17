@@ -42,8 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ApiRestTemplate {
 
     // 雪球 分红配股
-
-    @Value("${cookie.xueqiu}")
+    @Value("${cookie.xq}")
     private String xueqiuCookie;
     // https://stock.xueqiu.com/v5/stock/f10/cn/bonus.json?symbol=SZ002032&size=1000&page=1&extend=true
     private static final String XUEQIU_BONUS_URL = "http://stock.xueqiu.com/v5/stock/f10/cn/bonus.json?symbol={location}{companyCode}&size=1000&page=1&extend=true";
