@@ -131,24 +131,24 @@ public class StockService {
             } else if (sbDomain.getSchedule().equals(Constants.SB_SCHEDULE_IMPLEMENT.getString())
                     && Double.parseDouble(sbDomain.getDividend()) > 0d) { // 分红金额大于0
 
-                // 根据 公司代码 + 除权除息日(map) 取得 股价
-                String mapKey = stockDomain.getCompanyCode() + Utils.formatDate2String(sbDomain.getDividendDate());
+                // 根据 公司代码 + 股权登记日(map) 取得 股价
+                String mapKey = stockDomain.getCompanyCode() + Utils.formatDate2String(sbDomain.getRegistrationDate());
                 log.debug("mm mapKey :: {}", mapKey);
 //                DayLineDomain dayLineDomain = hhqDataMap.get(mapKey);
                 DayLineDomain dayLineDomain = historyHqService.getHhqByDateForObject(stockDomain);
                 // 历史数据 没有时 动态动计算股息率
                 if (dayLineDomain == null) {
                     log.debug("mm mapKey :: {}", mapKey);
-                    if ("--".equals(sbDomain.getDividendDate())) {
+                    if ("--".equals(sbDomain.getRegistrationDate())) {
                         stockDomain.setDividendYield("×");
                         stockDomain.setPrice("×");
-                        stockDomain.setDate(sbDomain.getDividendDate());
+                        stockDomain.setDate(sbDomain.getRegistrationDate());
                     } else {
-                        // 除权除息日 大于等于 当日（数据问题） 取实时行情
+                        // 股权登记日 大于等于 当日（数据问题） 取实时行情
                         LocalDate today = LocalDate.now();
-                        LocalDate dividendLocalDate = LocalDate.of(Integer.parseInt(sbDomain.getDividendDate().substring(0, 4)),
-                                Integer.parseInt(sbDomain.getDividendDate().substring(5, 7)),
-                                Integer.parseInt(sbDomain.getDividendDate().substring(8, 10)));
+                        LocalDate dividendLocalDate = LocalDate.of(Integer.parseInt(sbDomain.getRegistrationDate().substring(0, 4)),
+                                Integer.parseInt(sbDomain.getRegistrationDate().substring(5, 7)),
+                                Integer.parseInt(sbDomain.getRegistrationDate().substring(8, 10)));
                         if (ChronoUnit.DAYS.between(dividendLocalDate, today) <= 0) {
                             // 计算股息率
                             calDividendYield(stockDomain, hqDataMap);
@@ -171,13 +171,13 @@ public class StockService {
 
                                     // 收盘价
                                     stockDomain.setPrice(hhq[2]);
-                                    stockDomain.setDate(sbDomain.getDividendDate());
+                                    stockDomain.setDate(sbDomain.getRegistrationDate());
                                     // 股息率 = 派息(税前)(元) / 股价
                                     stockDomain.setDividendYield(calDividendYield(stockDomain));
 
                                 } else {
-                                    // 根据最近除权除息日的股价计算股息率
-                                    DayLineDomain dayLineDomain2 = historyHqService.getHhqByDateForObject(stockDomain, sbDomain.getDividendDate());
+                                    // 根据最近股权登记日的股价计算股息率
+                                    DayLineDomain dayLineDomain2 = historyHqService.getHhqByDateForObject(stockDomain, sbDomain.getRegistrationDate());
                                     if (dayLineDomain2 != null) {
                                         stockDomain.setPrice(dayLineDomain2.getPrice());
                                         stockDomain.setDate(dividendLocalDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
@@ -188,7 +188,7 @@ public class StockService {
                                         log.error("mm mapKey :: {}", mapKey);
                                         stockDomain.setDividendYield("×");
                                         stockDomain.setPrice("×");
-                                        stockDomain.setDate(sbDomain.getDividendDate());
+                                        stockDomain.setDate(sbDomain.getRegistrationDate());
                                     }
                                 }
                             } catch (ExecutionException | InterruptedException e) {
@@ -198,7 +198,7 @@ public class StockService {
                     }
                 } else {
                     stockDomain.setPrice(dayLineDomain.getPrice());
-                    stockDomain.setDate(sbDomain.getDividendDate());
+                    stockDomain.setDate(sbDomain.getRegistrationDate());
                     // 股息率 = 派息(税前)(元) / 股价
                     stockDomain.setDividendYield(calDividendYield(stockDomain));
                 }
@@ -219,12 +219,12 @@ public class StockService {
 //                }
                 stockDomain.setPrice("-");
                 stockDomain.setDividendYield("0");
-                stockDomain.setDate(sbDomain.getDividendDate());
+                stockDomain.setDate("--");
             // 非分红(送股(股)/转增(股))
             } else {
                 stockDomain.setPrice("-");
                 stockDomain.setDividendYield("0");
-                stockDomain.setDate(sbDomain.getDividendDate());
+                stockDomain.setDate("--");
             }
         });
 

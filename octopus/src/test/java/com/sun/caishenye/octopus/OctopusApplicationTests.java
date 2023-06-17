@@ -1,5 +1,6 @@
 package com.sun.caishenye.octopus;
 
+import com.sun.caishenye.octopus.common.Utils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -36,5 +37,11 @@ class OctopusApplicationTests {
         }
         LocalDateTime endTime = LocalDateTime.now();
         System.out.println(ChronoUnit.MINUTES.between(startTime, endTime));
+    }
+
+    @Test
+    void test002() {
+        long d = 1686153600000L;
+        System.out.println(Utils.number2Date(d));
     }
 }

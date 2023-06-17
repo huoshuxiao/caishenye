@@ -71,17 +71,13 @@ public class SzRestTemplate {
         params.put("companyCode", stockDomain.getCompanyCode());
         params.put("random", RandomUtils.nextInt());
         if (StringUtils.isEmpty(date)) {
-            params.put("beginDate", getDay(stockDomain));
-            params.put("endDate", getDay(stockDomain));
+            params.put("beginDate", stockDomain.getSbDomain().getRegistrationDate());
+            params.put("endDate", stockDomain.getSbDomain().getRegistrationDate());
         } else {
             params.put("beginDate", date);
             params.put("endDate", date);
         }
         return params;
-    }
-
-    private String getDay(StockDomain stockDomain) {
-        return "--".equals(stockDomain.getSbDomain().getDividendDate()) ? stockDomain.getSbDomain().getRegistrationDate() : stockDomain.getSbDomain().getDividendDate();
     }
 
     // 实时行情

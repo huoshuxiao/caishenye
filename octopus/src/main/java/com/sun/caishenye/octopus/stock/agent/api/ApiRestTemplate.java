@@ -462,14 +462,14 @@ public class ApiRestTemplate {
     }
 
     // 历史行情(指定日期)
-    public DayLineDomain getHhqByDateForObject(StockDomain stockDomain, String dividendDateStr) {
+    public DayLineDomain getHhqByDateForObject(StockDomain stockDomain, String sDate) {
 
         int dd = 0;
-        LocalDate dividendDate = LocalDate.parse(dividendDateStr);
+        LocalDate date = LocalDate.parse(sDate);
         DayLineDomain hhq = null;
         while (hhq == null) {
-            dividendDate = dividendDate.minusDays(dd--);
-            stockDomain.getSbDomain().setDividendDate(dividendDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+            date = date.minusDays(dd--);
+            stockDomain.getSbDomain().setRegistrationDate(date.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
             hhq = getHhqByDateForObject(stockDomain);
             if (hhq != null) {
                 return hhq;
@@ -514,7 +514,7 @@ public class ApiRestTemplate {
                     if (tDayLineDomain.getSummary().getId().contains(Constants.EXCHANGE_SZ.getString())) {
 
                         // call SzRestTemplate
-                        SzHqDomain hqDomain = szRestTemplate.getHhqData(stockDomain, "");
+                        SzHqDomain hqDomain = szRestTemplate.getHhqData(stockDomain, null);
                         if (hqDomain != null) {
                             // 收盘价
                             hhqDomain.setPrice(hqDomain.getPrice());
@@ -597,9 +597,7 @@ public class ApiRestTemplate {
     }
 
     private String getDay(StockDomain stockDomain) {
-        return Utils.formatDate2String("--".equals(stockDomain.getSbDomain().getDividendDate())
-                ? stockDomain.getSbDomain().getRegistrationDate()
-                : stockDomain.getSbDomain().getDividendDate());
+        return Utils.formatDate2String(stockDomain.getSbDomain().getRegistrationDate());
     }
 
     // 雪球 分红配股
@@ -619,6 +617,7 @@ public class ApiRestTemplate {
             ShareBonusDomain sb = new ShareBonusDomain();
             sb.setDividendYear(item.get("dividend_year").toString());
             sb.setDividendDate(Utils.number2Date((Long)item.get("ex_dividend_date")));
+            sb.setRegistrationDate(Utils.number2Date((Long)item.get("equity_date")));
 
             sbList.add(sb);
         }
