@@ -19,7 +19,7 @@ public class DayLineDomain implements Serializable {
 
     @Setter
     @Getter
-    private BaseDomain summary;
+    private BaseDomain summary = new BaseDomain();
 
     // 金融界
     // 600000
@@ -32,6 +32,18 @@ public class DayLineDomain implements Serializable {
     //6	:	321723      成交量(手)
     //7	:	327768574   成交金额(万)
     //8	:		false
+    // 东方财富网
+    //0	:	2020-03-25  收盘日
+    //1	:	10.06       开盘
+    //2	:	10.15       收盘
+    //3	:	10.2        最高
+    //4	:	10.27       最低
+    //5	:	10.12       成交量(手)
+    //6	:	321723      成交金额(万)
+    //7	:	振幅
+    //8	:	涨幅
+    //9	:	涨跌
+    //10:	换手
     @Setter
     @Getter
     private List<String[]> hqs = new ArrayList<>();

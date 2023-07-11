@@ -83,9 +83,12 @@ public class ApiRestTemplate {
      */
     private static final String EASTMONEY_BASE_LIST_URL = "http://10.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112408506576043032625_1612278160710&pn=1&pz=10000&po=0&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f12&fs=m:0+t:6,m:0+t:13,m:0+t:80,m:1+t:2,m:1+t:23&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152&_=1612278160715";
 
-    // 历史行情 金融界
-    // http://flashdata2.jrj.com.cn/history/js/share/601628/other/dayk_ex.js?random=1585145121921
-    protected static final String JRJ_HHQ_URL = "http://flashdata2.jrj.com.cn/history/js/share/{companyCode}/other/dayk_ex.js?random={random}";
+//    // 历史行情 金融界
+//    // http://flashdata2.jrj.com.cn/history/js/share/601628/other/dayk_ex.js?random=1585145121921
+//    protected static final String JRJ_HHQ_URL = "http://flashdata2.jrj.com.cn/history/js/share/{companyCode}/other/dayk_ex.js?random={random}";
+    // 历史行情 东方财富网
+    // http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg=0&end=20500101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid=0.300308&klt=101&fqt=1&cb=jsonp1688913443970
+    protected static final String EASTMONEY_HHQ_URL = "http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg=0&end=20500101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid={exchange}.{companyCode}&klt=101&fqt=1&cb=jsonp1688913443970";
 
     // 历史行情 搜狐
     // http://q.stock.sohu.com/hisHq?code=cn_603999&start=20091126&end=20200325&stat=1&order=D&period=d&callback=historySearchHandler&rt=jsonp&r=0.028961481283250157&0.037908320278956964
@@ -424,7 +427,35 @@ public class ApiRestTemplate {
 //        params.put("js", "var ITnKjhqD={pages:(tp),data: (x),font:(font)}");
 //        return params;
 //    }
-
+//
+//    // 历史行情
+//    @Async
+//    public CompletableFuture<DayLineDomain> getHhqForObject(StockDomain stockDomain) {
+//        log.debug("call hhq request params :: {}", stockDomain);
+//        DayLineDomain hhqDomain = new DayLineDomain();
+//        try {
+//
+//            // call rest service
+//            String response = restTemplateText.getForObject(JRJ_HHQ_URL, String.class, hhqUrlBuilder(stockDomain));
+//            log.debug("call hhq response string :: {}", response);
+//            // 结构化返回值，对返回值进行fmt
+//            response = StringUtils.removeStart(response, "var s_d_ex_" + stockDomain.getCompanyCode() + "=");
+//            response = StringUtils.substringBefore(response,"\"factor\"");
+//            response = response.replace("]],","]]}");
+//
+//            log.debug("call hhq response :: {}", response);
+//            Gson gson = new Gson();
+//            hhqDomain = gson.fromJson(response, DayLineDomain.class);
+//
+////            log.debug("call hhq response value :: {}", hhqDomain);
+//        } catch (HttpClientErrorException e) {
+//            log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
+//        } catch (JsonSyntaxException je) {
+//            log.error("getHhqForObject :: " + hhqUrlBuilder(stockDomain) + " " + je);
+//        }
+//        return CompletableFuture.completedFuture(hhqDomain);
+//    }
+//
     // 历史行情
     @Async
     public CompletableFuture<DayLineDomain> getHhqForObject(StockDomain stockDomain) {
@@ -433,18 +464,34 @@ public class ApiRestTemplate {
         try {
 
             // call rest service
-            String response = restTemplateText.getForObject(JRJ_HHQ_URL, String.class, hhqUrlBuilder(stockDomain));
+            String response = restTemplateText.getForObject(EASTMONEY_HHQ_URL, String.class, hhqUrlBuilder(stockDomain));
             log.debug("call hhq response string :: {}", response);
             // 结构化返回值，对返回值进行fmt
-            response = StringUtils.removeStart(response, "var s_d_ex_" + stockDomain.getCompanyCode() + "=");
-            response = StringUtils.substringBefore(response,"\"factor\"");
-            response = response.replace("]],","]]}");
-
+            response = StringUtils.removeStart(response, "jsonp1688913443970(");
+            response = StringUtils.removeEnd(response, ");");
             log.debug("call hhq response :: {}", response);
             Gson gson = new Gson();
-            hhqDomain = gson.fromJson(response, DayLineDomain.class);
+            Map<String, Object> responseMap = gson.fromJson(response, Map.class);
+            Map<String, Object> dataMap = (Map)responseMap.get("data");
+            List<String> klines = (List)dataMap.get("klines");
 
-//            log.debug("call hhq response value :: {}", hhqDomain);
+            hhqDomain.setCompanyCode(dataMap.get("code").toString());
+            hhqDomain.setCompanyName(dataMap.get("name").toString());
+
+            // 证券交易所
+            if (StringUtils.startsWith(dataMap.get("code").toString(), "6")) {
+                // 600001/686868
+                hhqDomain.getSummary().setId(Constants.EXCHANGE_SH.getString().concat(dataMap.get("code").toString()));
+            } else {
+                // 000002/300002
+                hhqDomain.getSummary().setId(Constants.EXCHANGE_SZ.getString().concat(dataMap.get("code").toString()));
+            }
+
+            klines.forEach(k -> {
+                String[] hqs = k.split(",");
+                hqs[0] = hqs[0].replaceAll("-", "");
+                hhqDomain.getHqs().add(hqs);
+            });
         } catch (HttpClientErrorException e) {
             log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
         } catch (JsonSyntaxException je) {
@@ -455,7 +502,16 @@ public class ApiRestTemplate {
 
     private Map<String, Object> hhqUrlBuilder(StockDomain stockDomain) {
         Map<String, Object> params = new HashMap<>();
-        params.put("companyCode", stockDomain.getCompanyCode());
+        String companyCode = stockDomain.getCompanyCode();
+        params.put("companyCode", companyCode);
+        // 证券交易所
+        if (StringUtils.startsWith(companyCode, "6")) {
+            // 600001/686868
+            params.put("exchange", 1);
+        } else {
+            // 000002/300002
+            params.put("exchange", 0);
+        }
         params.put("random", RandomUtils.nextInt());
         return params;
     }
