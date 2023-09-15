@@ -7,14 +7,13 @@ import java.util.Date;
 public class Utils {
 
     public static String long2Date(Long date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return date == null ? "--" : dateFormat.format(new Date(date));
+        return date == null ? "--" : LocalDateTime.ofInstant(Instant.ofEpochMilli(date), ZoneId.systemDefault()).toLocalDate().toString();
     }
 
-    public static String date2Long(String date) {
+    public static Long date2Long(String date) {
         LocalDateTime localDateTime = LocalDateTime.of(LocalDate.parse(date), LocalTime.parse("00:00:00"));
         ZonedDateTime zdt = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
-        return  String.valueOf(zdt.toInstant().toEpochMilli());
+        return  zdt.toInstant().toEpochMilli();
     }
 
     public static String getYear(String date) {
