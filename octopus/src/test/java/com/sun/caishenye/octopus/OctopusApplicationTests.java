@@ -39,9 +39,4 @@ class OctopusApplicationTests {
         System.out.println(ChronoUnit.MINUTES.between(startTime, endTime));
     }
 
-    @Test
-    void test002() {
-        long d = 1686153600000L;
-        System.out.println(Utils.number2Date(d));
-    }
 }

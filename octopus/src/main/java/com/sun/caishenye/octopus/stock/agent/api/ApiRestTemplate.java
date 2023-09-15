@@ -671,8 +671,8 @@ public class ApiRestTemplate {
         for (Map item: items) {
             ShareBonusDomain sb = new ShareBonusDomain();
             sb.setDividendYear(item.get("dividend_year").toString());
-            sb.setDividendDate(Utils.number2Date((Long)item.get("ex_dividend_date")));
-            sb.setRegistrationDate(Utils.number2Date((Long)item.get("equity_date")));
+            sb.setDividendDate(Utils.long2Date((Long)item.get("ex_dividend_date")));
+            sb.setRegistrationDate(Utils.long2Date((Long)item.get("equity_date")));
 
             sbList.add(sb);
         }
