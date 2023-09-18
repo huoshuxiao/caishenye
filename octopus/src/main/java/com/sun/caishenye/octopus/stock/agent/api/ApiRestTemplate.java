@@ -672,10 +672,10 @@ public class ApiRestTemplate {
 
     // 雪球 分红配股
     private List<ShareBonusDomain> getXueqiuSB(String companyCode, String exchange) {
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-        }
+//        try {
+//            Thread.sleep(500);
+//        } catch (InterruptedException e) {
+//        }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Cookie", xueqiuCookie);
         HttpEntity<String> entity = new HttpEntity<>(headers);
