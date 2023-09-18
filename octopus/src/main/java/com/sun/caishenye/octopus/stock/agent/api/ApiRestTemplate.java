@@ -658,6 +658,24 @@ public class ApiRestTemplate {
     // 雪球 分红配股
     public List<ShareBonusDomain> getXueqiuShareBonus(String companyCode, String exchange) {
 
+        List<ShareBonusDomain> sbList1 = getXueqiuSB(companyCode, exchange);
+        List<ShareBonusDomain> sbList2 = getXueqiuSB(companyCode, exchange);
+        List<ShareBonusDomain> sbList3 = getXueqiuSB(companyCode, exchange);
+
+        Map<Integer, List<ShareBonusDomain>> max = new HashMap<>();
+        max.putIfAbsent(sbList1.size(), sbList1);
+        max.putIfAbsent(sbList2.size(), sbList2);
+        max.putIfAbsent(sbList3.size(), sbList3);
+
+        return max.get(max.keySet().stream().mapToInt(v -> v).max().orElse(sbList1.size()));
+    }
+
+    // 雪球 分红配股
+    private List<ShareBonusDomain> getXueqiuSB(String companyCode, String exchange) {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Cookie", xueqiuCookie);
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -678,6 +696,7 @@ public class ApiRestTemplate {
         }
         return sbList;
     }
+
     private Map<String, Object> builderXueqiuShareBonusUrl(String companyCode, String exchange) {
         Map<String, Object> params = new HashMap<>();
         params.put("location", exchange.toUpperCase());

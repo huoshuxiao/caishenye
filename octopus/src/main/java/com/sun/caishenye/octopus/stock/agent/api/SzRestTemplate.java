@@ -60,7 +60,7 @@ public class SzRestTemplate {
         } catch (RestClientException e) {
             log.error("sz hhq retry {} :: {}", stockDomain.getCompanyCode(), e.getMessage());
             // 访问异常 retry
-//            getHhqData(stockDomain, date);
+            getHhqData(stockDomain, date);
         }
         return hqDomain;
     }
