@@ -6,13 +6,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.Utils;
+import com.sun.caishenye.octopus.stock.cache.StockCache;
 import com.sun.caishenye.octopus.stock.domain.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -41,9 +41,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class ApiRestTemplate {
 
+    @Autowired
+    private StockCache cache;
+
     // 雪球 分红配股
-    @Value("${cookie.xq}")
-    private String xueqiuCookie;
     // https://stock.xueqiu.com/v5/stock/f10/cn/bonus.json?symbol=SZ002032&size=1000&page=1&extend=true
     private static final String XUEQIU_BONUS_URL = "http://stock.xueqiu.com/v5/stock/f10/cn/bonus.json?symbol={location}{companyCode}&size=1000&page=1&extend=true";
 
@@ -672,12 +673,9 @@ public class ApiRestTemplate {
 
     // 雪球 分红配股
     private List<ShareBonusDomain> getXueqiuSB(String companyCode, String exchange) {
-//        try {
-//            Thread.sleep(500);
-//        } catch (InterruptedException e) {
-//        }
+
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Cookie", xueqiuCookie);
+        headers.add("Cookie", cache.getXQCookies());
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<Map> responseEntity = restTemplate.exchange(XUEQIU_BONUS_URL, HttpMethod.GET, entity, Map.class,
                 builderXueqiuShareBonusUrl(companyCode, exchange));

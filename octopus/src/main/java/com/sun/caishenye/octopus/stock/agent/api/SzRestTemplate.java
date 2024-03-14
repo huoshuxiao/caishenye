@@ -25,11 +25,13 @@ public class SzRestTemplate {
 
     // 实时行情(分时图) 深圳证券交易所
     // http://www.szse.cn/api/market/ssjjhq/getTimeData?random=0.8019259119284983&marketId=1&code=000001
+//    protected static final String SZ_HQ_BASE_URL = "http://www.szse.cn/api/market/ssjjhq/getTimeData?random={random}&marketId=1&code={companyCode}";
     protected static final String SZ_HQ_BASE_URL = "http://big5.szse.cn/site/cht/www.szse.cn/api/market/ssjjhq/getTimeData?random={random}&marketId=1&code={companyCode}";
 
     // 历史行情(日次) 深圳证券交易所
     // http://www.szse.cn/api/report/ShowReport/data?SHOWTYPE=JSON&CATALOGID=1815_stock&TABKEY=tab1&txtDMorJC=000001&txtBeginDate=2020-03-24&txtEndDate=2020-03-24&radioClass=00%2C20%2C30&txtSite=all&random=0.5182614190145614
-    protected static final String SZ_HHQ_BASE_URL = "http://big5.szse.cn/site/cht/www.szse.cn/api/report/ShowReport/data?SHOWTYPE=JSON&CATALOGID=1815_stock&TABKEY=tab1&txtDMorJC={companyCode}&txtBeginDate={beginDate}&txtEndDate={endDate}&radioClass=00,20,30&txtSite=all&random={random}";
+    protected static final String SZ_HHQ_BASE_URL = "http://www.szse.cn/api/report/ShowReport/data?SHOWTYPE=JSON&CATALOGID=1815_stock&TABKEY=tab1&txtDMorJC={companyCode}&txtBeginDate={beginDate}&txtEndDate={endDate}&radioClass=00,20,30&txtSite=all&random={random}";
+//    protected static final String SZ_HHQ_BASE_URLURL = "http://big5.szse.cn/site/cht/www.szse.cn/api/report/ShowReport/data?SHOWTYPE=JSON&CATALOGID=1815_stock&TABKEY=tab1&txtDMorJC={companyCode}&txtBeginDate={beginDate}&txtEndDate={endDate}&radioClass=00,20,30&txtSite=all&random={random}";
 
     @Autowired
     private RestTemplate restTemplate;

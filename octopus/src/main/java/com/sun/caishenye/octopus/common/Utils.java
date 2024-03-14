@@ -9,6 +9,9 @@ public class Utils {
     public static String long2Date(Long date) {
         return date == null ? "--" : LocalDateTime.ofInstant(Instant.ofEpochMilli(date), ZoneId.systemDefault()).toLocalDate().toString();
     }
+    public static String long2DateTime(Long datetime) {
+        return datetime == null ? "--" : LocalDateTime.ofInstant(Instant.ofEpochMilli(datetime), ZoneId.systemDefault()).toString();
+    }
 
     public static Long date2Long(String date) {
         LocalDateTime localDateTime = LocalDateTime.of(LocalDate.parse(date), LocalTime.parse("00:00:00"));

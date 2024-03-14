@@ -6,8 +6,9 @@ public class UtilsTest {
 
     @Test
     void testDate() {
-        long d = 1694707200000L;
+        long d = 1710247928283L;
         System.out.println(Utils.long2Date(d));
+        System.out.println(Utils.long2DateTime(d));
         System.out.println(Utils.date2Long(Utils.long2Date(d)));
     }
 }

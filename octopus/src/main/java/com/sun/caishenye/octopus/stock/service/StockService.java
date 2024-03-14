@@ -53,11 +53,11 @@ public class StockService {
     public void run() throws ExecutionException, InterruptedException {
         base();
 
-        hq();
-        shareBonus();
-//        hhq();
         financialReport();
 
+        hq();
+//        hhq();
+        shareBonus();
         moneyMoney();
     }
 

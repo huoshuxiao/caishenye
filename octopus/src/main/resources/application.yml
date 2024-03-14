@@ -36,5 +36,3 @@ job:
 mm:
   # true: 股息二次计算(股息累加)
   cal2: true
-cookie:
-  xq: xxxx

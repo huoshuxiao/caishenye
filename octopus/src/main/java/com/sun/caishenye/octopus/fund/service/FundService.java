@@ -59,7 +59,7 @@ public class FundService {
 
         // retry
         if (baseDataList.size() != detailDataList.size() && baseDataList.size() != extendDomainList.size()) {
-            log.info("fund run retry");
+            log.error("fund run retry");
             run();
         }
 
