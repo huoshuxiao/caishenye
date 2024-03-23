@@ -14,8 +14,8 @@
 * 太极 (Tai chi)
   -[ ] 服务中心
 
-* 魔方 (Rubik's cube)
-  -[ ] 数据平台
+* 魔方 (Cube)
+  -[x] 数据平台
   
 * 招财猫 (Lucky Cat)
   -[ ] Frontend
