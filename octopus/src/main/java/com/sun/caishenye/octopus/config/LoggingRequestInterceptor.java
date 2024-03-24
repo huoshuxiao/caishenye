@@ -1,4 +1,4 @@
-package com.sun.caishenye.octopus.interceptor;
+package com.sun.caishenye.octopus.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpRequest;
@@ -23,12 +23,12 @@ public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
     }
 
     private void traceRequest(HttpRequest request, byte[] body) {
-        log.info("===========================①request begin================================================");
-        log.info("URI         : {}", request.getURI());
-        log.debug("Method      : {}", request.getMethod());
-        log.debug("Headers     : {}", request.getHeaders());
-        log.debug("Request body: {}", new String(body, StandardCharsets.UTF_8));
-        log.info("===========================①request end==================================================");
+        log.debug("===========================①request begin================================================");
+        log.info("Request URI   : {}", request.getURI());
+        log.debug("Method       : {}", request.getMethod());
+        log.debug("Headers      : {}", request.getHeaders());
+        log.debug("Request Body : {}", new String(body, StandardCharsets.UTF_8));
+        log.debug("===========================①request end==================================================");
     }
 
     private void traceResponse(ClientHttpResponse response) throws IOException {
@@ -42,11 +42,11 @@ public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
             line = bufferedReader.readLine();
         }
 
-        log.info("============================②response begin=========================================");
-        log.info("Status code  : {}", response.getStatusCode());
-        log.debug("Status text  : {}", response.getStatusText());
-        log.debug("Headers      : {}", response.getHeaders());
-        log.debug("Response body: {}", inputStringBuilder);
-        log.info("============================②response end===========================================");
+        log.debug("============================②response begin=========================================");
+        log.info("Response Status Code    : {}", response.getStatusCode());
+        log.debug("Status Text            : {}", response.getStatusText());
+        log.debug("Headers                : {}", response.getHeaders());
+        log.debug("Response Body          : {}", inputStringBuilder);
+        log.debug("============================②response end===========================================");
     }
 }

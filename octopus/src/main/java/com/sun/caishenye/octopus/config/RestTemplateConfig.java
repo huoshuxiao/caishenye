@@ -1,6 +1,5 @@
 package com.sun.caishenye.octopus.config;
 
-import com.sun.caishenye.octopus.interceptor.LoggingRequestInterceptor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
