@@ -20,8 +20,7 @@ import java.util.List;
 @Slf4j
 @Repository
 public class StockDao {
-
-    private static final String FILE_PATH = "data/";
+    private static final String FILE_PATH = Constants.FILE_PATH.getString();
 
     private static final String BASE_FILE = FILE_PATH + Constants.FILE_STOCK_BASE.getString();
     private static final String FR_STEP1_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_STEP1.getString();

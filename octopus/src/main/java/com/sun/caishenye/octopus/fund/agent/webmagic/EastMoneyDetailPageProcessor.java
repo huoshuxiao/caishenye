@@ -30,7 +30,7 @@ public class EastMoneyDetailPageProcessor implements PageProcessor {
     protected Site site = Site.me().setRetryTimes(3).setSleepTime(2000).setTimeOut(Integer.MAX_VALUE);
 
     // home page
-    protected final String FILE_PATH = "data";
+    protected final String FILE_PATH = Constants.FILE_PATH.getString();;
     protected final String FILE_NAME = Constants.FILE_EAST_MONEY_DETAIL.getString();
     private final String RISK_MAEESAGE = "友情提示：该基金可能由于巨额赎回等原因，基金净值和阶段涨幅出现异常波动。";
 

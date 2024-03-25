@@ -34,7 +34,7 @@ public class ShareBonusPageProcessor implements PageProcessor {
             .setCharset("gb2312");
 
     // home page
-    protected final String FILE_PATH = "data";
+    protected final String FILE_PATH = Constants.FILE_PATH.getString();;
     protected final String FILE_NAME = Constants.FILE_SHARE_BONUS1.getString();
 
     protected final String DATA_404 = "暂时没有数据！";

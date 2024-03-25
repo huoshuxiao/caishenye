@@ -22,7 +22,7 @@ import java.util.Map;
 @Repository
 public class EastMoneyDao {
 
-    private static final String FILE_PATH = "data/";
+    private static final String FILE_PATH = Constants.FILE_PATH.getString();;
 
     private static final String BASE_FILE = FILE_PATH + Constants.FILE_EAST_MONEY_BASE.getString();
     private static final String DATA_FILE_NAME_DETAIL = FILE_PATH + Constants.FILE_EAST_MONEY_DETAIL.getString();

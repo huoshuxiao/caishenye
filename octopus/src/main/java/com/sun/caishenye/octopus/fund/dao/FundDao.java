@@ -19,9 +19,9 @@ import java.util.List;
 @Slf4j
 @Repository
 public class FundDao {
-    private static final String FILE_PATH = "data/";
+    private static final String FILE_PATH = Constants.FILE_PATH.getString();
     private static final String DATA_FILE_NAME_EXTEND = FILE_PATH + Constants.FILE_FUND_EXTEND.getString();
-    private static final String DATA_FILE_NAME = "data/" + Constants.FILE_FUND.getString();
+    private static final String DATA_FILE_NAME = FILE_PATH + Constants.FILE_FUND.getString();
 
     // 写 扩展数据
     public void writeExtendData(List<FundExtendDomain> data) {

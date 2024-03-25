@@ -29,7 +29,7 @@ public class FinancialReportStep2PageProcessor implements PageProcessor {
     protected Site site = Site.me().setRetryTimes(3).setSleepTime(100).setTimeOut(Integer.MAX_VALUE).setCharset("gb2312");
 
     // home page
-    protected final String FILE_PATH = "data";
+    protected final String FILE_PATH = Constants.FILE_PATH.getString();
     protected final String FILE_NAME = Constants.FILE_FINANCIAL_REPORT_STEP2.getString();
 
     @Override

@@ -39,7 +39,7 @@ public class FinancialReportEastMoneyYJBBPageProcessor implements PageProcessor 
             ;
 
     // home page
-    protected final String FILE_PATH = "data";
+    protected final String FILE_PATH = Constants.FILE_PATH.getString();
     protected final String FILE_NAME = Constants.FILE_FINANCIAL_REPORT_EASTMONEY.getString();
 
     @Override
