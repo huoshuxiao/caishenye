@@ -23,7 +23,7 @@ public class ShareBonusService {
 
     // 发行与分配:分红配股 — 新浪财经
     // https://money.finance.sina.com.cn/corp/go.php/vISSUE_ShareBonus/stockid/603005.phtml
-    private static final String SB_BASE_URL = "https://money.finance.sina.com.cn/corp/go.php/vISSUE_ShareBonus/stockid/{companyCode}.phtml";
+    private static final String SB_BASE_URL = "http://money.finance.sina.com.cn/corp/go.php/vISSUE_ShareBonus/stockid/{companyCode}.phtml";
 
     @Autowired
     private BaseService baseService;
