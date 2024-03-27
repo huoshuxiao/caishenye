@@ -1,9 +1,11 @@
 package com.sun.caishenye.octopus.fund.dao;
 
 import com.sun.caishenye.octopus.common.Constants;
+import com.sun.caishenye.octopus.common.component.CacheComponent;
 import com.sun.caishenye.octopus.fund.domain.EastMoneyBaseDomain;
 import com.sun.caishenye.octopus.fund.domain.EastMoneyDetailDomain;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedReader;
@@ -22,15 +24,17 @@ import java.util.Map;
 @Repository
 public class EastMoneyDao {
 
-    private static final String FILE_PATH = Constants.FILE_PATH.getString();;
+    @Autowired
+    private CacheComponent cache;
 
-    private static final String BASE_FILE = FILE_PATH + Constants.FILE_EAST_MONEY_BASE.getString();
-    private static final String DATA_FILE_NAME_DETAIL = FILE_PATH + Constants.FILE_EAST_MONEY_DETAIL.getString();
+    private String getFilePath() {
+        return cache.getFilePath();
+    }
 
     // 写 基础数据
     public void writeBaseData(List<EastMoneyBaseDomain> data) {
 
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(BASE_FILE), StandardCharsets.UTF_8)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(getFilePath() + Constants.FILE_EAST_MONEY_BASE.getString()), StandardCharsets.UTF_8)) {
             for (EastMoneyBaseDomain stockDomain : data) {
                 String s = stockDomain.builder() + "\r\n";
                 log.debug("write base data >> {}", s);
@@ -45,7 +49,7 @@ public class EastMoneyDao {
     public List<EastMoneyBaseDomain> readBaseData() {
 
         List<EastMoneyBaseDomain> list = new ArrayList<>();
-        Path path = Paths.get(BASE_FILE);
+        Path path = Paths.get(getFilePath() + Constants.FILE_EAST_MONEY_BASE.getString());
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -103,7 +107,7 @@ public class EastMoneyDao {
     public List<EastMoneyDetailDomain> readDetailData() {
 
         List<EastMoneyDetailDomain> list = new ArrayList<>();
-        Path path = Paths.get(DATA_FILE_NAME_DETAIL);
+        Path path = Paths.get(getFilePath() + Constants.FILE_EAST_MONEY_DETAIL.getString());
 
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line = null;

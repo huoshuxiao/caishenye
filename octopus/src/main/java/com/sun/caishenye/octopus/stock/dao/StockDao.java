@@ -1,10 +1,12 @@
 package com.sun.caishenye.octopus.stock.dao;
 
 import com.sun.caishenye.octopus.common.Constants;
+import com.sun.caishenye.octopus.common.component.CacheComponent;
 import com.sun.caishenye.octopus.stock.domain.DayLineDomain;
 import com.sun.caishenye.octopus.stock.domain.FinancialReport2Domain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedReader;
@@ -20,24 +22,18 @@ import java.util.List;
 @Slf4j
 @Repository
 public class StockDao {
-    private static final String FILE_PATH = Constants.FILE_PATH.getString();
 
-    private static final String BASE_FILE = FILE_PATH + Constants.FILE_STOCK_BASE.getString();
-    private static final String FR_STEP1_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_STEP1.getString();
-    private static final String FR_STEP2_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_STEP2.getString();
-    private static final String FR_EASTMONEY_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT_EASTMONEY.getString();
-    private static final String FR_DATA_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT.getString();
-    private static final String FR_DATA2_FILE = FILE_PATH + Constants.FILE_FINANCIAL_REPORT2.getString();
-    private static final String HQ_DATA_FILE = FILE_PATH + Constants.FILE_HQ.getString();
-    private static final String HHQ_DATA_FILE = FILE_PATH + Constants.FILE_HHQ.getString();
-    private static final String SB_DATA_FILE1 = FILE_PATH + Constants.FILE_SHARE_BONUS1.getString();
-    private static final String SB_DATA_FILE = FILE_PATH + Constants.FILE_SHARE_BONUS.getString();
-    private static final String MM_DATA_FILE = FILE_PATH + Constants.FILE_MONEY_MONEY.getString();
+    @Autowired
+    private CacheComponent cache;
+
+    private String getFilePath() {
+        return cache.getFilePath();
+    }
 
     // 写 基础数据
     public void writeBaseData(List<StockDomain> data) {
         log.info("基础数据::{}",data.size());
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(BASE_FILE), StandardCharsets.UTF_8)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(getFilePath() + Constants.FILE_STOCK_BASE.getString()), StandardCharsets.UTF_8)) {
             for (StockDomain stockDomain : data) {
                 String s = stockDomain.baseBuilder() + "\r\n";
                 log.debug("write base data >> {}", s);
@@ -52,7 +48,7 @@ public class StockDao {
     public List<StockDomain> readBaseData() {
 
         List<StockDomain> list = new ArrayList<>();
-        Path path = Paths.get(BASE_FILE);
+        Path path = Paths.get(getFilePath() + Constants.FILE_STOCK_BASE.getString());
 
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line = null;
@@ -79,7 +75,7 @@ public class StockDao {
 
     public void writeMoneyMoney(List<StockDomain> data) {
 
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(MM_DATA_FILE), StandardCharsets.UTF_8)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(getFilePath() + Constants.FILE_MONEY_MONEY.getString()), StandardCharsets.UTF_8)) {
             for (StockDomain stockDomain : data) {
                 String s = stockDomain.mmBuilder() + "\r\n";
                 log.debug("write mm data >> {}", s);
@@ -92,7 +88,7 @@ public class StockDao {
 
     // 写 实时行情
     public void writeHqData(List<StockDomain> data) {
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(HQ_DATA_FILE), StandardCharsets.UTF_8)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(getFilePath() + Constants.FILE_HQ.getString()), StandardCharsets.UTF_8)) {
             for (StockDomain stockDomain : data) {
                 String s = stockDomain.hqBuilder() + "\r\n";
                 log.debug("write hq data >> {}", s);
@@ -106,7 +102,7 @@ public class StockDao {
     // 读 实时行情
     public List<StockDomain> readHqData() {
         List<StockDomain> list = new ArrayList<>();
-        Path path = Paths.get(HQ_DATA_FILE);
+        Path path = Paths.get(getFilePath() + Constants.FILE_HQ.getString());
 
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line = null;
@@ -226,7 +222,7 @@ public class StockDao {
     // 写 财报
     public void writeFinancialReport2(List<FinancialReport2Domain> data) {
 
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(FR_DATA2_FILE), StandardCharsets.UTF_8)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(getFilePath() + Constants.FILE_FINANCIAL_REPORT2.getString()), StandardCharsets.UTF_8)) {
             for (FinancialReport2Domain stockDomain : data) {
                 String s = stockDomain.builder() + "\r\n";
                 log.debug("write fr data >> {}", s);
@@ -324,7 +320,7 @@ public class StockDao {
     public List<StockDomain> readShareBonus1() {
 
         List<StockDomain> list = new ArrayList<>();
-        Path path = Paths.get(SB_DATA_FILE1);
+        Path path = Paths.get(getFilePath() + Constants.FILE_SHARE_BONUS1.getString());
 
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line = null;
@@ -362,7 +358,7 @@ public class StockDao {
     public List<StockDomain> readShareBonus() {
 
         List<StockDomain> list = new ArrayList<>();
-        Path path = Paths.get(SB_DATA_FILE);
+        Path path = Paths.get(getFilePath() + Constants.FILE_SHARE_BONUS.getString());
 
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line;
@@ -401,7 +397,7 @@ public class StockDao {
     // 写 财报
     public void writeShareBonus(List<StockDomain> data) {
 
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(SB_DATA_FILE), StandardCharsets.UTF_8)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(getFilePath() + Constants.FILE_SHARE_BONUS.getString()), StandardCharsets.UTF_8)) {
             for (StockDomain stockDomain : data) {
                 String s = stockDomain.sbBuilder() + "\r\n";
                 log.debug("write sb data >> {}", s);
@@ -415,7 +411,7 @@ public class StockDao {
     // 读 历史行情
     public List<DayLineDomain> readHhqData() {
         List<DayLineDomain> list = new ArrayList<>();
-        Path path = Paths.get(HHQ_DATA_FILE);
+        Path path = Paths.get(getFilePath() + Constants.FILE_HHQ.getString());
 
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line;
@@ -445,7 +441,7 @@ public class StockDao {
     // 写 历史行情
     public void writeHhqData(List<DayLineDomain> data) {
 
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(HHQ_DATA_FILE), StandardCharsets.UTF_8)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(getFilePath() + Constants.FILE_HHQ.getString()), StandardCharsets.UTF_8)) {
             for (DayLineDomain domain : data) {
                 String s = domain.hhqBuilder() + "\r\n";
                 log.debug("write hhq data >> {}", s);

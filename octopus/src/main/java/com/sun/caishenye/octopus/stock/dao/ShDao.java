@@ -1,8 +1,10 @@
 package com.sun.caishenye.octopus.stock.dao;
 
 import com.sun.caishenye.octopus.common.Constants;
+import com.sun.caishenye.octopus.common.component.CacheComponent;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedReader;
@@ -19,7 +21,9 @@ import java.util.List;
 @Repository
 public class ShDao {
 
-//
+    @Autowired
+    private CacheComponent cache;
+
 //    public void writeData(List<StockDomain> data) {
 //        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(BASE_DATA_FILE_NAME), StandardCharsets.UTF_8)) {
 //            for (StockDomain stockDomain : data) {
@@ -35,7 +39,7 @@ public class ShDao {
     public List<StockDomain> readBaseData() {
 
         List<StockDomain> list = new ArrayList<>();
-        Path path = Paths.get(Constants.FILE_STOCK_BASE_SH.getString());
+        Path path = Paths.get(cache.getFilePath() + Constants.FILE_STOCK_BASE_SH.getString());
 
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line = null;

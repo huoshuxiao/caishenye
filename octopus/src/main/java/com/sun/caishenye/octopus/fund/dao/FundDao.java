@@ -1,9 +1,11 @@
 package com.sun.caishenye.octopus.fund.dao;
 
 import com.sun.caishenye.octopus.common.Constants;
+import com.sun.caishenye.octopus.common.component.CacheComponent;
 import com.sun.caishenye.octopus.fund.domain.FundDomain;
 import com.sun.caishenye.octopus.fund.domain.FundExtendDomain;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedReader;
@@ -19,13 +21,17 @@ import java.util.List;
 @Slf4j
 @Repository
 public class FundDao {
-    private static final String FILE_PATH = Constants.FILE_PATH.getString();
-    private static final String DATA_FILE_NAME_EXTEND = FILE_PATH + Constants.FILE_FUND_EXTEND.getString();
-    private static final String DATA_FILE_NAME = FILE_PATH + Constants.FILE_FUND.getString();
+
+    @Autowired
+    private CacheComponent cache;
+
+    private String getFilePath() {
+        return cache.getFilePath();
+    }
 
     // 写 扩展数据
     public void writeExtendData(List<FundExtendDomain> data) {
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(DATA_FILE_NAME_EXTEND), StandardCharsets.UTF_8)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(getFilePath() + Constants.FILE_FUND_EXTEND.getString()), StandardCharsets.UTF_8)) {
             for (FundExtendDomain stockDomain : data) {
                 String s = stockDomain.builder() + "\r\n";
                 log.debug("write fund extend data >> {}", s);
@@ -40,7 +46,7 @@ public class FundDao {
     public List<FundExtendDomain> readExtendData() {
 
         List<FundExtendDomain> list = new ArrayList<>();
-        Path path = Paths.get(DATA_FILE_NAME_EXTEND);
+        Path path = Paths.get(getFilePath() + Constants.FILE_FUND_EXTEND.getString());
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -64,7 +70,7 @@ public class FundDao {
 
     // 报表
     public void writeDashBoard(List<FundDomain> data) {
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(DATA_FILE_NAME), StandardCharsets.UTF_8)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(getFilePath() + Constants.FILE_FUND.getString()), StandardCharsets.UTF_8)) {
             for (FundDomain stockDomain : data) {
                 String s = stockDomain.builder() + "\r\n";
                 log.debug("write fund >> {}", s);
