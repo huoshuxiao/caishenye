@@ -26,7 +26,7 @@ public class FundDao {
     private CacheComponent cache;
 
     private String getFilePath() {
-        return cache.getFilePath();
+        return cache.putIfAbsentFilePath();
     }
 
     // 写 扩展数据

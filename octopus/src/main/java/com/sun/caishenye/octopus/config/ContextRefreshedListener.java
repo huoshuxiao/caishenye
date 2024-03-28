@@ -3,6 +3,7 @@ package com.sun.caishenye.octopus.config;
 import com.sun.caishenye.octopus.common.component.CacheComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,9 @@ public class ContextRefreshedListener implements ApplicationListener<ContextRefr
     @Autowired
     private CacheComponent cache;
 
+    @Value("${file.path}")
+    private String filePath;
+
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         log.info("自定义初始化开始.............");
@@ -29,16 +33,18 @@ public class ContextRefreshedListener implements ApplicationListener<ContextRefr
     @Override
     public void run(String... args) throws Exception {
         log.info("自定义初始化开始 :: 开始命令行参数.............");
-        String filePath = args[0];
-        StringTokenizer tokenizer = new StringTokenizer(filePath, "=");
-        while (tokenizer.hasMoreTokens()) {
-            // key
-            tokenizer.nextToken();
-            // value
-            cache.setFilePath(tokenizer.nextToken());
+        String filePath = this.filePath;
+        if (args.length > 0) {
+            filePath = args[0];
+            StringTokenizer tokenizer = new StringTokenizer(filePath, "=");
+            while (tokenizer.hasMoreTokens()) {
+                // key
+                tokenizer.nextToken();
+                // value
+                filePath = cache.putIfAbsentFilePath(tokenizer.nextToken());
+            }
         }
-
-        log.info(cache.getFilePath());
+        log.info(filePath);
         log.info("自定义初始化完毕 :: 开始命令行参数.............");
     }
 }

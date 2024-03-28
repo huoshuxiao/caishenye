@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -39,7 +38,7 @@ public class ShDao {
     public List<StockDomain> readBaseData() {
 
         List<StockDomain> list = new ArrayList<>();
-        Path path = Paths.get(cache.getFilePath() + Constants.FILE_STOCK_BASE_SH.getString());
+        Path path = Paths.get(cache.putIfAbsentFilePath() + Constants.FILE_STOCK_BASE_SH.getString());
 
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line = null;

@@ -106,7 +106,7 @@ public class FinancialReportStep2PageProcessor implements PageProcessor {
         Spider.create(this)
                 .startUrls(urls)
 //                .addPipeline(new ConsolePipeline()) // 输出结果到控制台
-                .addPipeline(new TextFilePipeline(cache.getFilePath(), FILE_NAME))  // 使用Pipeline保存结果到文件
+                .addPipeline(new TextFilePipeline(cache.putIfAbsentFilePath(), FILE_NAME))  // 使用Pipeline保存结果到文件
                 .thread(Constants.THREADS.getInteger())
                 .run();
     }

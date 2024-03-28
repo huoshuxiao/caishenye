@@ -26,7 +26,7 @@ public class SzDao {
     public List<StockDomain> readBaseData() {
 
         List<StockDomain> list = new ArrayList<>();
-        Path path = Paths.get(cache.getFilePath() + Constants.FILE_STOCK_BASE_SZ.getString());
+        Path path = Paths.get(cache.putIfAbsentFilePath() + Constants.FILE_STOCK_BASE_SZ.getString());
 
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line = null;

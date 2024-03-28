@@ -27,7 +27,7 @@ public class StockDao {
     private CacheComponent cache;
 
     private String getFilePath() {
-        return cache.getFilePath();
+        return cache.putIfAbsentFilePath();
     }
 
     // 写 基础数据

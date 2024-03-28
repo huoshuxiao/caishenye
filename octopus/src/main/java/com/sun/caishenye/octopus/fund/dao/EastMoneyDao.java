@@ -16,9 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Repository
@@ -28,7 +26,7 @@ public class EastMoneyDao {
     private CacheComponent cache;
 
     private String getFilePath() {
-        return cache.getFilePath();
+        return cache.putIfAbsentFilePath();
     }
 
     // 写 基础数据
