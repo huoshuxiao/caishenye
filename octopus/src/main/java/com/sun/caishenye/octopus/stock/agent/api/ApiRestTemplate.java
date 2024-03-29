@@ -3,7 +3,9 @@ package com.sun.caishenye.octopus.stock.agent.api;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.ToNumberPolicy;
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.Utils;
 import com.sun.caishenye.octopus.stock.cache.StockCache;
@@ -190,13 +192,15 @@ public class ApiRestTemplate {
             response = StringUtils.removeEnd(response, ";");
             log.debug("call fr yjbb response :: {}", response);
 
-            Gson gson = new Gson();
+            Gson gson = new GsonBuilder()
+                    .setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
+                    .create();
             Map<String, Object> responseMap = gson.fromJson(response, Map.class);
 
             Map<String, Object> resultMap = (Map)responseMap.get("result");
             if (resultMap != null) {
                 // page
-                Double page = (Double) resultMap.get("pages");
+                Long page = (Long) resultMap.get("pages");
                 // 非退市
                 if (page.intValue() != 0) {
                     result = frYjbbResultDataBuilder4((List) resultMap.get("data"));
@@ -276,7 +280,7 @@ public class ApiRestTemplate {
 
     private String parseValue(Object value) {
         String str = null;
-        if (value instanceof String || value instanceof Double) {
+        if (value instanceof String || value instanceof Number) {
             str = String.valueOf(value);
         }
 
