@@ -46,6 +46,10 @@ public class ApiRestTemplate {
     @Autowired
     private StockCache cache;
 
+    // 雪球 实时行情
+    // https://stock.xueqiu.com/v5/stock/quote.json?symbol=SZ002233&extend=detail
+    private static final String XUEQIU_QUOTE_URL = "http://stock.xueqiu.com/v5/stock/quote.json?symbol={location}{companyCode}&extend=detail";
+
     // 雪球 分红配股
     // https://stock.xueqiu.com/v5/stock/f10/cn/bonus.json?symbol=SZ002032&size=1000&page=1&extend=true
     private static final String XUEQIU_BONUS_URL = "http://stock.xueqiu.com/v5/stock/f10/cn/bonus.json?symbol={location}{companyCode}&size=1000&page=1&extend=true";
@@ -704,5 +708,21 @@ public class ApiRestTemplate {
         params.put("location", exchange.toUpperCase());
         params.put("companyCode", companyCode);
         return params;
+    }
+
+    // 实时行情
+    @Async
+    public void getHqData(StockDomain stockDomain, String location) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cookie", cache.getXQCookies());
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<Map> responseEntity = restTemplate.exchange(XUEQIU_QUOTE_URL, HttpMethod.GET, entity, Map.class,
+                builderXueqiuShareBonusUrl(stockDomain.getCompanyCode(), location));
+        Map<String, Object> responseMap = responseEntity.getBody();
+        Map<String, Object> dataMap = (Map)responseMap.get("data");
+        Map<String, Object> quoteMap = (Map)dataMap.get("quote");
+
+        stockDomain.setPrice(String.valueOf(quoteMap.get("current")));
     }
 }
