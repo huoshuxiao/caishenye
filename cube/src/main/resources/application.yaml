@@ -1,0 +1,8 @@
+file:
+  # 分析文件根目录
+  path: /data
+  name:
+    stock:
+      mm: a.csv
+
+debug: true

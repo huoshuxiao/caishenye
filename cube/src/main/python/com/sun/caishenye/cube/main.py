@@ -1,16 +1,15 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+from com.sun.caishenye.cube.config import config
+from com.sun.caishenye.cube.config import log
+from com.sun.caishenye.cube.stock import money_more
 
 
-# Press the green button in the gutter to run the script.
+def main():
+    file_path = config.get('file.path')
+    log.logger.debug(r'config :: {}'.format(file_path))
+
+    money_more.y_current()
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    main()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
