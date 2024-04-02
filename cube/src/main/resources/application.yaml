@@ -4,5 +4,7 @@ file:
   name:
     stock:
       mm: a.csv
+      header:
+        g: '5'
 
 debug: true
