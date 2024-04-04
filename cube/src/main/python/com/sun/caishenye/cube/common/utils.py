@@ -3,6 +3,7 @@ import datetime
 import os
 
 import pandas
+import pandas as pd
 
 
 def root():
@@ -33,8 +34,19 @@ def write_csv(file_path, file_name, file_fields, body):
         writer.writerows(body)
 
 
-def write_excel(file_path, file_name, df):
-    df.to_excel(r'{}/{}.xlsx'.format(file_path, file_name), header=False, index=False, sheet_name=file_name)
+def write_excel(file_path, file_name, sheet_name, df):
+    file = r'{}/{}.xlsx'.format(file_path, file_name)
+    if not os.path.exists(file):
+        df.to_excel(file, header=False, index=False, sheet_name=sheet_name)
+
+    with pd.ExcelWriter(file, mode='a', if_sheet_exists='replace', engine='openpyxl') as writer:
+        df.to_excel(writer, header=False, index=False, sheet_name=sheet_name)
+
+
+def remove_file(file_path, file_name):
+    file = r'{}/{}.xlsx'.format(file_path, file_name)
+    if os.path.exists(file):
+        os.remove(file)
 
 
 def today():
@@ -42,5 +54,4 @@ def today():
 
 
 def year():
-    return r'{}'.format(today().year)
-
+    return today().year

@@ -4,10 +4,8 @@ from com.sun.caishenye.cube.stock import money_more
 
 
 def main():
-    file_path = config.get('file.path')
-    log.logger.debug(r'config :: {}'.format(file_path))
-
-    money_more.y_current()
+    log.log(r'base directory :: {}'.format(config.get('file.path')))
+    money_more.run()
 
 
 if __name__ == '__main__':

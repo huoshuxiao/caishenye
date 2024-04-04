@@ -1,10 +1,13 @@
 file:
   # 分析文件根目录
-  path: /data
+  path: data
   name:
     stock:
-      mm: a.csv
-      header:
-        g: '5'
+      mm:
+        file_name: a.csv
+        header:
+          g: 5
+        target_year: 2022
+        out_file_name: mm
 
-debug: true
+debug: false
