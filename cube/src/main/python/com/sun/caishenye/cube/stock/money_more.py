@@ -93,8 +93,6 @@ def __y5_top5__():
     df_score_3_5 = __cal_y5_top5_score__(df2, years[:4], 4)
     df_score_3_3 = __cal2_y5_top5_score__(df_score_3_5, years[:3], '4-')
     df_score_3 = pd.concat([df_score_3_5[df_score_3_5['M'].eq(4)], df_score_3_3])
-    df_score_3_other = pd.concat([df_score_3_5, df_score_3]).drop_duplicates(keep=False)
-    df_score_3_other['M'] = '3--'
 
     # 计算第四名
     df_score_4 = __cal_y5_top5_score__(df2, years[:3], 3)
@@ -102,7 +100,7 @@ def __y5_top5__():
     df_score_4 = df_score_4[~df_score_4['M'].eq('3-')]
 
     # 评分3以上
-    df_score = pd.concat([df_score_1, df_score_2, df_score_3, df_score_4, df_score_2_other, df_score_3_other])
+    df_score = pd.concat([df_score_1, df_score_2, df_score_3, df_score_4, df_score_2_other])
     utils.write_excel(file_path, out_file_name, '2_Y5TOP5_RECOUNT', df_score)
 
     # 2. 均值(mean)[以B列分组计算G列的均值(mean)]
@@ -111,8 +109,7 @@ def __y5_top5__():
     df_score_3['N'] = df_score_3.groupby('B')['G'].transform('mean')
     df_score_4['N'] = df_score_4.groupby('B')['G'].transform('mean')
     df_score_2_other['N'] = df_score_2_other.groupby('B')['G'].transform('mean')
-    df_score_3_other['N'] = df_score_3_other.groupby('B')['G'].transform('mean')
-    df_score = pd.concat([df_score_1, df_score_2, df_score_3, df_score_4, df_score_2_other, df_score_3_other])
+    df_score = pd.concat([df_score_1, df_score_2, df_score_3, df_score_4, df_score_2_other])
     utils.write_excel(file_path, out_file_name, '3_Y5TOP5_MEAN', df_score)
 
     # 为了不影响列的顺序，以A列分组(不写reset_index B列缺失)
@@ -121,16 +118,14 @@ def __y5_top5__():
     df_score_3 = df_score_3.groupby('A').agg({col: 'first' for col in df_score_3.columns if col != 'A'}).reset_index()
     df_score_4 = df_score_4.groupby('A').agg({col: 'first' for col in df_score_4.columns if col != 'A'}).reset_index()
     df_score_2_other = df_score_2_other.groupby('A').agg({col: 'first' for col in df_score_2_other.columns if col != 'A'}).reset_index()
-    df_score_3_other = df_score_3_other.groupby('A').agg({col: 'first' for col in df_score_3_other.columns if col != 'A'}).reset_index()
 
     df_score_1 = df_score_1.sort_values(by=['M', 'N'], ascending=False)
     df_score_2 = df_score_2.sort_values(by=['M', 'N'], ascending=False)
     df_score_3 = df_score_3.sort_values(by=['M', 'N'], ascending=False)
     df_score_4 = df_score_4.sort_values(by=['M', 'N'], ascending=False)
     df_score_2_other = df_score_2_other.sort_values(by=['M', 'N'], ascending=False)
-    df_score_3_other = df_score_3_other.sort_values(by=['M', 'N'], ascending=False)
 
-    df_score = pd.concat([df_score_1, df_score_2, df_score_3, df_score_4, df_score_2_other, df_score_3_other])
+    df_score = pd.concat([df_score_1, df_score_2, df_score_3, df_score_4, df_score_2_other])
     utils.write_excel(file_path, out_file_name, 'Y5TOP5', df_score)
     log.log(r'Y5TOP5 :: {}'.format(df_score))
 
