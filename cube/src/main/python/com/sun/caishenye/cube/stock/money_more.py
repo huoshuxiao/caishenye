@@ -132,27 +132,27 @@ def __y5_top5__():
 
 def __cal_y5_top5_score__(df, years, score):
     # 1. 评分为6的，且K列包含连续近6年的是第1名
-    df_score_ALL = df[df['M'].eq(score)]
+    df_score_all = df[df['M'].eq(score)]
     df_score = df[df['M'].eq(score) & df['K'].str.contains('|'.join(years))]
     df_score['M'] = df_score['B'].map(df_score['B'].value_counts())
     # 1. 评分为6的，且K列包含连续近6年的是第1名
-    df_score_A = df_score[df_score['M'].eq(score)]
+    df_score_a = df_score[df_score['M'].eq(score)]
     # 1. 评分为6的，且K列不是连续近6年的是第1名-
-    df_score_B = pd.concat([df_score_ALL, df_score_A]).drop_duplicates(keep=False)
-    df_score_B['M'] = r'{}-'.format(score)
-    df_score = pd.concat([df_score_A, df_score_B])
+    df_score_b = pd.concat([df_score_all, df_score_a]).drop_duplicates(keep=False)
+    df_score_b['M'] = r'{}-'.format(score)
+    df_score = pd.concat([df_score_a, df_score_b])
 
     return df_score
 
 
 def __cal2_y5_top5_score__(df, years, score):
     # 1. 评分为6的，且K列包含连续近6年的是第1名
-    df_score_ALL = df[df['M'].eq(score)]
+    df_score_all = df[df['M'].eq(score)]
     df_score = df[df['M'].eq(score) & df['K'].str.contains('|'.join(years))]
     df_score['M'] = df_score['B'].map(df_score['B'].value_counts())
     # 1. 评分为6的，且K列包含连续近6年的是第1名
     df_score = df_score[df_score['M'].eq(len(years))]
-    df_score = df_score_ALL[df_score_ALL['B'].isin(df_score['B'])]
+    df_score = df_score_all[df_score_all['B'].isin(df_score['B'])]
     df_score['M'] = score
 
     return df_score
