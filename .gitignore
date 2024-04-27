@@ -6,3 +6,5 @@
 cube/.idea/
 *.log
 cube/src/main/python/com/sun/caishenye/cube/*/__pycache__/
+
+octopus/log/

@@ -20,7 +20,7 @@ public class StockCache {
     @Autowired
     private RestTemplate restTemplateText;
 
-    @Cacheable(value = "getXQCookies")
+    @Cacheable(value = "ehcache_24H")
     public String getXQCookies() {
         ResponseEntity<String> response = restTemplateText.getForEntity(XQ_URL, String.class);
         List<String > cookies = response.getHeaders().get("Set-Cookie");
