@@ -60,9 +60,8 @@ public class RestTemplateConfig {
                 .disableCookieManagement()
                 .useSystemProperties()
                 .build();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
 
-//        restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory()));
+        restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)));
         return restTemplate;
     }
 }

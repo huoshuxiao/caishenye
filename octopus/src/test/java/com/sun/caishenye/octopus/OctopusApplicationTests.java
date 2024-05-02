@@ -59,6 +59,10 @@ class OctopusApplicationTests {
         ResponseEntity<String> response = restTemplateText.getForEntity(XQ_URL, String.class);
         List<String > cookies = response.getHeaders().get("Set-Cookie");
         cookies.forEach(System.out::println);
+
+        response = restTemplateText.getForEntity(XQ_URL, String.class);
+        cookies = response.getHeaders().get("Set-Cookie");
+        cookies.forEach(System.out::println);
     }
 
 }
