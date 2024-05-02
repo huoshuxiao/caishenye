@@ -11,7 +11,7 @@ public class CacheComponent {
 
     private String filePath;
 
-    @Cacheable(value = "ehcache_6M")
+    @Cacheable(value = "ehcache_10M")
     public String putIfAbsentFilePath(String filePath) {
         if (StringUtils.isNotEmpty(filePath)) {
             this.filePath = filePath;
