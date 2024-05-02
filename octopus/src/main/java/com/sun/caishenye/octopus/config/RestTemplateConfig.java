@@ -1,5 +1,9 @@
 package com.sun.caishenye.octopus.config;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,7 +55,14 @@ public class RestTemplateConfig {
                 .additionalInterceptors(new LoggingRequestInterceptor())
                 .build();
 
-        restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory()));
+        // Disabling Cookie Management。关闭cookie缓存管理(cookieStore)
+        HttpClient httpClient = HttpClients.custom()
+                .disableCookieManagement()
+                .useSystemProperties()
+                .build();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
+
+//        restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory()));
         return restTemplate;
     }
 }
