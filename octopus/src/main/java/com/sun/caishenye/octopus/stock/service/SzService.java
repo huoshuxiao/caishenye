@@ -40,20 +40,22 @@ public class SzService {
         // call rest service
         CompletableFuture<SzHqDomain> hqDomainCompletableFuture = CompletableFuture.supplyAsync(() -> restTemplate.getHqData(stockDomain)).get();
         SzHqDomain hqDomain = hqDomainCompletableFuture.get();
+        // 今日收盘价为空，取昨日收盘价
         if (StringUtils.isEmpty(hqDomain.getData().getNow())) {
-            if (hqDomain.getDatetime().length() >= 10) {
-                hqDomain = hhq(stockDomain, hqDomain.getDatetime().substring(0, 10));
-            } else {
-                log.error("hq {} 404 :: {}", stockDomain.getCompanyCode(), hqDomain);
-                hqDomain = hhq(stockDomain, LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            }
+            hqDomain.setPrice(hqDomain.getData().getClose());
+//            if (hqDomain.getDatetime().length() >= 10) {
+//                hqDomain = hhq(stockDomain, hqDomain.getDatetime().substring(0, 10));
+//            } else {
+//                log.error("hq {} 404 :: {}", stockDomain.getCompanyCode(), hqDomain);
+//                hqDomain = hhq(stockDomain, LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+//            }
         } else {
-            hqDomain.setPrice(hqDomain.getData().getNow() == null ? Constants.HQ_SUSPENSION.getString() : hqDomain.getData().getNow());
+            hqDomain.setPrice(hqDomain.getData().getNow());
         }
-        if (hqDomain == null) {
-            hqDomain = new SzHqDomain();
-            hqDomain.setPrice(Constants.HQ_SUSPENSION.getString());
-        }
+//        if (hqDomain == null) {
+//            hqDomain = new SzHqDomain();
+//            hqDomain.setPrice(Constants.HQ_SUSPENSION.getString());
+//        }
         stockDomain.setPrice(hqDomain.getPrice());
     }
 
