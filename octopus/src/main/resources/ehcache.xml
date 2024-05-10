@@ -3,11 +3,10 @@
          xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
          updateCheck="false">
 
-<!--    <diskStore path="java.io.tmpdir/Tmp_EhCache" />-->
+    <diskStore path="/home/sunwenkun/Developer/workspace/temp_cache" />
 
     <!-- 默认配置 -->
-<!--    <defaultCache maxElementsInMemory="10000" eternal="false"-->
-<!--                  timeToIdleSeconds="600" timeToLiveSeconds="600" overflowToDisk="false" />-->
+    <defaultCache maxElementsInMemory="10000" eternal="true"/>
 
     <cache name="ehcache_24H" maxElementsInMemory="10000" eternal="false"
            timeToIdleSeconds="43200" timeToLiveSeconds="86400" overflowToDisk="false" />
