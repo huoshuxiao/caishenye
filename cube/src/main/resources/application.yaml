@@ -7,7 +7,14 @@ file:
         file_name: a.csv
         header:
           g: 5
+          g_y2: 6
+          g_y3: 5
+          g_y10: 3
+        # TODO
         target_year: 2022
         out_file_name: mm
+      fr:
+        file_name: Stock_FinancialReport.csv
+        out_file_name: boss
 
-debug: false
+debug: true

@@ -5,10 +5,10 @@ from com.sun.caishenye.cube.config import config, log
 
 file_path = config.get('file.path')
 file_name = config.get('file.name.stock.mm.file_name')
-headers = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
-year_target = config.get('file.name.stock.mm.target_year')
 out_file_name = config.get('file.name.stock.mm.out_file_name')
-header_g = config.get('file.name.stock.mm.header.g')
+
+headers = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
+target_year = config.get('file.name.stock.mm.target_year')
 
 
 def run():
@@ -26,6 +26,7 @@ def __y_current__():
     """
     过滤数据。
     """
+    header_g = config.get('file.name.stock.mm.header.g')
     header_h = ['预案']
     df_filtered1 = df[df['E'].str.contains(r'{}'.format(utils.year())) & df['H'].isin(header_h)]
     df_filtered1['G'] = df_filtered1['G'].astype(float)
@@ -45,14 +46,15 @@ def __y5_top5__():
     """
     过滤数据。(近六年)
     """
+    header_g = config.get('file.name.stock.mm.header.g_y5')
     header_h = ['实施']
     # TODO
-    year_current = r'{}'.format(year_target + 1)
-    year_current_1 = r'{}'.format(year_target)
-    year_current_2 = r'{}'.format(year_target - 1)
-    year_current_3 = r'{}'.format(year_target - 2)
-    year_current_4 = r'{}'.format(year_target - 3)
-    year_current_5 = r'{}'.format(year_target - 4)
+    year_current = r'{}'.format(target_year + 1)
+    year_current_1 = r'{}'.format(target_year)
+    year_current_2 = r'{}'.format(target_year - 1)
+    year_current_3 = r'{}'.format(target_year - 2)
+    year_current_4 = r'{}'.format(target_year - 3)
+    year_current_5 = r'{}'.format(target_year - 4)
     years = [year_current, year_current_1, year_current_2, year_current_3, year_current_4, year_current_5]
     df_filtered1 = df[df['E'].str.contains('|'.join(years)) & df['H'].isin(header_h)]  # dataframe
     df_filtered1['G'] = df_filtered1['G'].astype(float)
@@ -73,12 +75,12 @@ def __y5_top5__():
     utils.write_excel(file_path, out_file_name, '2_Y5TOP5_COUNT', df2.sort_values(by='A'))
 
     # TODO
-    year_current = r'{}'.format(year_target)
-    year_current_1 = r'{}'.format(year_target - 1)
-    year_current_2 = r'{}'.format(year_target - 2)
-    year_current_3 = r'{}'.format(year_target - 3)
-    year_current_4 = r'{}'.format(year_target - 4)
-    year_current_5 = r'{}'.format(year_target - 5)
+    year_current = r'{}'.format(target_year)
+    year_current_1 = r'{}'.format(target_year - 1)
+    year_current_2 = r'{}'.format(target_year - 2)
+    year_current_3 = r'{}'.format(target_year - 3)
+    year_current_4 = r'{}'.format(target_year - 4)
+    year_current_5 = r'{}'.format(target_year - 5)
     years = [year_current, year_current_1, year_current_2, year_current_3, year_current_4, year_current_5]
     # 计算第一名
     df_score_1 = __cal_score__(df2, years, 6)
@@ -165,11 +167,12 @@ def __y2_top6__():
     """
     过滤数据。(近三年)
     """
+    header_g = config.get('file.name.stock.mm.header.g_y2')
     header_h = ['实施']
     # TODO
-    year_current = r'{}'.format(year_target + 1)
-    year_current_1 = r'{}'.format(year_target)
-    year_current_2 = r'{}'.format(year_target - 1)
+    year_current = r'{}'.format(target_year + 1)
+    year_current_1 = r'{}'.format(target_year)
+    year_current_2 = r'{}'.format(target_year - 1)
     years = [year_current, year_current_1, year_current_2]
     df_filtered1 = df[df['E'].str.contains('|'.join(years)) & df['H'].isin(header_h)]  # dataframe
     df_filtered1['G'] = df_filtered1['G'].astype(float)
@@ -194,8 +197,8 @@ def __y2_top6__():
 
     # TODO
     # 2. 评分为2的，且K列包含连续近两年的是第二名
-    year_current = r'{}'.format(year_target)
-    year_current_1 = r'{}'.format(year_target - 1)
+    year_current = r'{}'.format(target_year)
+    year_current_1 = r'{}'.format(target_year - 1)
     years = [year_current, year_current_1]
     df_score_2 = df2[df2['M'].eq(2) & df2['K'].str.contains('|'.join(years))]
     df_score_2['M'] = df_score_2['B'].map(df_score_2['B'].value_counts())
@@ -226,23 +229,24 @@ def __y10_top3__():
     """
     过滤数据。(近10年)
     """
+    header_g = config.get('file.name.stock.mm.header.g_y10')
     header_h = ['实施']
     # TODO
-    year_current = r'{}'.format(year_target + 1)
-    year_current_1 = r'{}'.format(year_target)
-    year_current_2 = r'{}'.format(year_target - 1)
-    year_current_3 = r'{}'.format(year_target - 2)
-    year_current_4 = r'{}'.format(year_target - 3)
-    year_current_5 = r'{}'.format(year_target - 4)
-    year_current_6 = r'{}'.format(year_target - 5)
-    year_current_7 = r'{}'.format(year_target - 6)
-    year_current_8 = r'{}'.format(year_target - 7)
-    year_current_9 = r'{}'.format(year_target - 8)
+    year_current = r'{}'.format(target_year + 1)
+    year_current_1 = r'{}'.format(target_year)
+    year_current_2 = r'{}'.format(target_year - 1)
+    year_current_3 = r'{}'.format(target_year - 2)
+    year_current_4 = r'{}'.format(target_year - 3)
+    year_current_5 = r'{}'.format(target_year - 4)
+    year_current_6 = r'{}'.format(target_year - 5)
+    year_current_7 = r'{}'.format(target_year - 6)
+    year_current_8 = r'{}'.format(target_year - 7)
+    year_current_9 = r'{}'.format(target_year - 8)
     years = [year_current, year_current_1, year_current_2, year_current_3, year_current_4, year_current_5,
              year_current_6, year_current_7, year_current_8, year_current_9]
     df_filtered1 = df[df['E'].str.contains('|'.join(years)) & df['H'].isin(header_h)]  # dataframe
     df_filtered1['G'] = df_filtered1['G'].astype(float)
-    df2 = df_filtered1[df_filtered1['G'] >= ((header_g + 1) / 2)]  # series TODO 3
+    df2 = df_filtered1[df_filtered1['G'] >= header_g]  # series TODO 3
     # utils.write_excel(file_path, out_file_name, '1_Y10TOP3_10Y', df2.sort_values(by='A'))
 
     """
@@ -259,16 +263,16 @@ def __y10_top3__():
     utils.write_excel(file_path, out_file_name, '2_Y10TOP3_COUNT', df2.sort_values(by='A'))
 
     # TODO
-    year_current = r'{}'.format(year_target)
-    year_current_1 = r'{}'.format(year_target - 1)
-    year_current_2 = r'{}'.format(year_target - 2)
-    year_current_3 = r'{}'.format(year_target - 3)
-    year_current_4 = r'{}'.format(year_target - 4)
-    year_current_5 = r'{}'.format(year_target - 5)
-    year_current_6 = r'{}'.format(year_target - 6)
-    year_current_7 = r'{}'.format(year_target - 7)
-    year_current_8 = r'{}'.format(year_target - 8)
-    year_current_9 = r'{}'.format(year_target - 9)
+    year_current = r'{}'.format(target_year)
+    year_current_1 = r'{}'.format(target_year - 1)
+    year_current_2 = r'{}'.format(target_year - 2)
+    year_current_3 = r'{}'.format(target_year - 3)
+    year_current_4 = r'{}'.format(target_year - 4)
+    year_current_5 = r'{}'.format(target_year - 5)
+    year_current_6 = r'{}'.format(target_year - 6)
+    year_current_7 = r'{}'.format(target_year - 7)
+    year_current_8 = r'{}'.format(target_year - 8)
+    year_current_9 = r'{}'.format(target_year - 9)
     years = [year_current, year_current_1, year_current_2, year_current_3, year_current_4, year_current_5,
              year_current_6, year_current_7, year_current_8, year_current_9]
     # 计算第一名
