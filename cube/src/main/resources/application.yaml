@@ -4,17 +4,37 @@ file:
   name:
     stock:
       mm:
-        file_name: a.csv
+        file_name:
+          in: a.csv
+          out: mm
+        # TODO
+        target_year: 2022
         header:
           g: 5
           g_y2: 6
           g_y3: 5
           g_y10: 3
-        # TODO
-        target_year: 2022
-        out_file_name: mm
+
       fr:
-        file_name: Stock_FinancialReport.csv
-        out_file_name: boss
+        file_name: 
+          in: a.csv
+          out: boss
+        # TODO
+        target_year: 2023
+        header:
+          f:
+            month:
+              y: 12
+              q1: 3
+#              h: 6
+#              q3: 9
+            day:
+              y: 31
+              q1: 31
+#              h: 30
+#              q3: 30
+          i: [30,40,45]
+          j: 30
+          k: 30
 
 debug: true
