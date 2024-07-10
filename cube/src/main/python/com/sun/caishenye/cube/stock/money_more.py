@@ -4,8 +4,8 @@ from com.sun.caishenye.cube.common import utils
 from com.sun.caishenye.cube.config import config, log
 
 file_path = config.get('file.path')
-file_name = config.get('file.name.stock.mm.file_name')
-out_file_name = config.get('file.name.stock.mm.out_file_name')
+file_name = config.get('file.name.stock.mm.file_name.in')
+out_file_name = config.get('file.name.stock.mm.file_name.out')
 
 headers = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
 target_year = config.get('file.name.stock.mm.target_year')
@@ -87,15 +87,15 @@ def __y5_top5__():
 
     # 计算第二名
     df_score_2_5 = __cal_score__(df2, years[:5], 5)
-    df_score_2_3 = __cal2_score__(df_score_2_5, years[:4], '5-')
-    df_score_2 = pd.concat([df_score_2_5[df_score_2_5['M'].eq(5)], df_score_2_3])
+    df_score_2_5_ = __cal2_score__(df_score_2_5, years[:4], '5-')
+    df_score_2 = pd.concat([df_score_2_5[df_score_2_5['M'].eq(5)], df_score_2_5_])
     df_score_2_other = pd.concat([df_score_2_5, df_score_2]).drop_duplicates(keep=False)
     df_score_2_other['M'] = '3-'
 
     # 计算第三名
-    df_score_3_5 = __cal_score__(df2, years[:4], 4)
-    df_score_3_3 = __cal2_score__(df_score_3_5, years[:3], '4-')
-    df_score_3 = pd.concat([df_score_3_5[df_score_3_5['M'].eq(4)], df_score_3_3])
+    df_score_3_4 = __cal_score__(df2, years[:4], 4)
+    df_score_3_4_ = __cal2_score__(df_score_3_4, years[:3], '4-')
+    df_score_3 = pd.concat([df_score_3_4[df_score_3_4['M'].eq(4)], df_score_3_4_])
 
     # 计算第四名
     df_score_4 = __cal_score__(df2, years[:3], 3)
