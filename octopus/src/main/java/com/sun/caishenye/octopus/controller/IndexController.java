@@ -34,6 +34,7 @@ public class IndexController {
                         .build());
     }
 
+
     ////////////////////////////////////////// fund ////////////////////////////////////////////////////////////////////
 //    @Autowired
 //    private MorningStarService morningstarService;
@@ -145,5 +146,14 @@ public class IndexController {
         stockService.run();
         LocalDateTime endTime = LocalDateTime.now();
         return "stock " + ChronoUnit.MINUTES.between(startTime, endTime);
+    }
+
+    // 资金流
+    @GetMapping("mf")
+    public Object moneyFlow() throws ExecutionException, InterruptedException {
+        LocalDateTime startTime = LocalDateTime.now();
+        stockService.moneyFlow();
+        LocalDateTime endTime = LocalDateTime.now();
+        return "money flow " + ChronoUnit.MINUTES.between(startTime, endTime);
     }
 }

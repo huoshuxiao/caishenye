@@ -55,7 +55,7 @@ public class ShareBonusService {
         Gson gson = new Gson();
         for (StockDomain base : baseList) {
             String jsonString = gson.toJson(base);
-            List<ShareBonusDomain> sbList = apiRestTemplate.getXueqiuShareBonus(base.getCompanyCode(), base.getExchange());
+            List<ShareBonusDomain> sbList = apiRestTemplate.getShareBonus(base.getCompanyCode(), base.getExchange());
             sbList.sort(Comparator.comparing(ShareBonusDomain::getDividendYear).reversed());
             for (ShareBonusDomain sb: sbList) {
                 StockDomain clone = gson.fromJson(jsonString, StockDomain.class);

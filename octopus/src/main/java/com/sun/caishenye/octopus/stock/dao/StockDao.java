@@ -4,6 +4,7 @@ import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.component.CacheComponent;
 import com.sun.caishenye.octopus.stock.domain.DayLineDomain;
 import com.sun.caishenye.octopus.stock.domain.FinancialReport2Domain;
+import com.sun.caishenye.octopus.stock.domain.MoneyFlowDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -445,6 +446,19 @@ public class StockDao {
             for (DayLineDomain domain : data) {
                 String s = domain.hhqBuilder() + "\r\n";
                 log.debug("write hhq data >> {}", s);
+                writer.write(s, 0, s.length());
+            }
+        } catch (IOException x) {
+            log.error(String.format("IOException: %s%n", x));
+        }
+    }
+
+    // 写 个股资金流
+    public void writeStockData(List<MoneyFlowDomain> data) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(getFilePath() + Constants.MONEY_FLOW_STOCK.getString()), StandardCharsets.UTF_8)) {
+            for (MoneyFlowDomain domain : data) {
+                String s = domain.stockBuilder() + "\r\n";
+                log.debug("write stock money flow data >> {}", s);
                 writer.write(s, 0, s.length());
             }
         } catch (IOException x) {

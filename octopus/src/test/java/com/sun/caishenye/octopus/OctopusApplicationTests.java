@@ -65,4 +65,10 @@ class OctopusApplicationTests {
         cookies.forEach(System.out::println);
     }
 
+    @Test
+    void test004() {
+        String s = "2024-07-12,-53552368.0,127562864.0,-74010480.0,-143662528.0,90110160.0,-1.95,4.64,-2.69,-5.23,3.28,25.60,-1.46,0.00,0.00";
+        Arrays.stream(s.split(",")).forEach(t -> System.out.println(StringUtils.trim(t)));
+    }
+
 }

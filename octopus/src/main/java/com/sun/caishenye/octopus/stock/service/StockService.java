@@ -50,6 +50,9 @@ public class StockService {
     @Autowired
     private HistoryHqService historyHqService;
 
+    @Autowired
+    private MoneyFlowService moneyFlowService;
+
     public void run() throws ExecutionException, InterruptedException {
         base();
 
@@ -286,5 +289,9 @@ public class StockService {
 
     private void writeMoneyMoney(List<StockDomain> data) {
         stockDao.writeMoneyMoney(data);
+    }
+
+    public void moneyFlow() throws ExecutionException, InterruptedException {
+        moneyFlowService.stock();
     }
 }

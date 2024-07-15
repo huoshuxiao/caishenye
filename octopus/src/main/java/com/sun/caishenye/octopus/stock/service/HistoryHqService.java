@@ -29,7 +29,7 @@ public class HistoryHqService {
     @Autowired
     private BaseService baseService;
 
-    // 历史行情(指定日期)
+    // 历史行情(主)
     public DayLineDomain getHhqByDateForObject(StockDomain stockDomain) {
         return apiRestTemplate.getHhqByDateForObject(stockDomain);
     }

@@ -25,6 +25,7 @@ public enum Constants {
     FILE_SHARE_BONUS1("ShareBonus1.log"),
     FILE_HQ("HQ.log"),
     FILE_HHQ("HHQ.log"),
+    MONEY_FLOW_STOCK("MoneyFlow_Stock.csv"),
     FILE_MONEY_MONEY("Stock_MM.csv"),
 
     CHROME_DRIVER_PATH("/home/sunwenkun/Developer/gitroot/caishenye.git/octopus/bin/chromedriver"),
