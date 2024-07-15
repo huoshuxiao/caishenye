@@ -10,7 +10,7 @@ file:
         # TODO
         target_year: 2022
         header:
-          g: 5
+          g: 4
           g_y2: 6
           g_y3: 5
           g_y10: 3
@@ -36,5 +36,16 @@ file:
           i: [30,40,45]
           j: 30
           k: 30
+
+      money_flow:
+        stock:
+#          target_date: 2024-07-12
+          file_name:
+            in: a.csv
+            out: a
+          header:
+            c: 30
+            d: 10000
+            o: 0.01
 
 debug: true

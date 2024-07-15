@@ -55,3 +55,15 @@ def today():
 
 def year():
     return today().year
+
+
+def is_work_day(target_day):
+    _year = target_day.year
+    _month = target_day.month
+    _day = target_day.day
+    date = datetime.date(_year, _month, _day)
+
+    if (date.weekday() == 5
+            or date.weekday() == 6):
+        return False
+    return True
