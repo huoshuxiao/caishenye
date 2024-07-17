@@ -4,6 +4,7 @@ file:
   name:
     stock:
       mm:
+#        run: true
         file_name:
           in: a.csv
           out: mm
@@ -16,6 +17,7 @@ file:
           g_y10: 3
 
       fr:
+#        run: true
         file_name: 
           in: a.csv
           out: boss
@@ -38,8 +40,9 @@ file:
           k: 30
 
       money_flow:
+        run: true
         stock:
-#          target_date: 2024-07-12
+#          target_date: 2024-07-16
           file_name:
             in: a.csv
             out: a

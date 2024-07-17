@@ -10,8 +10,13 @@ out_file_name = config.get('file.name.stock.mm.file_name.out')
 headers = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
 target_year = config.get('file.name.stock.mm.target_year')
 
+execute_flg = config.get('file.name.stock.mm.run')
+
 
 def run():
+    if execute_flg is None:
+        return
+
     utils.remove_file(file_path, out_file_name)
 
     __y_current__()

@@ -16,12 +16,20 @@ header_d = config.get('file.name.stock.money_flow.stock.header.d')
 header_o = config.get('file.name.stock.money_flow.stock.header.o')
 target_date = config.get('file.name.stock.money_flow.stock.target_date')
 
+execute_flg = config.get('file.name.stock.money_flow.run')
+
 
 def run():
+    if execute_flg is None:
+        return
+
     __stock__()
 
 
 def __stock__():
+    """
+    确定日期范围
+    """
     if target_date is None:
         end_date = utils.today()
     else:
@@ -34,10 +42,11 @@ def __stock__():
             break
         else:
             end_date = end_date - timedelta(days=1)
-    log.log(r'end date :: {}'.format(end_date))
+
+    start_date = end_date - timedelta(days=header_c)
+    log.log(r'start date :: {} end date :: {}'.format(start_date, end_date))
 
     utils.remove_file(file_path, r'{}_{}'.format(out_file_name, end_date))
-    start_date = end_date - timedelta(days=header_c)
 
     df = __read_file__()
     df['D'] = df['D'].astype(int)
@@ -59,17 +68,31 @@ def __stock__():
     """
     计算
     """
-    log.log('cal count start')
-    df = __cal_d_count__(df)
-    log.log('cal count end')
-    utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'COUNT', df)
+    log.log('cal count d start')
+    df_d = __cal_d_count__(df)
+    log.log('cal count d end')
+    utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'COUNT_D', df_d)
+    log.log(r'{} :: {}'.format('COUNT_D', df_d))
+
+    log.log('cal count o start')
+    df_o = __cal_o_count__(df)
+    log.log('cal count o end')
+    utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'COUNT_O', df_o)
+    log.log(r'{} :: {}'.format('COUNT_O', df_o))
 
     """
     过滤数据。
     """
-    df['C'] = df['C'].astype(str)
+    df_d['C'] = df_d['C'].astype(str)
     # 只保留最新日期
-    df = df[(df['C'].eq(str(end_date))) & ~(df['N'].eq(0))]
+    df_d = df_d[(df_d['C'].eq(str(end_date))) & ~(df_d['N'].eq(0))]
+    # # drop_duplicates 函数默认保留首次出现的值，如果想保留最后一次出现的值，可以使用keep='last'这样，在去除重复值的过程中，会保留最后一次出现的重复值。
+    # df = df.drop_duplicates('B', keep='last')
+    # df = df[~(df['N'].eq(0))]
+
+    df_o['C'] = df_o['C'].astype(str)
+    # 只保留最新日期
+    df_o = df_o[(df_o['C'].eq(str(end_date))) & ~(df_o['N'].eq(0))]
     # # drop_duplicates 函数默认保留首次出现的值，如果想保留最后一次出现的值，可以使用keep='last'这样，在去除重复值的过程中，会保留最后一次出现的重复值。
     # df = df.drop_duplicates('B', keep='last')
     # df = df[~(df['N'].eq(0))]
@@ -77,36 +100,17 @@ def __stock__():
     """
     Sort
     """
-    df_result = df.sort_values(by='V', ascending=False)
+    df_d_result = df_d.sort_values(by='V', ascending=False)
+    df_o_result = df_o.sort_values(by='V', ascending=False)
 
-    # """
-    # 过滤数据。
-    # """
-    # df = df[(df['C'] >= str(start_date)) & (df['C'] <= str(end_date))
-    #         & (df['D'] >= header_d)
-    #         & (df['O'] >= header_o)]
-    #
-    # """
-    # 计算
-    # """
-    # df['R'] = ''
-    # df['S'] = df['B'].map(df['B'].value_counts())
-    # df = df.sort_values(by=['S', 'B'], ascending=[False, True])
-    # utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'COUNT', df)
-    # # log.log(r'{} :: {}'.format(r'{}_{}_{}'.format(out_file_name, target_day, 'COUNT'), df))
-    #
-    # # drop_duplicates 函数默认保留首次出现的值，如果想保留最后一次出现的值，可以使用keep='last'这样，在去除重复值的过程中，会保留最后一次出现的重复值。
-    # df_result = df.drop_duplicates('B', keep='last')
-    #
-    # # 只保留最新日期
-    # df_result = df_result[df_result['C'].eq(str(end_date))]
-    # df_result = df_result.sort_values(by=['S', 'B'], ascending=[False, True])
-    #
     """
     写excel。
     """
-    utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), out_file_name, df_result)
-    log.log(r'{} :: {}'.format(r'{}_{}'.format(out_file_name, end_date), df_result))
+    utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'DD', df_d_result)
+    log.log(r'{} :: {}'.format(r'{}_{}'.format(out_file_name, end_date), df_d_result))
+
+    utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'OO', df_o_result)
+    log.log(r'{} :: {}'.format(r'{}_{}'.format(out_file_name, end_date), df_o_result))
 
 
 def __fill__(df, start_date, end_date):
@@ -146,15 +150,38 @@ def __cal_d_count__(df):
     def __count_consecutive_days__(group):
         # 用于计算连续日期的天数，需要排序
         group = group.sort_values('C')
-        group['is_valid'] = group['D'] >= header_d
+        group['is_valid_d'] = group['D'] >= header_d
         # 检查 C 列是否连续。
-        group['consecutive'] = group['C'].diff().dt.days.eq(1) & group['is_valid']
+        group['consecutive_d'] = group['C'].diff().dt.days.eq(1) & group['is_valid_d']
         # 计算连续日期的天数。
-        group['group'] = (~group['consecutive']).cumsum()
-        consecutive_days = group.groupby(['group', 'is_valid'])['consecutive'].cumsum()
+        group['group_d'] = (~group['consecutive_d']).cumsum()
+        consecutive_days = group.groupby(['group_d', 'is_valid_d'])['consecutive_d'].cumsum()
 
         group['U'] = ''
-        group['V'] = consecutive_days.where(group['is_valid'], 0)
+        group['V'] = consecutive_days.where(group['is_valid_d'], 0)
+        return group
+
+    result = grouped.apply(__count_consecutive_days__).reset_index(drop=True)
+    return result
+
+
+def __cal_o_count__(df):
+    # 确保日期列为 datetime 类型，用于日期计算
+    df['C'] = pd.to_datetime(df['C'])
+    grouped = df.groupby(['A', 'B'])
+
+    def __count_consecutive_days__(group):
+        # 用于计算连续日期的天数，需要排序
+        group = group.sort_values('C')
+        group['is_valid_o'] = group['O'] >= header_o
+        # 检查 C 列是否连续。
+        group['consecutive_o'] = group['C'].diff().dt.days.eq(1) & group['is_valid_o']
+        # 计算连续日期的天数。
+        group['group_o'] = (~group['consecutive_o']).cumsum()
+        consecutive_days = group.groupby(['group_o', 'is_valid_o'])['consecutive_o'].cumsum()
+
+        group['U'] = ''
+        group['V'] = consecutive_days.where(group['is_valid_o'], 0)
         return group
 
     result = grouped.apply(__count_consecutive_days__).reset_index(drop=True)

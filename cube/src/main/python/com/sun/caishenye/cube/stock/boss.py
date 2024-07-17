@@ -13,8 +13,13 @@ header_i = config.get('file.name.stock.fr.header.i')
 header_j = config.get('file.name.stock.fr.header.j')
 header_k = config.get('file.name.stock.fr.header.k')
 
+execute_flg = config.get('file.name.stock.fr.run')
+
 
 def run():
+    if execute_flg is None:
+        return
+
     utils.remove_file(file_path, out_file_name)
 
     # __y__()
