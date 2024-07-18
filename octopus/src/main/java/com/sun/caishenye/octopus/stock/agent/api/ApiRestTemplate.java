@@ -748,6 +748,10 @@ public class ApiRestTemplate {
         Map<String, Object> responseMap = gson.fromJson(response, Map.class);
         Map<String, Object> dataMap = (Map)responseMap.get("data");
 
+        if (dataMap == null) {
+            return CompletableFuture.completedFuture(domain);
+        }
+
         stockDomain.setCompanyName(dataMap.get("name").toString());
         domain.setCompanyCode(dataMap.get("code").toString());
         domain.setCompanyName(dataMap.get("name").toString());
