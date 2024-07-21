@@ -30,20 +30,7 @@ def __stock__():
     """
     确定日期范围
     """
-    if target_date is None:
-        end_date = utils.today()
-    else:
-        end_date = target_date
-
-    _is_work_day = False
-    while ~_is_work_day:
-        _is_work_day = utils.is_work_day(end_date)
-        if _is_work_day:
-            break
-        else:
-            end_date = end_date - timedelta(days=1)
-
-    start_date = end_date - timedelta(days=header_c)
+    start_date, end_date = __cal_date_range__()
     log.log(r'start date :: {} end date :: {}'.format(start_date, end_date))
 
     utils.remove_file(file_path, r'{}_{}'.format(out_file_name, end_date))
@@ -81,36 +68,40 @@ def __stock__():
     log.log(r'{} :: {}'.format('COUNT_O', df_o))
 
     """
-    过滤数据。
+    过滤数据（二次计算）
     """
-    df_d['C'] = df_d['C'].astype(str)
-    # 只保留最新日期
-    df_d = df_d[(df_d['C'].eq(str(end_date))) & ~(df_d['N'].eq(0))]
-    # # drop_duplicates 函数默认保留首次出现的值，如果想保留最后一次出现的值，可以使用keep='last'这样，在去除重复值的过程中，会保留最后一次出现的重复值。
-    # df = df.drop_duplicates('B', keep='last')
-    # df = df[~(df['N'].eq(0))]
+    log.log('cal count v start')
+    df_d_max = __cal_v_count__(df_d)
+    # df_d['C'] = df_d['C'].astype(str)
+    # # 只保留最新日期
+    # df_d_result = df_d[(df_d['C'].eq(str(end_date))) & ~(df_d['N'].eq(0))]
+    # # # drop_duplicates 函数默认保留首次出现的值，如果想保留最后一次出现的值，可以使用keep='last'这样，在去除重复值的过程中，会保留最后一次出现的重复值。
+    # # df = df.drop_duplicates('B', keep='last')
+    # # df = df[~(df['N'].eq(0))]
 
-    df_o['C'] = df_o['C'].astype(str)
-    # 只保留最新日期
-    df_o = df_o[(df_o['C'].eq(str(end_date))) & ~(df_o['N'].eq(0))]
-    # # drop_duplicates 函数默认保留首次出现的值，如果想保留最后一次出现的值，可以使用keep='last'这样，在去除重复值的过程中，会保留最后一次出现的重复值。
-    # df = df.drop_duplicates('B', keep='last')
-    # df = df[~(df['N'].eq(0))]
+    df_o_max = __cal_v_count__(df_o)
+    # df_o['C'] = df_o['C'].astype(str)
+    # # 只保留最新日期
+    # df_o_result = df_o[(df_o['C'].eq(str(end_date))) & ~(df_o['N'].eq(0))]
+    # # # drop_duplicates 函数默认保留首次出现的值，如果想保留最后一次出现的值，可以使用keep='last'这样，在去除重复值的过程中，会保留最后一次出现的重复值。
+    # # df = df.drop_duplicates('B', keep='last')
+    # # df = df[~(df['N'].eq(0))]
+    log.log('cal count v end')
 
     """
     Sort
     """
-    df_d_result = df_d.sort_values(by='V', ascending=False)
-    df_o_result = df_o.sort_values(by='V', ascending=False)
+    df_d_result = df_d_max.sort_values(by='V', ascending=False)
+    df_o_result = df_o_max.sort_values(by='V', ascending=False)
 
     """
-    写excel。
+    写excel
     """
-    utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'DD', df_d_result)
-    log.log(r'{} :: {}'.format(r'{}_{}'.format(out_file_name, end_date), df_d_result))
+    utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'MAX_D', df_d_result)
+    log.log(r'{} :: {}'.format(r'{}_{}_{}'.format(out_file_name, end_date, 'MAX_D'), df_d_result))
 
-    utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'OO', df_o_result)
-    log.log(r'{} :: {}'.format(r'{}_{}'.format(out_file_name, end_date), df_o_result))
+    utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'MAX_O', df_o_result)
+    log.log(r'{} :: {}'.format(r'{}_{}_{}'.format(out_file_name, end_date, 'MAX_O'), df_o_result))
 
 
 def __fill__(df, start_date, end_date):
@@ -159,6 +150,7 @@ def __cal_d_count__(df):
 
         group['U'] = ''
         group['V'] = consecutive_days.where(group['is_valid_d'], 0)
+
         return group
 
     result = grouped.apply(__count_consecutive_days__).reset_index(drop=True)
@@ -186,6 +178,53 @@ def __cal_o_count__(df):
 
     result = grouped.apply(__count_consecutive_days__).reset_index(drop=True)
     return result
+
+
+def __cal_v_count__(df):
+    # 确保日期列为 datetime 类型，用于日期计算
+    df['C'] = pd.to_datetime(df['C'])
+    grouped = df.groupby(['A', 'B'])
+    # desc_group = group.sort_values(by='C', ascending=False)
+
+    def __count_v_days__(group):
+        max_row = group.loc[group['C'].idxmax()]
+        is_max_row = max_row['V'] > 1
+        if is_max_row:
+            header_d_count = 0
+            for _, r in group.iterrows():
+                if r['D'] == header_d:
+                    header_d_count = header_d_count + 1
+                # exit
+                elif r['D'] < 0:
+                    break
+            max_row['V'] = max_row['V'] - header_d_count
+        return max_row
+
+    max_result = grouped.apply(__count_v_days__).reset_index(drop=True)
+    return max_result
+
+
+def __cal_date_range__():
+    if target_date is None:
+        end_date = utils.today()
+        if end_date.weekday() == 5:
+            end_date = end_date - timedelta(days=1)
+        elif end_date.weekday() == 6:
+            end_date = end_date - timedelta(days=2)
+    else:
+        end_date = target_date
+
+    _is_work_day = False
+    while ~_is_work_day:
+        _is_work_day = utils.is_work_day(end_date)
+        if _is_work_day:
+            break
+        else:
+            end_date = end_date - timedelta(days=1)
+
+    start_date = end_date - timedelta(days=header_c)
+
+    return start_date, end_date
 
 
 def __read_file__():
