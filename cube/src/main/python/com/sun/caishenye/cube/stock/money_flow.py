@@ -184,14 +184,14 @@ def __cal_v_count__(df):
     # 确保日期列为 datetime 类型，用于日期计算
     df['C'] = pd.to_datetime(df['C'])
     grouped = df.groupby(['A', 'B'])
-    # desc_group = group.sort_values(by='C', ascending=False)
 
     def __count_v_days__(group):
         max_row = group.loc[group['C'].idxmax()]
         is_max_row = max_row['V'] > 1
         if is_max_row:
+            desc_group = group.sort_values(by='C', ascending=False)
             header_d_count = 0
-            for _, r in group.iterrows():
+            for _, r in desc_group.iterrows():
                 if r['D'] == header_d:
                     header_d_count = header_d_count + 1
                 # exit
