@@ -181,7 +181,7 @@ def __y2_top6__():
     years = [year_current, year_current_1, year_current_2]
     df_filtered1 = df[df['E'].str.contains('|'.join(years)) & df['H'].isin(header_h)]  # dataframe
     df_filtered1['G'] = df_filtered1['G'].astype(float)
-    df2 = df_filtered1[df_filtered1['G'] >= header_g + 1]  # series TODO 6
+    df2 = df_filtered1[df_filtered1['G'] >= header_g]  # series TODO 6
     # utils.write_excel(file_path, out_file_name, '1_Y2TOP6_3Y', df2.sort_values(by='A'))
 
     """

@@ -7,33 +7,33 @@ file:
 #        run: true
         file_name:
           in: a.csv
-          out: mm
+          out: a
         # TODO
         target_year: 2022
         header:
           g: 4
           g_y2: 6
-          g_y3: 5
+          g_y5: 5
           g_y10: 3
 
       fr:
 #        run: true
         file_name: 
           in: a.csv
-          out: boss
+          out: a
         # TODO
         target_year: 2023
         header:
           f:
             month:
               y: 12
-              q1: 3
-#              h: 6
+#              q1: 3
+              h: 6
 #              q3: 9
             day:
               y: 31
-              q1: 31
-#              h: 30
+#              q1: 31
+              h: 30
 #              q3: 30
           i: [30,40,45]
           j: 30
@@ -42,7 +42,7 @@ file:
       money_flow:
         run: true
         stock:
-#          target_date: 2024-07-16
+#          target_date: 2024-07-18
           file_name:
             in: a.csv
             out: a
