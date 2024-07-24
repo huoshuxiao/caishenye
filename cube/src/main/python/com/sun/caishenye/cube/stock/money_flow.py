@@ -71,7 +71,7 @@ def __stock__():
     过滤数据（二次计算）
     """
     log.log('cal count v start')
-    df_d_max = __cal_v_count__(df_d)
+    df_d_max = __cal2_d_count__(df_d)
     # df_d['C'] = df_d['C'].astype(str)
     # # 只保留最新日期
     # df_d_result = df_d[(df_d['C'].eq(str(end_date))) & ~(df_d['N'].eq(0))]
@@ -79,7 +79,7 @@ def __stock__():
     # # df = df.drop_duplicates('B', keep='last')
     # # df = df[~(df['N'].eq(0))]
 
-    df_o_max = __cal_v_count__(df_o)
+    df_o_max = __cal2_o_count__(df_o)
     # df_o['C'] = df_o['C'].astype(str)
     # # 只保留最新日期
     # df_o_result = df_o[(df_o['C'].eq(str(end_date))) & ~(df_o['N'].eq(0))]
@@ -180,7 +180,7 @@ def __cal_o_count__(df):
     return result
 
 
-def __cal_v_count__(df):
+def __cal2_d_count__(df):
     # 确保日期列为 datetime 类型，用于日期计算
     df['C'] = pd.to_datetime(df['C'])
     grouped = df.groupby(['A', 'B'])
@@ -196,6 +196,30 @@ def __cal_v_count__(df):
                     header_d_count = header_d_count + 1
                 # exit
                 elif r['D'] < 0:
+                    break
+            max_row['V'] = max_row['V'] - header_d_count
+        return max_row
+
+    max_result = grouped.apply(__count_v_days__).reset_index(drop=True)
+    return max_result
+
+
+def __cal2_o_count__(df):
+    # 确保日期列为 datetime 类型，用于日期计算
+    df['C'] = pd.to_datetime(df['C'])
+    grouped = df.groupby(['A', 'B'])
+
+    def __count_v_days__(group):
+        max_row = group.loc[group['C'].idxmax()]
+        is_max_row = max_row['V'] > 1
+        if is_max_row:
+            desc_group = group.sort_values(by='C', ascending=False)
+            header_d_count = 0
+            for _, r in desc_group.iterrows():
+                if r['D'] == header_d:
+                    header_d_count = header_d_count + 1
+                # exit
+                elif r['O'] < 0:
                     break
             max_row['V'] = max_row['V'] - header_d_count
         return max_row
