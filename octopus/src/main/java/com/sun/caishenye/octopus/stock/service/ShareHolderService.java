@@ -2,7 +2,6 @@ package com.sun.caishenye.octopus.stock.service;
 
 import com.sun.caishenye.octopus.stock.agent.api.ApiRestTemplate;
 import com.sun.caishenye.octopus.stock.dao.StockDao;
-import com.sun.caishenye.octopus.stock.domain.MoneyFlowDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import com.sun.caishenye.octopus.stock.domain.TenHolderDomain;
 import lombok.extern.slf4j.Slf4j;

@@ -33,6 +33,7 @@ public class MoneyFlowService {
     public void stock() throws ExecutionException, InterruptedException {
         // 查询证券基础数据
         List<StockDomain> baseList = baseService.readBaseData();
+        
         List<MoneyFlowDomain> resultList = new ArrayList<>();
         for (StockDomain stockDomain: baseList) {
             // 采集 个股资金流

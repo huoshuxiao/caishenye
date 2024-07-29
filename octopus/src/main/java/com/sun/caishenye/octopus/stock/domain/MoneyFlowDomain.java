@@ -8,7 +8,6 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 资金流
@@ -71,7 +70,7 @@ public class MoneyFlowDomain {
                 .append(Constants.DELIMITING_COMMA.getString()).append(companyName) // 公司简称
         ;
         klines.forEach(t -> {
-            String[] k = t.split("Constants.DELIMITING_COMMA");
+            String[] k = t.split(Constants.DELIMITING_COMMA.getString());
             Arrays.stream(k).forEach(a -> {
                 sbStr.append(Constants.DELIMITING_COMMA.getString()).append(a);
             });
