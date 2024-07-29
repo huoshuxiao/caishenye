@@ -22,6 +22,7 @@
         <google.guava.gson>2.8.9</google.guava.gson>
         <apache.log4j.version>1.2.17</apache.log4j.version>
         <apache.httpcore.version>4.4.4</apache.httpcore.version>
+        <opencsv.version>5.6</opencsv.version>
     </properties>
 
     <dependencies>
@@ -94,6 +95,13 @@
         <dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache</artifactId>
+        </dependency>
+
+        <!-- csv -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>${opencsv.version}</version>
         </dependency>
 
     </dependencies>

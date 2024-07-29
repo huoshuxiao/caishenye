@@ -156,4 +156,13 @@ public class IndexController {
         LocalDateTime endTime = LocalDateTime.now();
         return "money flow " + ChronoUnit.MINUTES.between(startTime, endTime);
     }
+
+    // 十大股东
+    @GetMapping("sdgd")
+    public Object tenHolder() throws ExecutionException, InterruptedException {
+        LocalDateTime startTime = LocalDateTime.now();
+        stockService.tenHolder();
+        LocalDateTime endTime = LocalDateTime.now();
+        return "ten holder " + ChronoUnit.MINUTES.between(startTime, endTime);
+    }
 }

@@ -43,8 +43,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class ApiRestTemplate {
 
-    @Autowired
-    private StockCache cache;
+    // 雪球 实时行情
+    // 最新
+    // http://stock.xueqiu.com/v5/stock/f10/cn/top_holders.json?symbol=SZ000010&circula=0&count=200
+    // 财报时间
+    // http://stock.xueqiu.com/v5/stock/f10/cn/top_holders.json?symbol=SZ000010&locate=1711814400000&start=1711814400000&circula=0
+    private static final String XUEQIU_SDGD_URL = "http://stock.xueqiu.com/v5/stock/f10/cn/top_holders.json?symbol={location}{companyCode}&circula=0&count=200";
+    private static final String XUEQIU_SDGD_URL2 = "http://stock.xueqiu.com/v5/stock/f10/cn/top_holders.json?symbol={location}{companyCode}&locate=1711814400000&start=1711814400000&circula=0";
 
     // 雪球 实时行情
     // https://stock.xueqiu.com/v5/stock/quote.json?symbol=SZ002233&extend=detail
@@ -97,10 +102,6 @@ public class ApiRestTemplate {
     // http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg=0&end=20500101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid=0.300308&klt=101&fqt=1&cb=jsonp1688913443970
     protected static final String EASTMONEY_HHQ_URL = "http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg=0&end=20490101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid={exchange}.{companyCode}&klt=101&fqt=1&cb=jsonp1688913443970";
 
-    // 历史行情 搜狐
-    // http://q.stock.sohu.com/hisHq?code=cn_603999&start=20091126&end=20200325&stat=1&order=D&period=d&callback=historySearchHandler&rt=jsonp&r=0.028961481283250157&0.037908320278956964
-    protected static final String SOHU_HHQ_URL = "http://q.stock.sohu.com/hisHq?code=cn_{companyCode}&start={startDay}&end={endDay}&stat=1&order=D&period=d&callback=historySearchHandler&rt=jsonp&r={random1}&{random2}";
-
     // 财务数据(业绩报表) 东方财富网
 //    // http://dcfm.eastmoney.com//em_mutisvcexpandinterface/api/js/get?type=YJBB21_YJBB&token=70f12f2f4f091e459a279469fe49eca5&filter=(scode=600000)&st=reportdate&sr=-1&p=1&ps=500&js=var%20ITnKjhqD={pages:(tp),data:%20(x),font:(font)}&rt=52946252
 //    protected static final String EASTMONEY_FR_YJBB_URL = "http://dcfm.eastmoney.com//em_mutisvcexpandinterface/api/js/get?type=YJBB21_YJBB&token=70f12f2f4f091e459a279469fe49eca5&filter=(scode={companyCode})&st=reportdate&sr=-1&p=1&ps=500&js={js}&rt=52946252";
@@ -110,6 +111,13 @@ public class ApiRestTemplate {
     // 东方财富网 个股资金流向
     // https://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get?cb=jQuery112307003461005693303_1720105195359&lmt=0&klt=101&fields1=f1,f2,f3,f7&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65&ut=b2884a393a59ad64002292a3e90d46a5&secid=1.601928&_=1720105195360
     protected static final String EASTMONEY_STOCK_MONEY_FLOW_URL = "http://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get?cb=jQuery112307003461005693303_1720105195359&lmt=0&klt=101&fields1=f1,f2,f3,f7&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65&ut=b2884a393a59ad64002292a3e90d46a5&secid={exchange}.{companyCode}&_=1720105195360";
+
+    // 历史行情 搜狐
+    // http://q.stock.sohu.com/hisHq?code=cn_603999&start=20091126&end=20200325&stat=1&order=D&period=d&callback=historySearchHandler&rt=jsonp&r=0.028961481283250157&0.037908320278956964
+    protected static final String SOHU_HHQ_URL = "http://q.stock.sohu.com/hisHq?code=cn_{companyCode}&start={startDay}&end={endDay}&stat=1&order=D&period=d&callback=historySearchHandler&rt=jsonp&r={random1}&{random2}";
+
+    @Autowired
+    private StockCache cache;
 
     @Autowired
     private ShRestTemplate shRestTemplate;
@@ -579,7 +587,7 @@ public class ApiRestTemplate {
                         break;
                     } else {
                         day = String.valueOf(Integer.parseInt(day) - 1);
-                        log.debug("call getHhqForObject {} date {} ", stockDomain.getCompanyCode(), day);
+                        log.debug("call getHhqForObject :: {} date :: {} ", stockDomain.getCompanyCode(), day);
                         // 数据质量差，交易所取数据（不保证数据正确）
                         if ("19900101".equals(day)) {
                             // 从 证券交易所 取数据
@@ -615,7 +623,7 @@ public class ApiRestTemplate {
                     }
                 }
             } catch (InterruptedException | ExecutionException e) {
-                log.error("call getHhqForObject error " + e);
+                log.error("call getHhqForObject error :: {}", e.toString());
                 return null;
             }
             return isOK.get() ? hhqDomain : null;
@@ -652,7 +660,7 @@ public class ApiRestTemplate {
         } catch (JSONException je) {
             log.error(hhqUrlBuilderWithSohu(stockDomain) + " " + je);
         } catch (InterruptedException | ExecutionException e) {
-            log.error("call getHhqForObject error " + e);
+            log.error("call getHhqForObject error :: {} ", e.toString());
         }
 //        log.debug("call hhq response value :: {}", hhqDomain);
         return hhqDomain;
@@ -757,6 +765,146 @@ public class ApiRestTemplate {
         domain.setCompanyName(dataMap.get("name").toString());
         List<String> klines = (List)dataMap.get("klines");
         domain.setKlines(klines);
+
+        return CompletableFuture.completedFuture(domain);
+    }
+
+    // 十大股东
+    @Async
+    public CompletableFuture<TenHolderDomain> getTenHolder(StockDomain stockDomain) {
+
+        // call rest service
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cookie", cache.getXQCookies());
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<Map> responseEntity = restTemplate.exchange(XUEQIU_SDGD_URL, HttpMethod.GET, entity, Map.class,
+                builderShareBonusUrl(stockDomain.getCompanyCode(), stockDomain.getExchange()));
+        Map<String, Object> responseMap = responseEntity.getBody();
+        Map<String, Object> dataMap = (Map)responseMap.get("data");
+        List<Map<String, Object>> items = (List)dataMap.get("items");
+        List<Map<String, Object>> times = (List)dataMap.get("times");
+
+        if (items.size() < 5) {
+            responseEntity = restTemplate.exchange(XUEQIU_SDGD_URL2, HttpMethod.GET, entity, Map.class,
+                    builderShareBonusUrl(stockDomain.getCompanyCode(), stockDomain.getExchange()));
+            responseMap = responseEntity.getBody();
+            dataMap = (Map)responseMap.get("data");
+            items = (List)dataMap.get("items");
+            times = (List)dataMap.get("times");
+        }
+
+        if (items.isEmpty()) {
+            return null;
+        }
+
+        TenHolderDomain domain = new TenHolderDomain();
+        domain.setCompanyCode(stockDomain.getCompanyCode());
+        domain.setCompanyName(stockDomain.getCompanyName());
+        domain.setTime(times.get(0).get("name").toString());
+
+        Map<String, Object> mItem;
+        TenHolderDomain.Item item;
+
+        if (!items.isEmpty()) {
+            mItem = items.get(0);
+            item = new TenHolderDomain.Item();
+            item.setHolderName(mItem.get("holder_name").toString());
+            item.setHeldNum(mItem.get("held_num").toString());
+            item.setHeldRatio(mItem.get("held_ratio").toString());
+            item.setChg(String.valueOf(mItem.get("chg")));
+            domain.setItem1(item);
+        }
+
+        if (items.size() > 1) {
+            mItem = items.get(1);
+            item = new TenHolderDomain.Item();
+            item.setHolderName(mItem.get("holder_name").toString());
+            item.setHeldNum(mItem.get("held_num").toString());
+            item.setHeldRatio(mItem.get("held_ratio").toString());
+            item.setChg(String.valueOf(mItem.get("chg")));
+            domain.setItem2(item);
+        }
+
+        if (items.size() > 2) {
+            mItem = items.get(2);
+            item = new TenHolderDomain.Item();
+            item.setHolderName(mItem.get("holder_name").toString());
+            item.setHeldNum(mItem.get("held_num").toString());
+            item.setHeldRatio(mItem.get("held_ratio").toString());
+            item.setChg(String.valueOf(mItem.get("chg")));
+            domain.setItem3(item);
+        }
+
+        if (items.size() > 3) {
+            mItem = items.get(3);
+            item = new TenHolderDomain.Item();
+            item.setHolderName(mItem.get("holder_name").toString());
+            item.setHeldNum(mItem.get("held_num").toString());
+            item.setHeldRatio(mItem.get("held_ratio").toString());
+            item.setChg(String.valueOf(mItem.get("chg")));
+            domain.setItem4(item);
+        }
+
+        if (items.size() > 4) {
+            mItem = items.get(4);
+            item = new TenHolderDomain.Item();
+            item.setHolderName(mItem.get("holder_name").toString());
+            item.setHeldNum(mItem.get("held_num").toString());
+            item.setHeldRatio(mItem.get("held_ratio").toString());
+            item.setChg(String.valueOf(mItem.get("chg")));
+            domain.setItem5(item);
+        }
+
+        if (items.size() > 5) {
+            mItem = items.get(5);
+            item = new TenHolderDomain.Item();
+            item.setHolderName(mItem.get("holder_name").toString());
+            item.setHeldNum(mItem.get("held_num").toString());
+            item.setHeldRatio(mItem.get("held_ratio").toString());
+            item.setChg(String.valueOf(mItem.get("chg")));
+            domain.setItem6(item);
+        }
+
+        if (items.size() > 6) {
+            mItem = items.get(6);
+            item = new TenHolderDomain.Item();
+            item.setHolderName(mItem.get("holder_name").toString());
+            item.setHeldNum(mItem.get("held_num").toString());
+            item.setHeldRatio(mItem.get("held_ratio").toString());
+            item.setChg(String.valueOf(mItem.get("chg")));
+            domain.setItem7(item);
+        }
+
+        if (items.size() > 7) {
+            mItem = items.get(7);
+            item = new TenHolderDomain.Item();
+            item.setHolderName(mItem.get("holder_name").toString());
+            item.setHeldNum(mItem.get("held_num").toString());
+            item.setHeldRatio(mItem.get("held_ratio").toString());
+            item.setChg(String.valueOf(mItem.get("chg")));
+            domain.setItem8(item);
+        }
+
+        if (items.size() > 8) {
+            mItem = items.get(8);
+            item = new TenHolderDomain.Item();
+            item.setHolderName(mItem.get("holder_name").toString());
+            item.setHeldNum(mItem.get("held_num").toString());
+            item.setHeldRatio(mItem.get("held_ratio").toString());
+            item.setChg(String.valueOf(mItem.get("chg")));
+            domain.setItem9(item);
+        }
+
+        if (items.size() > 9) {
+            mItem = items.get(9);
+            item = new TenHolderDomain.Item();
+            item.setHolderName(mItem.get("holder_name").toString());
+            item.setHeldNum(mItem.get("held_num").toString());
+            item.setHeldRatio(mItem.get("held_ratio").toString());
+            item.setChg(String.valueOf(mItem.get("chg")));
+            domain.setItem10(item);
+        }
 
         return CompletableFuture.completedFuture(domain);
     }

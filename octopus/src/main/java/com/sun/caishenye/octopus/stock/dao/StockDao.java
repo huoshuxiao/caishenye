@@ -1,18 +1,14 @@
 package com.sun.caishenye.octopus.stock.dao;
 
+import com.opencsv.CSVWriter;
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.component.CacheComponent;
-import com.sun.caishenye.octopus.stock.domain.DayLineDomain;
-import com.sun.caishenye.octopus.stock.domain.FinancialReport2Domain;
-import com.sun.caishenye.octopus.stock.domain.MoneyFlowDomain;
-import com.sun.caishenye.octopus.stock.domain.StockDomain;
+import com.sun.caishenye.octopus.stock.domain.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -460,6 +456,29 @@ public class StockDao {
                 String s = domain.stockBuilder() + "\r\n";
                 log.debug("write stock money flow data >> {}", s);
                 writer.write(s, 0, s.length());
+            }
+        } catch (IOException x) {
+            log.error(String.format("IOException: %s%n", x));
+        }
+    }
+
+    // 写 十大股东
+    public void writeTenHolderData(List<TenHolderDomain> data) {
+//        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(getFilePath() + Constants.SHARE_HOLDER_SDGD.getString()), StandardCharsets.UTF_8)) {
+//            for (TenHolderDomain domain : data) {
+//                String s = domain.builder() + "\r\n";
+//                log.debug("write sdgd data >> {}", s);
+//                writer.write(s, 0, s.length());
+//            }
+//        } catch (IOException x) {
+//            log.error(String.format("IOException: %s%n", x));
+//        }
+
+        try (FileOutputStream fos = new FileOutputStream(Paths.get(getFilePath() + Constants.SHARE_HOLDER_SDGD.getString()).toFile());
+             OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+             CSVWriter writer = new CSVWriter(osw)) {
+            for (TenHolderDomain domain : data) {
+                writer.writeNext(domain.builders());
             }
         } catch (IOException x) {
             log.error(String.format("IOException: %s%n", x));

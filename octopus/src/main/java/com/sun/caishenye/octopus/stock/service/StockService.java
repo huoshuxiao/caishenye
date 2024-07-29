@@ -53,6 +53,9 @@ public class StockService {
     @Autowired
     private MoneyFlowService moneyFlowService;
 
+    @Autowired
+    private ShareHolderService shareHolderService;
+
     public void run() throws ExecutionException, InterruptedException {
         base();
 
@@ -293,5 +296,9 @@ public class StockService {
 
     public void moneyFlow() throws ExecutionException, InterruptedException {
         moneyFlowService.stock();
+    }
+
+    public void tenHolder() throws ExecutionException, InterruptedException {
+        shareHolderService.tenHolder();
     }
 }

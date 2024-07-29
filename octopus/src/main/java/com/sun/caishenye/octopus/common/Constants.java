@@ -2,7 +2,6 @@ package com.sun.caishenye.octopus.common;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
 
 public enum Constants {
 
@@ -26,6 +25,7 @@ public enum Constants {
     FILE_HQ("HQ.log"),
     FILE_HHQ("HHQ.log"),
     MONEY_FLOW_STOCK("MoneyFlow_Stock.csv"),
+    SHARE_HOLDER_SDGD("ShareHolder_SDGD.csv"),
     FILE_MONEY_MONEY("Stock_MM.csv"),
 
     CHROME_DRIVER_PATH("/home/sunwenkun/Developer/gitroot/caishenye.git/octopus/bin/chromedriver"),
