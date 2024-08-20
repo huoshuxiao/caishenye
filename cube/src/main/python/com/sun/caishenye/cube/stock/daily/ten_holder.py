@@ -1,3 +1,8 @@
+"""
+十大股东
+"""
+
+
 from com.sun.caishenye.cube.common import utils
 from com.sun.caishenye.cube.config import config, log
 
@@ -92,7 +97,7 @@ def __is_origin__(cell):
 
     if len(ignores) > 0:
         if any(keyword in cell for keyword in ignores):
-            log.log(cell)
+            # log.log(cell)
             return False
 
     # any() 函数在找到第一个匹配项时就会返回 True，否则返回 False

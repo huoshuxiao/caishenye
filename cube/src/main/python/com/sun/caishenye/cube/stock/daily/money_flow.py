@@ -1,3 +1,8 @@
+"""
+资金流
+"""
+
+
 from datetime import timedelta
 
 import pandas as pd
@@ -23,9 +28,11 @@ def run():
     if execute_flg is None:
         return
 
+    # 个股
     __stock__()
 
 
+# 个股
 def __stock__():
     """
     确定日期范围
@@ -56,22 +63,22 @@ def __stock__():
     计算
     """
     log.log('cal count d start')
-    df_d = __cal_d_count__(df)
+    df_d = __cal_v_by_d__(df)
     log.log('cal count d end')
     utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'COUNT_D', df_d)
     log.log(r'{} :: {}'.format('COUNT_D', df_d))
 
-    log.log('cal count o start')
-    df_o = __cal_o_count__(df)
-    log.log('cal count o end')
-    utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'COUNT_O', df_o)
-    log.log(r'{} :: {}'.format('COUNT_O', df_o))
+    # log.log('cal count o start')
+    # df_o = __cal_o_count__(df)
+    # log.log('cal count o end')
+    # utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'COUNT_O', df_o)
+    # log.log(r'{} :: {}'.format('COUNT_O', df_o))
 
     """
     过滤数据（二次计算）
     """
     log.log('cal count v start')
-    df_d_max = __cal2_d_count__(df_d)
+    df_d_max = __cal2_v_by_d__(df_d)
     # df_d['C'] = df_d['C'].astype(str)
     # # 只保留最新日期
     # df_d_result = df_d[(df_d['C'].eq(str(end_date))) & ~(df_d['N'].eq(0))]
@@ -79,7 +86,7 @@ def __stock__():
     # # df = df.drop_duplicates('B', keep='last')
     # # df = df[~(df['N'].eq(0))]
 
-    df_o_max = __cal2_o_count__(df_o)
+    # df_o_max = __cal2_o_count__(df_o)
     # df_o['C'] = df_o['C'].astype(str)
     # # 只保留最新日期
     # df_o_result = df_o[(df_o['C'].eq(str(end_date))) & ~(df_o['N'].eq(0))]
@@ -92,7 +99,7 @@ def __stock__():
     Sort
     """
     df_d_result = df_d_max.sort_values(by='V', ascending=False)
-    df_o_result = df_o_max.sort_values(by='V', ascending=False)
+    # df_o_result = df_o_max.sort_values(by='V', ascending=False)
 
     """
     写excel
@@ -100,8 +107,8 @@ def __stock__():
     utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'MAX_D', df_d_result)
     log.log(r'{} :: {}'.format(r'{}_{}_{}'.format(out_file_name, end_date, 'MAX_D'), df_d_result))
 
-    utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'MAX_O', df_o_result)
-    log.log(r'{} :: {}'.format(r'{}_{}_{}'.format(out_file_name, end_date, 'MAX_O'), df_o_result))
+    # utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'MAX_O', df_o_result)
+    # log.log(r'{} :: {}'.format(r'{}_{}_{}'.format(out_file_name, end_date, 'MAX_O'), df_o_result))
 
 
 def __fill__(df, start_date, end_date):
@@ -133,7 +140,7 @@ def __fill__(df, start_date, end_date):
     return result
 
 
-def __cal_d_count__(df):
+def __cal_v_by_d__(df):
     # 确保日期列为 datetime 类型，用于日期计算
     df['C'] = pd.to_datetime(df['C'])
     grouped = df.groupby(['A', 'B'])
@@ -151,13 +158,19 @@ def __cal_d_count__(df):
         group['U'] = ''
         group['V'] = consecutive_days.where(group['is_valid_d'], 0)
 
+        # # 显示小数点后2位
+        # group['W'] = r'{:.0%}'.format(sum(group['is_valid_d']) / len(group['D']))
+        group['U'] = group['D'] > header_d
+        # 正数
+        group['W'] = r'{}'.format(sum(group['U']))
+
         return group
 
     result = grouped.apply(__count_consecutive_days__).reset_index(drop=True)
     return result
 
 
-def __cal_o_count__(df):
+def __cal_v_by_o__(df):
     # 确保日期列为 datetime 类型，用于日期计算
     df['C'] = pd.to_datetime(df['C'])
     grouped = df.groupby(['A', 'B'])
@@ -174,13 +187,19 @@ def __cal_o_count__(df):
 
         group['U'] = ''
         group['V'] = consecutive_days.where(group['is_valid_o'], 0)
+
+        # # 显示小数点后2位
+        # group['W'] = r'{:.0%}'.format(sum(group['is_valid_d']) / len(group['D']))
+        group['U'] = group['O'] > header_d
+        # 正数
+        group['W'] = r'{}'.format(sum(group['U']))
         return group
 
     result = grouped.apply(__count_consecutive_days__).reset_index(drop=True)
     return result
 
 
-def __cal2_d_count__(df):
+def __cal2_v_by_d__(df):
     # 确保日期列为 datetime 类型，用于日期计算
     df['C'] = pd.to_datetime(df['C'])
     grouped = df.groupby(['A', 'B'])
@@ -204,7 +223,7 @@ def __cal2_d_count__(df):
     return max_result
 
 
-def __cal2_o_count__(df):
+def __cal2_v_by_o__(df):
     # 确保日期列为 datetime 类型，用于日期计算
     df['C'] = pd.to_datetime(df['C'])
     grouped = df.groupby(['A', 'B'])
