@@ -6,6 +6,7 @@ import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import com.sun.caishenye.octopus.stock.domain.TenHolderDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class ShareHolderService {
     private StockDao stockDao;
 
     // 十大股东
+    @Async
     public void tenHolder() throws ExecutionException, InterruptedException {
 
         List<TenHolderDomain> resultList = new ArrayList<>();

@@ -6,6 +6,7 @@ import com.sun.caishenye.octopus.stock.domain.MoneyFlowDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class MoneyFlowService {
     private StockDao stockDao;
 
     // 个股
+    @Async
     public void stock() throws ExecutionException, InterruptedException {
         // 查询证券基础数据
         List<StockDomain> baseList = baseService.readBaseData();

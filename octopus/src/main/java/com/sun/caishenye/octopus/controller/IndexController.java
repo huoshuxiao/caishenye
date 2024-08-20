@@ -21,6 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequestMapping("/")
 public class IndexController {
 
+    /////////////////////////////////////////////// Flux (Socket) //////////////////////////////////////////////////////
     // 服务器推送事件（Server-Sent Events，SSE）
     // 在 WebFlux 中创建 SSE 的服务器端是非常简单的。只需要返回的对象的类型是 Flux<ServerSentEvent>，就会被自动按照 SSE 规范要求的格式来发送响应。
     @GetMapping("")
@@ -139,7 +140,7 @@ public class IndexController {
         return tag + " " + ChronoUnit.MINUTES.between(startTime, endTime);
     }
 
-    // run
+    // run (job)
     @GetMapping("stock")
     public Object stock() throws ExecutionException, InterruptedException {
         LocalDateTime startTime = LocalDateTime.now();
@@ -165,4 +166,14 @@ public class IndexController {
         LocalDateTime endTime = LocalDateTime.now();
         return "ten holder " + ChronoUnit.MINUTES.between(startTime, endTime);
     }
+
+    // daily
+    @GetMapping("daily")
+    public Object daily() throws ExecutionException, InterruptedException {
+        LocalDateTime startTime = LocalDateTime.now();
+        stockService.daily();
+        LocalDateTime endTime = LocalDateTime.now();
+        return "daily " + ChronoUnit.MINUTES.between(startTime, endTime);
+    }
+
 }

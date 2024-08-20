@@ -301,4 +301,11 @@ public class StockService {
     public void tenHolder() throws ExecutionException, InterruptedException {
         shareHolderService.tenHolder();
     }
+
+    public void daily() throws ExecutionException, InterruptedException {
+        base();
+
+        tenHolder();
+        moneyFlow();
+    }
 }
