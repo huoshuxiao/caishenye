@@ -220,6 +220,7 @@ def __cal2_v_by_d__(df):
         return max_row
 
     max_result = grouped.apply(__count_v_days__).reset_index(drop=True)
+    max_result['C'] = max_result['C'].astype(str)
     return max_result
 
 
@@ -244,6 +245,7 @@ def __cal2_v_by_o__(df):
         return max_row
 
     max_result = grouped.apply(__count_v_days__).reset_index(drop=True)
+    max_result['C'] = max_result['C'].astype(str)
     return max_result
 
 
