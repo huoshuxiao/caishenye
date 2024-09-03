@@ -1,10 +1,12 @@
-/.idea/
 *.iml
+*.log
+
+/.idea/
 /data/
 /log/
 
 cube/.idea/
-*.log
-cube/src/main/python/com/sun/caishenye/cube/*/__pycache__/
-
 octopus/log/
+
+cube/src/main/python/com/sun/caishenye/cube/*/__pycache__/
+cube/src/main/python/com/sun/caishenye/cube/*/*/__pycache__/
