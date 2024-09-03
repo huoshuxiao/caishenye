@@ -42,9 +42,12 @@ public class ContextRefreshedListener implements ApplicationListener<ContextRefr
                 tokenizer.nextToken();
                 // value
                 filePath = cache.putIfAbsentFilePath(tokenizer.nextToken());
+                log.info("自定义初始化开始 ::  command filePath >> {}", filePath);
             }
+        } else {
+            cache.putIfAbsentFilePath(filePath);
         }
-        log.info(filePath);
+        log.info("自定义初始化开始 ::  default filePath {} ::", filePath);
         log.info("自定义初始化完毕 :: 开始命令行参数.............");
     }
 }

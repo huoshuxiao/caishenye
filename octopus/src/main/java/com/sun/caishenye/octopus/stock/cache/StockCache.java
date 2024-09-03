@@ -3,6 +3,7 @@ package com.sun.caishenye.octopus.stock.cache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,9 @@ public class StockCache {
 
     private String XQ_URL = "http://www.xueqiu.com";
 
+    @Value("${cookie.xq}")
+    private String cookie;
+
     @Qualifier("restTemplateText")
     @Autowired
     private RestTemplate restTemplateText;
@@ -25,6 +29,11 @@ public class StockCache {
         ResponseEntity<String> response = restTemplateText.getForEntity(XQ_URL, String.class);
         List<String > cookies = response.getHeaders().get("Set-Cookie");
         String xq = String.join(";", cookies);
+        log.info("cookies :: {}", xq);
+
+        if (!xq.contains("token")) {
+            xq = cookie;
+        }
         log.info("cookies :: {}", xq);
         return xq;
     }

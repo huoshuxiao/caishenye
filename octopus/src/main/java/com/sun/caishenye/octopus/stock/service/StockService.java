@@ -58,6 +58,10 @@ public class StockService {
 
     public void run() throws ExecutionException, InterruptedException {
         base();
+        ///////////////////
+        tenHolder();
+        moneyFlow();
+        //////////////////
 
         financialReport();
 
