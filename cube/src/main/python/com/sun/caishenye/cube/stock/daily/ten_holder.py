@@ -1,5 +1,7 @@
 """
 十大股东
+  1. 股东类型
+  2. 非个人实体股东百分比
 """
 
 
@@ -54,7 +56,7 @@ def __cal__():
     log.log(r'{} :: {}'.format(r'{}_{}'.format(out_file_name, 'DEMO'), df))
 
 
-# 股东百分比
+# 非个人实体股东百分比
 def __cal_ratio__(row):
     # log.log(row['B'])
 

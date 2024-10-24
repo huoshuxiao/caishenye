@@ -556,111 +556,114 @@ public class ApiRestTemplate {
     // 历史行情(指定日期)
     public DayLineDomain getHhqByDateForObject(StockDomain stockDomain) {
         log.debug("call hhq request params :: {}", stockDomain);
-        // 指定日期
-        String response = restTemplateText.getForObject(SOHU_HHQ_URL, String.class, hhqUrlBuilderWithSohu(stockDomain));
-        log.debug("call hhq response string :: {}", response);
+        DayLineDomain hhqDomain = null;
+        String response = null;
+        try {
+            // 指定日期
+            response = restTemplateText.getForObject(SOHU_HHQ_URL, String.class, hhqUrlBuilderWithSohu(stockDomain));
+            log.debug("call hhq response string :: {}", response);
 
-        // 结构化返回值，对返回值进行fmt
-        response = StringUtils.substringBetween(response, "(",")");
-        log.debug("call hhq response :: {}", response);
+            // 结构化返回值，对返回值进行fmt
+            response = StringUtils.substringBetween(response, "(",")");
+            log.debug("call hhq response :: {}", response);
 
-        // not found, call next api
-        if ("{}".equals(response)) {
-            DayLineDomain hhqDomain = new DayLineDomain();
-            AtomicBoolean isOK = new AtomicBoolean(false);
             try {
-                String day = getDay(stockDomain);
-                // 全量
-                DayLineDomain tDayLineDomain = getHhqForObject(stockDomain).get();
-                while (!isOK.get()) {
-                    for (String[] t : tDayLineDomain.getHqs()) {
-                        if (t[0].equals(day)) {
-                            isOK.set(true);
-                            // 收盘日
-                            hhqDomain.setDay(getDay(stockDomain));
+                JSONArray jsonArray = JSONArray.parseArray(response);
+                if (jsonArray.size() > 0) {
+                    Gson gson = new Gson();
+                    log.debug("call hhq response jsonarray value :: {}", jsonArray.get(0).toString());
+                    hhqDomain = gson.fromJson(jsonArray.get(0).toString(), DayLineDomain.class);
+                    // 有历史数据
+                    if (hhqDomain.getHq() != null) {
+                        // 收盘日
+                        hhqDomain.setDay(Utils.formatDate2String(hhqDomain.getHq().get(0)[0]));
+                        // 收盘价
+                        hhqDomain.setPrice(hhqDomain.getHq().get(0)[2]);
+
+                        // 数据问题 call jrj
+                        if (Double.parseDouble(hhqDomain.getPrice()) >= 2000) {
+                            String day = getDay(stockDomain);
+                            DayLineDomain tDayLineDomain = getHhqForObject(stockDomain).toCompletableFuture().get();
+                            String[] hqs = tDayLineDomain.getHqs().stream().filter(t -> t[0].equals(day)).findFirst().orElse(new String[3]);
                             // 收盘价
-                            hhqDomain.setPrice(t[2]);
-                            break;
+                            hhqDomain.setPrice(hqs[2]);
                         }
-                    }
-                    if (isOK.get()) {
-                        break;
                     } else {
-                        day = String.valueOf(Integer.parseInt(day) - 1);
-                        log.debug("call getHhqForObject :: {} date :: {} ", stockDomain.getCompanyCode(), day);
-                        // 数据质量差，交易所取数据（不保证数据正确）
-                        if ("19900101".equals(day)) {
-                            // 从 证券交易所 取数据
-                            if (tDayLineDomain.getSummary().getId().contains(Constants.EXCHANGE_SZ.getString())) {
-                                // call SzRestTemplate
-                                SzHqDomain hqDomain = szRestTemplate.getHhqData(stockDomain, null);
-                                if (hqDomain != null) {
-                                    // 收盘价
-                                    hhqDomain.setPrice(hqDomain.getPrice());
-                                    isOK.set(true);
-                                }
-                            } else {
-                                String day2 = getDay(stockDomain);
-                                // call ShRestTemplate
-                                long days = ChronoUnit.DAYS.between(LocalDate.of(Integer.parseInt(day2.substring(0, 4)),
-                                                Integer.parseInt(day2.substring(4, 6)), Integer.parseInt(day2.substring(6, 8))),
-                                        LocalDate.now());
-                                ShHqDomain shHqDomain = shRestTemplate.getHhqData(stockDomain, days);
-                                if (shHqDomain != null) {
-                                    // 收盘价
-                                    shHqDomain.getKline().forEach(t -> {
-                                        if (day2.equals(t[0])) {
-                                            hhqDomain.setPrice(t[3]);
-                                            isOK.set(true);
-                                        }
-                                    });
-                                }
-                            }
-                            // 收盘日
-                            hhqDomain.setDay(getDay(stockDomain));
-                            break;
-                        }
+                        return null;
                     }
                 }
+            } catch (JSONException je) {
+                log.error(hhqUrlBuilderWithSohu(stockDomain) + " " + je);
             } catch (InterruptedException | ExecutionException e) {
-                log.error("call getHhqForObject error :: {}", e.toString());
-                return null;
+                log.error("call getHhqForObject error :: {} ", e.toString());
             }
-            return isOK.get() ? hhqDomain : null;
-        } else if ("{\"status\":3,\"msg\":\"begin time invalid\"}".equals(response)) {
-            return null;
-        }
-
-        DayLineDomain hhqDomain = null;
-        try {
-            JSONArray jsonArray = JSONArray.parseArray(response);
-            if (jsonArray.size() > 0) {
-                Gson gson = new Gson();
-                log.debug("call hhq response jsonarray value :: {}", jsonArray.get(0).toString());
-                hhqDomain = gson.fromJson(jsonArray.get(0).toString(), DayLineDomain.class);
-                // 有历史数据
-                if (hhqDomain.getHq() != null) {
-                    // 收盘日
-                    hhqDomain.setDay(Utils.formatDate2String(hhqDomain.getHq().get(0)[0]));
-                    // 收盘价
-                    hhqDomain.setPrice(hhqDomain.getHq().get(0)[2]);
-
-                    // 数据问题 call jrj
-                    if (Double.parseDouble(hhqDomain.getPrice()) >= 2000) {
-                        String day = getDay(stockDomain);
-                        DayLineDomain tDayLineDomain = getHhqForObject(stockDomain).toCompletableFuture().get();
-                        String[] hqs = tDayLineDomain.getHqs().stream().filter(t -> t[0].equals(day)).findFirst().orElse(new String[3]);
-                        // 收盘价
-                        hhqDomain.setPrice(hqs[2]);
+        } catch (Exception e) {
+            // not found, call next api
+            if ("{}".equals(response)) {
+                AtomicBoolean isOK = new AtomicBoolean(false);
+                try {
+                    String day = getDay(stockDomain);
+                    // 全量
+                    DayLineDomain tDayLineDomain = getHhqForObject(stockDomain).get();
+                    while (!isOK.get()) {
+                        for (String[] t : tDayLineDomain.getHqs()) {
+                            if (t[0].equals(day)) {
+                                isOK.set(true);
+                                // 收盘日
+                                hhqDomain.setDay(getDay(stockDomain));
+                                // 收盘价
+                                hhqDomain.setPrice(t[2]);
+                                break;
+                            }
+                        }
+                        if (isOK.get()) {
+                            break;
+                        } else {
+                            day = String.valueOf(Integer.parseInt(day) - 1);
+                            log.debug("call getHhqForObject :: {} date :: {} ", stockDomain.getCompanyCode(), day);
+                            // 数据质量差，交易所取数据（不保证数据正确）
+                            if ("19900101".equals(day)) {
+                                // 从 证券交易所 取数据
+                                if (tDayLineDomain.getSummary().getId().contains(Constants.EXCHANGE_SZ.getString())) {
+                                    // call SzRestTemplate
+                                    SzHqDomain hqDomain = szRestTemplate.getHhqData(stockDomain, null);
+                                    if (hqDomain != null) {
+                                        // 收盘价
+                                        hhqDomain.setPrice(hqDomain.getPrice());
+                                        isOK.set(true);
+                                    }
+                                } else {
+                                    String day2 = getDay(stockDomain);
+                                    // call ShRestTemplate
+                                    long days = ChronoUnit.DAYS.between(LocalDate.of(Integer.parseInt(day2.substring(0, 4)),
+                                                    Integer.parseInt(day2.substring(4, 6)), Integer.parseInt(day2.substring(6, 8))),
+                                            LocalDate.now());
+                                    ShHqDomain shHqDomain = shRestTemplate.getHhqData(stockDomain, days);
+                                    if (shHqDomain != null) {
+                                        // 收盘价
+                                        DayLineDomain finalHhqDomain = hhqDomain;
+                                        shHqDomain.getKline().forEach(t -> {
+                                            if (day2.equals(t[0])) {
+                                                finalHhqDomain.setPrice(t[3]);
+                                                isOK.set(true);
+                                            }
+                                        });
+                                    }
+                                }
+                                // 收盘日
+                                hhqDomain.setDay(getDay(stockDomain));
+                                break;
+                            }
+                        }
                     }
-                } else {
+                } catch (InterruptedException | ExecutionException e2) {
+                    log.error("call getHhqForObject error :: {}", e2.toString());
                     return null;
                 }
+                return isOK.get() ? hhqDomain : null;
+            } else if ("{\"status\":3,\"msg\":\"begin time invalid\"}".equals(response)) {
+                return null;
             }
-        } catch (JSONException je) {
-            log.error(hhqUrlBuilderWithSohu(stockDomain) + " " + je);
-        } catch (InterruptedException | ExecutionException e) {
-            log.error("call getHhqForObject error :: {} ", e.toString());
         }
 //        log.debug("call hhq response value :: {}", hhqDomain);
         return hhqDomain;
