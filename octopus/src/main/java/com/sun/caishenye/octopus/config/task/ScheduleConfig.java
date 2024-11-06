@@ -1,4 +1,4 @@
-package com.sun.caishenye.octopus.config;
+package com.sun.caishenye.octopus.config.task;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;

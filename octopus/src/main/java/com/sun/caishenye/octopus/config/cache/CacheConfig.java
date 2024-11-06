@@ -1,4 +1,4 @@
-package com.sun.caishenye.octopus.config;
+package com.sun.caishenye.octopus.config.cache;
 
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;

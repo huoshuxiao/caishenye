@@ -1,4 +1,4 @@
-package com.sun.caishenye.octopus.config;
+package com.sun.caishenye.octopus.config.rest;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpRequest;

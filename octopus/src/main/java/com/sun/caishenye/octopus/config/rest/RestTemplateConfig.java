@@ -1,8 +1,6 @@
-package com.sun.caishenye.octopus.config;
+package com.sun.caishenye.octopus.config.rest;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package com.sun.caishenye.octopus.config;
+package com.sun.caishenye.octopus.config.task;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
