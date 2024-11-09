@@ -559,6 +559,7 @@ public class ApiRestTemplate {
         DayLineDomain hhqDomain = null;
         String response = null;
         try {
+            Thread.sleep(150);
             // 指定日期
             response = restTemplateText.getForObject(SOHU_HHQ_URL, String.class, hhqUrlBuilderWithSohu(stockDomain));
             log.debug("call hhq response string :: {}", response);
