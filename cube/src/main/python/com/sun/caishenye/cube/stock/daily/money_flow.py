@@ -69,11 +69,6 @@ def __stock__():
     utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'COUNT_D', df_d)
     log.log(r'{} :: {}'.format('COUNT_D', df_d))
 
-    # log.log('cal count o start')
-    # df_o = __cal_o_count__(df)
-    # log.log('cal count o end')
-    # utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'COUNT_O', df_o)
-    # log.log(r'{} :: {}'.format('COUNT_O', df_o))
 
     """
     过滤数据（二次计算）
@@ -87,20 +82,12 @@ def __stock__():
     # # df = df.drop_duplicates('B', keep='last')
     # # df = df[~(df['N'].eq(0))]
 
-    # df_o_max = __cal2_o_count__(df_o)
-    # df_o['C'] = df_o['C'].astype(str)
-    # # 只保留最新日期
-    # df_o_result = df_o[(df_o['C'].eq(str(end_date))) & ~(df_o['N'].eq(0))]
-    # # # drop_duplicates 函数默认保留首次出现的值，如果想保留最后一次出现的值，可以使用keep='last'这样，在去除重复值的过程中，会保留最后一次出现的重复值。
-    # # df = df.drop_duplicates('B', keep='last')
-    # # df = df[~(df['N'].eq(0))]
     log.log('cal count v end')
 
     """
     Sort
     """
     df_d_result = df_d_max.sort_values(by='V', ascending=False)
-    # df_o_result = df_o_max.sort_values(by='V', ascending=False)
 
     """
     写excel
@@ -108,8 +95,28 @@ def __stock__():
     utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'MAX_D', df_d_result)
     log.log(r'{} :: {}'.format(r'{}_{}_{}'.format(out_file_name, end_date, 'MAX_D'), df_d_result))
 
-    # utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'MAX_O', df_o_result)
-    # log.log(r'{} :: {}'.format(r'{}_{}_{}'.format(out_file_name, end_date, 'MAX_O'), df_o_result))
+    o_flg = config.get('file.name.stock.money_flow.stock.o')
+    if o_flg is True:
+        df['O'] = df['O'].astype(float)
+
+        log.log('cal count o start')
+        df_o = __cal_v_by_o__(df)
+        log.log('cal count o end')
+        utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'COUNT_O', df_o)
+        log.log(r'{} :: {}'.format('COUNT_O', df_o))
+
+        df_o_max = __cal2_v_by_o__(df_o)
+        # df_o['C'] = df_o['C'].astype(str)
+        # # 只保留最新日期
+        # df_o_result = df_o[(df_o['C'].eq(str(end_date))) & ~(df_o['N'].eq(0))]
+        # # # drop_duplicates 函数默认保留首次出现的值，如果想保留最后一次出现的值，可以使用keep='last'这样，在去除重复值的过程中，会保留最后一次出现的重复值。
+        # # df = df.drop_duplicates('B', keep='last')
+        # # df = df[~(df['N'].eq(0))]
+
+        df_o_result = df_o_max.sort_values(by='V', ascending=False)
+
+        utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'MAX_O', df_o_result)
+        log.log(r'{} :: {}'.format(r'{}_{}_{}'.format(out_file_name, end_date, 'MAX_O'), df_o_result))
 
 
 def __fill__(df, start_date, end_date):
