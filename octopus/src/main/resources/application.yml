@@ -41,3 +41,5 @@ mm:
   cal2: true
 file:
   path: data/
+cookie:
+  xq: xx

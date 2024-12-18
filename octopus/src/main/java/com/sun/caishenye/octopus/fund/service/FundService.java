@@ -83,12 +83,11 @@ public class FundService {
         for (EastMoneyDetailDomain detailDomain: detailDataList) {
 
             FundExtendDomain fundDomain = new FundExtendDomain();
-            // 计算 管理期间 年平均回报(%)
+            /* 计算 管理期间 年平均回报(%) */
             String returnAvg = calReturnAvg(detailDomain);
             fundDomain.setReturnAvg(returnAvg);
 
             fundDomain.setFundCode(detailDomain.getFundCode());
-
             fundDomainList.add(fundDomain);
         }
 
