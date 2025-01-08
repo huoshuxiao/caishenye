@@ -224,7 +224,8 @@ def __cal2_v_by_d__(df):
                 # exit
                 elif r['D'] < 0:
                     break
-            max_row['V'] = max_row['V'] - header_d_count
+            if max_row['V'] > header_d_count:
+                max_row['V'] = max_row['V'] - header_d_count
         return max_row
 
     max_result = grouped.apply(__count_v_days__).reset_index(drop=True)
@@ -249,7 +250,8 @@ def __cal2_v_by_o__(df):
                 # exit
                 elif r['O'] < 0:
                     break
-            max_row['V'] = max_row['V'] - header_d_count
+            if max_row['V'] > header_d_count:
+                max_row['V'] = max_row['V'] - header_d_count
         return max_row
 
     max_result = grouped.apply(__count_v_days__).reset_index(drop=True)
