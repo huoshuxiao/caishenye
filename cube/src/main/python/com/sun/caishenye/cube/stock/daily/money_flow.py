@@ -99,12 +99,18 @@ def __stock__():
     if o_flg is True:
         df['O'] = df['O'].astype(float)
 
+        """
+        计算
+        """
         log.log('cal count o start')
         df_o = __cal_v_by_o__(df)
         log.log('cal count o end')
         utils.write_excel(file_path, r'{}_{}'.format(out_file_name, end_date), 'COUNT_O', df_o)
         log.log(r'{} :: {}'.format('COUNT_O', df_o))
 
+        """
+        过滤数据（二次计算）
+        """
         df_o_max = __cal2_v_by_o__(df_o)
         # df_o['C'] = df_o['C'].astype(str)
         # # 只保留最新日期
@@ -156,6 +162,7 @@ def __cal_v_by_d__(df):
     def __count_consecutive_days__(group):
         # 用于计算连续日期的天数，需要排序
         group = group.sort_values('C')
+        # 大于等于默认D。
         group['is_valid_d'] = group['D'] >= header_d
         # 检查 C 列是否连续。
         group['consecutive_d'] = group['C'].diff().dt.days.eq(1) & group['is_valid_d']
@@ -186,6 +193,7 @@ def __cal_v_by_o__(df):
     def __count_consecutive_days__(group):
         # 用于计算连续日期的天数，需要排序
         group = group.sort_values('C')
+        # 大于等于默认O。
         group['is_valid_o'] = group['O'] >= header_o
         # 检查 C 列是否连续。
         group['consecutive_o'] = group['C'].diff().dt.days.eq(1) & group['is_valid_o']
@@ -197,8 +205,8 @@ def __cal_v_by_o__(df):
         group['V'] = consecutive_days.where(group['is_valid_o'], 0)
 
         # # 显示小数点后2位
-        # group['W'] = r'{:.0%}'.format(sum(group['is_valid_d']) / len(group['D']))
-        group['U'] = group['O'] > header_d
+        # group['W'] = r'{:.0%}'.format(sum(group['is_valid_o']) / len(group['O']))
+        group['U'] = group['O'] > header_o
         # 正数
         group['W'] = r'{}'.format(sum(group['U']))
         return group
@@ -212,13 +220,14 @@ def __cal2_v_by_d__(df):
     df['C'] = pd.to_datetime(df['C'])
     grouped = df.groupby(['A', 'B'])
 
+    # 排除D的默认值，再计算
     def __count_v_days__(group):
         max_row = group.loc[group['C'].idxmax()]
         is_max_row = max_row['V'] > 1
         if is_max_row:
-            desc_group = group.sort_values(by='C', ascending=False)
+            c_desc = group.sort_values(by='C', ascending=False)
             header_d_count = 0
-            for _, r in desc_group.iterrows():
+            for _, r in c_desc.iterrows():
                 if r['D'] == header_d:
                     header_d_count = header_d_count + 1
                 # exit
@@ -238,20 +247,21 @@ def __cal2_v_by_o__(df):
     df['C'] = pd.to_datetime(df['C'])
     grouped = df.groupby(['A', 'B'])
 
+    # 排除O的默认值，再计算
     def __count_v_days__(group):
         max_row = group.loc[group['C'].idxmax()]
         is_max_row = max_row['V'] > 1
         if is_max_row:
-            desc_group = group.sort_values(by='C', ascending=False)
-            header_d_count = 0
-            for _, r in desc_group.iterrows():
-                if r['D'] == header_d:
-                    header_d_count = header_d_count + 1
+            c_desc = group.sort_values(by='C', ascending=False)
+            header_o_count = 0
+            for _, r in c_desc.iterrows():
+                if r['O'] == header_o:
+                    header_o_count = header_o_count + 1
                 # exit
                 elif r['O'] < 0:
                     break
-            if max_row['V'] > header_d_count:
-                max_row['V'] = max_row['V'] - header_d_count
+            if max_row['V'] > header_o_count:
+                max_row['V'] = max_row['V'] - header_o_count
         return max_row
 
     max_result = grouped.apply(__count_v_days__).reset_index(drop=True)
