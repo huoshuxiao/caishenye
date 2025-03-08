@@ -2,6 +2,7 @@ package com.sun.caishenye.octopus.fund.dao;
 
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.component.CacheComponent;
+import com.sun.caishenye.octopus.fund.component.CommonComponent;
 import com.sun.caishenye.octopus.fund.domain.FundDomain;
 import com.sun.caishenye.octopus.fund.domain.FundExtendDomain;
 import lombok.extern.slf4j.Slf4j;
@@ -23,15 +24,12 @@ import java.util.List;
 public class FundDao {
 
     @Autowired
-    private CacheComponent cache;
-
-    private String getFilePath() {
-        return cache.putIfAbsentFilePath();
-    }
+    private CommonComponent common;
 
     // 写 扩展数据
     public void writeExtendData(List<FundExtendDomain> data) {
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(getFilePath() + Constants.FILE_FUND_EXTEND.getString()), StandardCharsets.UTF_8)) {
+        Path path = Paths.get(common.getFilePath(), Constants.FILE_FUND_EXTEND.getString());
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
             for (FundExtendDomain stockDomain : data) {
                 String s = stockDomain.builder() + "\r\n";
                 log.debug("write fund extend data >> {}", s);
@@ -46,7 +44,7 @@ public class FundDao {
     public List<FundExtendDomain> readExtendData() {
 
         List<FundExtendDomain> list = new ArrayList<>();
-        Path path = Paths.get(getFilePath() + Constants.FILE_FUND_EXTEND.getString());
+        Path path = Paths.get(common.getFilePath(), Constants.FILE_FUND_EXTEND.getString());
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -58,6 +56,8 @@ public class FundDao {
                 baseDomain.setFundCode(datas[0].trim());
                 // 管理期间 年平均回报(%)
                 baseDomain.setReturnAvg(datas[1].trim());
+                // 管理期间(天)
+                baseDomain.setManagementTime(datas[2].trim());
 
                 list.add(baseDomain);
             }
@@ -70,7 +70,8 @@ public class FundDao {
 
     // 报表
     public void writeDashBoard(List<FundDomain> data) {
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(getFilePath() + Constants.FILE_FUND.getString()), StandardCharsets.UTF_8)) {
+        Path path = Paths.get(common.getFilePath(), Constants.FILE_FUND.getString());
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
             for (FundDomain stockDomain : data) {
                 String s = stockDomain.builder() + "\r\n";
                 log.debug("write fund >> {}", s);

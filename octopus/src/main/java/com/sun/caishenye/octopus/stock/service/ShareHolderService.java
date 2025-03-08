@@ -46,10 +46,10 @@ public class ShareHolderService {
             if (domain == null) {
                 continue;
             }
-            // 构建 历史行情 实体 写入用
+            // 构建 十大股东 实体 写入用
             resultList.add(domain);
         }
-        // 写入 历史行情 数据
+        // 写入 十大股东 数据
         writeTenHolderData(resultList);
     }
 

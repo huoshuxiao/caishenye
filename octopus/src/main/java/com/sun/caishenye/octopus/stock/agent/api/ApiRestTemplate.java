@@ -93,7 +93,8 @@ public class ApiRestTemplate {
     f136:
     f152:
      */
-    private static final String EASTMONEY_BASE_LIST_URL = "http://10.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112408506576043032625_1612278160710&pn=1&pz=10000&po=0&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f12&fs=m:0+t:6,m:0+t:13,m:0+t:80,m:1+t:2,m:1+t:23&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152&_=1612278160715";
+    private static final String EASTMONEY_BASE_LIST_URL = "http://10.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112408506576043032625_1612278160710&pn=1&pz=1&po=0&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f12&fs=m:0+t:6,m:0+t:13,m:0+t:80,m:1+t:2,m:1+t:23&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152&_=1612278160715";
+    private static final String EASTMONEY_BASE_LIST_URL1 = "http://10.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112408506576043032625_1612278160710&pn={index}&pz=1&po=0&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f12&fs=m:0+t:6,m:0+t:13,m:0+t:80,m:1+t:2,m:1+t:23&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152&_=1612278160715";
 
 //    // 历史行情 金融界
 //    // http://flashdata2.jrj.com.cn/history/js/share/601628/other/dayk_ex.js?random=1585145121921
@@ -133,8 +134,7 @@ public class ApiRestTemplate {
     private RestTemplate restTemplate;
 
     // 沪深A股 东方财富网
-    @Async
-    public CompletableFuture<List<StockDomain>> getBaseForObject() {
+    public int getBaseCount() {
 
         log.debug("stock base data");
         // call rest service
@@ -149,9 +149,31 @@ public class ApiRestTemplate {
         Map<String, Object> responseMap = gson.fromJson(response, Map.class);
         Map<String, Object> data = (Map)responseMap.get("data");
         log.debug("call base data response :: {}", data);
+
+        return ((Double) data.get("total")).intValue();
+    }
+
+    @Async
+    public CompletableFuture<StockDomain> getBaseForObject(int index) {
+
+        log.debug("stock base data");
+        String url =  EASTMONEY_BASE_LIST_URL1.replace("{index}", String.valueOf(index));
+        // call rest service
+        String response = restTemplateText.getForObject(url, String.class);
+        log.debug("call base data response string :: {}", response);
+        // 结构化返回值，对返回值进行fmt
+        response = StringUtils.removeStart(response, "jQuery112408506576043032625_1612278160710(");
+        response = StringUtils.removeEnd(response, ");");
+        log.debug("call base data response :: {}", response);
+
+        Gson gson = new Gson();
+        Map<String, Object> responseMap = gson.fromJson(response, Map.class);
+        Map<String, Object> data = (Map)responseMap.get("data");
+        log.debug("call base data response :: {}", data);
         List<Map<String, String>> diffs = (List)data.get("diff");
         log.debug("call base diffs response :: {}", diffs);
-        List<StockDomain> bases = new ArrayList<>();
+//        List<StockDomain> bases = new ArrayList<>();
+        StockDomain base = new StockDomain();
         for (Map<String, String> diff : diffs) {
             // 公司代码
             String companyCode = diff.get("f12");
@@ -170,10 +192,9 @@ public class ApiRestTemplate {
             // 流通市值
             if ("-".equals(diff.get("f21"))) {
                 log.debug("退市->{},{}", companyCode, diff.get("f14"));
-                continue;
+                return null;
             }
 
-            StockDomain base = new StockDomain();
             // 公司代码
             base.setCompanyCode(companyCode);
             // 公司简称
@@ -186,9 +207,9 @@ public class ApiRestTemplate {
                 // 000002/300002
                 base.setExchange(Constants.EXCHANGE_SZ.getString());
             }
-            bases.add(base);
+//            bases.add(base);
         }
-        return CompletableFuture.completedFuture(bases);
+        return CompletableFuture.completedFuture(base);
     }
 
     // 财务数据(业绩报表) 东方财富网

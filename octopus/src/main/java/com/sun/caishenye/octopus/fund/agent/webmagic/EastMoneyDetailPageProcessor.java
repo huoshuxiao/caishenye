@@ -2,6 +2,7 @@ package com.sun.caishenye.octopus.fund.agent.webmagic;
 
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.component.CacheComponent;
+import com.sun.caishenye.octopus.fund.component.CommonComponent;
 import com.sun.caishenye.octopus.fund.domain.EastMoneyDetailDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +37,7 @@ public class EastMoneyDetailPageProcessor implements PageProcessor {
     private final String RISK_MAEESAGE = "友情提示：该基金可能由于巨额赎回等原因，基金净值和阶段涨幅出现异常波动。";
 
     @Autowired
-    private CacheComponent cache;
+    private CommonComponent common;
 
     @Override
     public void process(Page page) {
@@ -91,11 +92,22 @@ public class EastMoneyDetailPageProcessor implements PageProcessor {
                 .css(".dataOfFund")
                 .css(".dataItem02")
                 ;
+        Selectable dataItem01 = merchandiseDetail.css(".fundDetail-main")
+                .css(".fundInfoItem")
+                .css(".dataOfFund")
+                .css(".dataItem01")
+                ;
 
         // 净值日期
-        eastMoneyDetailDomain.setClosePriceDate(SelectableUtils.getValue(dataItem02.xpath("dt/p/text()")).replace("(","").replace(")",""));
+        String closePriceDate = SelectableUtils.getValue(dataItem02.xpath("dt/p/text()")).replace("(","").replace(")","");
+        if (StringUtils.isEmpty(closePriceDate)) {
+            closePriceDate = SelectableUtils.getValue(dataItem01.xpath("dt/p/text()")).replace("(","").replace(")","");
+        }
+        eastMoneyDetailDomain.setClosePriceDate(closePriceDate);
+
         // 单位净值
         String closePrice = SelectableUtils.getValue(dataItem02.xpath("dd/span/text()"));
+
         // 货币基金 7日年华收益率 ，排除此类数据
         if (closePrice.contains("%")) {
             closePrice = "-";
@@ -162,7 +174,7 @@ public class EastMoneyDetailPageProcessor implements PageProcessor {
         Spider.create(new EastMoneyDetailPageProcessor())
                 .startUrls(urls)
 //                .addPipeline(new ConsolePipeline()) // 输出结果到控制台
-                .addPipeline(new TextFilePipeline(cache.putIfAbsentFilePath(), FILE_NAME))  // 使用Pipeline保存结果到文件
+                .addPipeline(new TextFilePipeline(common.getFilePath(), FILE_NAME))  // 使用Pipeline保存结果到文件
                 .thread(Constants.THREADS.getInteger())
                 .run();
     }

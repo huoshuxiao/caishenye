@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -37,8 +38,16 @@ public class BaseService {
     // 基础数据
     public String base() throws ExecutionException, InterruptedException {
         // call rest service
-        CompletableFuture<List<StockDomain>> future = CompletableFuture.supplyAsync(() -> apiRestTemplate.getBaseForObject()).get();
-        stockDao.writeBaseData(future.get());
+        int count = apiRestTemplate.getBaseCount();
+        List<StockDomain> data = new ArrayList<>(count);
+        for (int i = 1; i <= count; i++) {
+            int finalI = i;
+            StockDomain domain = CompletableFuture.supplyAsync(() -> apiRestTemplate.getBaseForObject(finalI)).get().get();
+            if (domain != null) {
+                data.add(domain);
+            }
+        }
+        stockDao.writeBaseData(data);
         return "finished";
     }
 

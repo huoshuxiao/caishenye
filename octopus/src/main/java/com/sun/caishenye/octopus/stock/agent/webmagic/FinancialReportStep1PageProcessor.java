@@ -2,7 +2,7 @@ package com.sun.caishenye.octopus.stock.agent.webmagic;
 
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.Utils;
-import com.sun.caishenye.octopus.common.component.CacheComponent;
+import com.sun.caishenye.octopus.fund.component.CommonComponent;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class FinancialReportStep1PageProcessor implements PageProcessor {
     protected final String FILE_NAME = Constants.FILE_FINANCIAL_REPORT_STEP1.getString();
 
     @Autowired
-    private CacheComponent cache;
+    private CommonComponent common;
 
     @Override
     public void process(Page page) {
@@ -106,7 +106,7 @@ public class FinancialReportStep1PageProcessor implements PageProcessor {
         Spider.create(this)
                 .startUrls(urls)
 //                .addPipeline(new ConsolePipeline()) // 输出结果到控制台
-                .addPipeline(new TextFilePipeline(cache.putIfAbsentFilePath(), FILE_NAME))  // 使用Pipeline保存结果到文件
+                .addPipeline(new TextFilePipeline(common.getFilePath(), FILE_NAME))  // 使用Pipeline保存结果到文件
                 .thread(Constants.THREADS.getInteger())
                 .run();
     }

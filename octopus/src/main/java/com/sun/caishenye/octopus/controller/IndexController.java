@@ -53,7 +53,7 @@ public class IndexController {
 //    }
 
     // step1: 基础数据
-    @GetMapping("eastmoney/base")
+    @GetMapping("fund/base")
     public Object base() {
         return eastMoneyService.base();
     }
@@ -65,7 +65,7 @@ public class IndexController {
 //    }
 
     // step3: 扩展数据：友情提示 风险/净值日期/单位净值/基金类型/基金规模，供生成数据用
-    @GetMapping("eastmoney/detail")
+    @GetMapping("fund/detail")
     public Object detail() {
         return eastMoneyService.detail();
     }

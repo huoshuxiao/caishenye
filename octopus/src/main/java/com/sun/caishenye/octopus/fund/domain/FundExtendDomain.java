@@ -18,10 +18,13 @@ public class FundExtendDomain implements Serializable {
     private String fundCode;
     // 管理期间 年平均回报(%)
     private String returnAvg;
+    // 管理期间(天)
+    private String managementTime;
 
     public String builder() {
         String sbStr = Constants.DELIMITING_COMMA.getString() + fundCode +
-                Constants.DELIMITING_COMMA.getString() + returnAvg;
+                Constants.DELIMITING_COMMA.getString() + returnAvg +
+                Constants.DELIMITING_COMMA.getString() + managementTime;
         return sbStr.replaceFirst(Constants.DELIMITING_COMMA.getString(), "");
     }
 }

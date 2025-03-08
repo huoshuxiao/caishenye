@@ -83,6 +83,10 @@ public class FundService {
         for (EastMoneyDetailDomain detailDomain: detailDataList) {
 
             FundExtendDomain fundDomain = new FundExtendDomain();
+            /* 计算 管理期间(天) */
+            String managementTime = calManagementTime(detailDomain);
+            fundDomain.setManagementTime(managementTime);
+
             /* 计算 管理期间 年平均回报(%) */
             String returnAvg = calReturnAvg(detailDomain);
             fundDomain.setReturnAvg(returnAvg);
@@ -117,5 +121,18 @@ public class FundService {
                 Integer.parseInt(inceptionDate.substring(8, 10)));
         double returnAvg = Double.parseDouble(returnInception) / (ChronoUnit.DAYS.between(inceptionLocalDate, today) / BASE_DAY);
         return Utils.formatNumber2String(String.format("%.2f", returnAvg));
+    }
+
+    // 计算 管理期间(天)
+    private String calManagementTime(EastMoneyDetailDomain detailDomain) {   // 管理期间
+        String managementTime = detailDomain.getManagementTime();
+        if (managementTime.contains("年又")) {
+            String[] date1 = managementTime.split("年又");
+            String[] date2 = date1[1].split("天");
+
+            int dates = (int) (Integer.parseInt(date1[0]) * BASE_DAY) + Integer.parseInt(date2[0]);
+            return String.valueOf(dates);
+        }
+        return managementTime.replace("天","");
     }
 }

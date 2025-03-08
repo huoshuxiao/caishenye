@@ -43,6 +43,7 @@ public class FundDomain implements Serializable {
                 Constants.DELIMITING_COMMA.getString() + detailDomain.getManagerName() +    // 基金经理
                 Constants.DELIMITING_COMMA.getString() + detailDomain.getManagementRange() + // 管理期间
                 Constants.DELIMITING_COMMA.getString() + detailDomain.getManagementTime() +  // 管理时间
+                Constants.DELIMITING_COMMA.getString() + extendDomain.getManagementTime() +  // 管理时间(天)
                 Constants.DELIMITING_COMMA.getString() + format(detailDomain.getManagementReturn()) + // 管理回报(%)
                 Constants.DELIMITING_COMMA.getString() + format(extendDomain.getReturnAvg()) +      // 管理期间 年平均回报(%)
                 Constants.DELIMITING_COMMA.getString() + detailDomain.getRisk() +                   // 风险

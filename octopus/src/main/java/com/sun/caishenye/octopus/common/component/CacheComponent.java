@@ -2,6 +2,7 @@ package com.sun.caishenye.octopus.common.component;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -9,17 +10,12 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CacheComponent {
 
+    @Value("${file.path}")
     private String filePath;
 
     @Cacheable(value = "ehcache_10M")
-    public String putIfAbsentFilePath(String filePath) {
-        if (StringUtils.isNotEmpty(filePath)) {
-            this.filePath = filePath;
-        }
+    public String getBaseFilePath() {
+        log.info("自定义设置 :: file Path >> {}", this.filePath);
         return this.filePath;
-    }
-
-    public String putIfAbsentFilePath() {
-        return putIfAbsentFilePath("");
     }
 }

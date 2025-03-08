@@ -23,14 +23,10 @@ public class Utils {
         return date.substring(0, 4);
     }
 
-    public static String formatDate(String date, String... fmt) {
+    public static String formatDate(String date) {
 
         if (date.length() < 10) {
             return "-";
-        }
-
-        if (fmt != null) {
-            date.substring(0, 10).replace("-", "");
         }
 
         return date.substring(0, 10);

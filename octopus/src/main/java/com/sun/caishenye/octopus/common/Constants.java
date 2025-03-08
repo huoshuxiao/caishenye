@@ -28,7 +28,7 @@ public enum Constants {
     SHARE_HOLDER_SDGD("ShareHolder_SDGD.csv"),
     FILE_MONEY_MONEY("Stock_MM.csv"),
 
-    CHROME_DRIVER_PATH("/home/sunwenkun/Developer/gitroot/caishenye.git/octopus/bin/chromedriver"),
+//    CHROME_DRIVER_PATH("/bin/chromedriver"),
 
     THREADS(10),
 
