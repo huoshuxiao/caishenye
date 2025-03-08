@@ -2,11 +2,12 @@ package com.sun.caishenye.octopus.stock.agent.webmagic;
 
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.common.Utils;
-import com.sun.caishenye.octopus.fund.component.CommonComponent;
+import com.sun.caishenye.octopus.stock.component.CommonComponent;
 import com.sun.caishenye.octopus.stock.domain.FinancialReport2Domain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -41,6 +42,7 @@ public class FinancialReportEastMoneyYJBBPageProcessor implements PageProcessor 
     // home page
     protected final String FILE_NAME = Constants.FILE_FINANCIAL_REPORT_EASTMONEY.getString();
 
+    @Qualifier("stockCommonComponent")
     @Autowired
     private CommonComponent common;
 

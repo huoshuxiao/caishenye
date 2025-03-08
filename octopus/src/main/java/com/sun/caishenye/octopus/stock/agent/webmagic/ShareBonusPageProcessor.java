@@ -1,11 +1,11 @@
 package com.sun.caishenye.octopus.stock.agent.webmagic;
 
 import com.sun.caishenye.octopus.common.Constants;
-import com.sun.caishenye.octopus.common.component.CacheComponent;
-import com.sun.caishenye.octopus.fund.component.CommonComponent;
+import com.sun.caishenye.octopus.stock.component.CommonComponent;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -41,6 +41,7 @@ public class ShareBonusPageProcessor implements PageProcessor {
 
     protected final String DATA_404 = "暂时没有数据！";
 
+    @Qualifier("stockCommonComponent")
     @Autowired
     private CommonComponent common;
 
