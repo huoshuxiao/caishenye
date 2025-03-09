@@ -2,8 +2,7 @@
 资金流
   1. 个股
 """
-
-
+import os
 from datetime import timedelta
 
 import pandas as pd
@@ -11,7 +10,7 @@ import pandas as pd
 from com.sun.caishenye.cube.common import utils, consts
 from com.sun.caishenye.cube.config import config, log
 
-file_path = config.get('file.path')
+file_path = os.path.join(config.get('file.path'), consts.STOCK)
 file_name = config.get('file.name.stock.money_flow.stock.file_name.in')
 out_file_name = config.get('file.name.stock.money_flow.stock.file_name.out')
 

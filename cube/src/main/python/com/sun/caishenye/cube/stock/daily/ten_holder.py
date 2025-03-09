@@ -3,12 +3,12 @@
   1. 股东类型
   2. 非个人实体股东百分比
 """
+import os
 
-
-from com.sun.caishenye.cube.common import utils
+from com.sun.caishenye.cube.common import utils, consts
 from com.sun.caishenye.cube.config import config, log
 
-file_path = config.get('file.path')
+file_path = os.path.join(config.get('file.path'), consts.STOCK)
 file_name = config.get('file.name.stock.ten_holder.file_name.in')
 headers = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M']
 out_file_name = config.get('file.name.stock.ten_holder.file_name.out')

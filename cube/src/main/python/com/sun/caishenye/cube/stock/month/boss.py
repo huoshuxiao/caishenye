@@ -1,14 +1,14 @@
 """
 大佬
 """
-
+import os
 
 import pandas as pd
 
-from com.sun.caishenye.cube.common import utils
+from com.sun.caishenye.cube.common import utils, consts
 from com.sun.caishenye.cube.config import config, log
 
-file_path = config.get('file.path')
+file_path = os.path.join(config.get('file.path'), consts.STOCK)
 file_name = config.get('file.name.stock.fr.file_name.in')
 out_file_name = config.get('file.name.stock.fr.file_name.out')
 
