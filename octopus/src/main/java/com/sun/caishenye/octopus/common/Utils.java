@@ -18,6 +18,11 @@ public class Utils {
         ZonedDateTime zdt = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
         return  zdt.toInstant().toEpochMilli();
     }
+    public static Long dateTime2Long(String datetime) {
+        LocalDateTime localDateTime = LocalDateTime.parse(datetime);
+        ZonedDateTime zdt = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
+        return  zdt.toInstant().toEpochMilli();
+    }
 
     public static String getYear(String date) {
         return date.substring(0, 4);
