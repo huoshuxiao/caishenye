@@ -2,10 +2,9 @@ package com.sun.caishenye.octopus.stock.service;
 
 import com.sun.caishenye.octopus.stock.agent.api.ApiRestTemplate;
 import com.sun.caishenye.octopus.stock.dao.StockDao;
-import com.sun.caishenye.octopus.stock.domain.DayLineDomain;
-import com.sun.caishenye.octopus.stock.domain.FinancialReport2Domain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 基础数据
@@ -38,15 +36,32 @@ public class BaseService {
     // 基础数据
     public String base() throws ExecutionException, InterruptedException {
         // call rest service
-        int count = apiRestTemplate.getBaseCount();
-        List<StockDomain> data = new ArrayList<>(count);
+        int _count = apiRestTemplate.getBaseCount();
+        int count = (int)Math.ceil((double) _count / 100);
+        List<CompletableFuture<List<StockDomain>>> futures = new ArrayList<>(_count);
         for (int i = 1; i <= count; i++) {
             int finalI = i;
-            StockDomain domain = CompletableFuture.supplyAsync(() -> apiRestTemplate.getBaseForObject(finalI)).get().get();
-            if (domain != null) {
-                data.add(domain);
-            }
+            CompletableFuture<List<StockDomain>> future = CompletableFuture.supplyAsync(() -> apiRestTemplate.getBaseForObject(finalI)).get();
+            futures.add(future);
         }
+
+        // 等待所有任务完成，并获取结果
+        CompletableFuture<Void> allDone = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+
+        List<StockDomain> data = new ArrayList<>(_count);
+        // 获取结果列表
+        allDone.thenRun(() -> {
+            List<List<StockDomain>> results = futures.stream()
+                    .map(future -> {
+                        try {
+                            return future.get(); // get() 会阻塞直到有结果
+                        } catch (InterruptedException | ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }).collect(Collectors.toList());
+            results.forEach(data::addAll);
+        }).get(); // 阻塞等待所有任务完成
+
         stockDao.writeBaseData(data);
         return "finished";
     }

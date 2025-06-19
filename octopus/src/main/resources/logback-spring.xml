@@ -126,6 +126,9 @@
         <logger name="com.sun.caishenye" level="INFO">
             <appender-ref ref="filebeat"/>
         </logger>
+        <logger name="okhttp3.OkHttpClient" level="INFO">
+            <appender-ref ref="filebeat"/>
+        </logger>
     </springProfile>
 
     <springProfile name="dev">
