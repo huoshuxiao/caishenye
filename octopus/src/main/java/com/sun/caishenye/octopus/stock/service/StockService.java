@@ -240,11 +240,12 @@ public class StockService {
 
         // 二次计算
         if (cal2) {
-            shareBonusDataList.stream().forEach(s -> {
+            shareBonusDataList.forEach(s -> {
                 List<StockDomain> sbList = shareBonusDataList.stream().filter(t -> t.getCompanyCode().equals(s.getCompanyCode()))
                         .filter(t -> t.getSbDomain().getSchedule().equals(Constants.SB_SCHEDULE_IMPLEMENT.getString()))
                         .filter(t -> t.getSbDomain().getBonusDate().length() > 4)
                         .filter(t -> Float.parseFloat(t.getSbDomain().getDividend()) > 0f)
+                        .filter(t -> !t.getDividendYield().equals("×"))
                         // 相同财年
                         .filter(t -> Utils.getYear(t.getSbDomain().getDividendYear()).equals(Utils.getYear(s.getSbDomain().getDividendYear())))
                         .collect(Collectors.toList());

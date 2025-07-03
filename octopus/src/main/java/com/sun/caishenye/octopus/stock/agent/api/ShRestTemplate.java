@@ -36,10 +36,10 @@ public class ShRestTemplate {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Autowired
-    public ShRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+//    @Autowired
+//    public ShRestTemplate(RestTemplate restTemplate) {
+//        this.restTemplate = restTemplate;
+//    }
 
     // 历史行情
     public ShHqDomain getHhqData(StockDomain stockDomain, long days) {

@@ -11,13 +11,9 @@ import com.sun.caishenye.octopus.common.Utils;
 import com.sun.caishenye.octopus.stock.cache.StockCache;
 import com.sun.caishenye.octopus.stock.domain.*;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -25,11 +21,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -116,7 +110,7 @@ public class ApiRestTemplate {
 
     // 东方财富网 个股资金流向
     // https://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get?cb=jQuery112307003461005693303_1720105195359&lmt=0&klt=101&fields1=f1,f2,f3,f7&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65&ut=b2884a393a59ad64002292a3e90d46a5&secid=1.601928&_=1720105195360
-    protected static final String EASTMONEY_STOCK_MONEY_FLOW_URL = "http://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get?cb=jQuery112307003461005693303_1720105195359&lmt=0&klt=101&fields1=f1,f2,f3,f7&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65&ut=b2884a393a59ad64002292a3e90d46a5&secid={exchange}.{companyCode}&_=1720105195360";
+    protected static final String EASTMONEY_STOCK_MONEY_FLOW_URL = "http://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get?cb=jQuery112307003461005693303_{now}&lmt=0&klt=101&fields1=f1,f2,f3,f7&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65&ut=b2884a393a59ad64002292a3e90d46a5&secid={exchange}.{companyCode}&_={now5}";
 
     // 历史行情 搜狐
     // http://q.stock.sohu.com/hisHq?code=cn_603999&start=20091126&end=20200325&stat=1&order=D&period=d&callback=historySearchHandler&rt=jsonp&r=0.028961481283250157&0.037908320278956964
@@ -131,9 +125,9 @@ public class ApiRestTemplate {
     @Autowired
     private SzRestTemplate szRestTemplate;
 
-    @Qualifier("restTemplateText")
-    @Autowired
-    private RestTemplate restTemplateText;
+//    @Qualifier("restTemplateText")
+//    @Autowired
+//    private RestTemplate restTemplateText;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -148,13 +142,8 @@ public class ApiRestTemplate {
 
         // call rest service
         String jQueryName = Utils.dateTime2Long(LocalDateTime.now().toString()).toString();
-        String url =  replaceEastmoneyBaseUrl(EASTMONEY_BASE_LIST_URL, jQueryName, 1);
-        String response;
-//        try {
-//            response = restTemplateText.getForObject(url, String.class);
-//        } catch (ResourceAccessException e) {
-            response = okHttpClient.call(url);
-//        }
+        String url =  replaceUrl(EASTMONEY_BASE_LIST_URL, jQueryName, 1);
+        String response = okHttpClient.call(url);
         log.debug("call base data response string :: {}", response);
         // 结构化返回值，对返回值进行fmt
         response = StringUtils.removeStart(response, "jQuery112408506576043032625_"+jQueryName+"(");
@@ -169,11 +158,22 @@ public class ApiRestTemplate {
         return ((Double) data.get("total")).intValue();
     }
 
-    private String replaceEastmoneyBaseUrl(String url, String jQueryName,int index) {
+    private String replaceUrl(String url, String jQueryName, int index) {
 
         return url.replace("{index}", String.valueOf(index))
                             .replace("{now}", jQueryName)
                             .replace("{now5}", String.valueOf(Long.parseLong(jQueryName) + 5));
+    }
+
+    private String replaceUrl(String url, String jQueryName, Map<String, Object> params) {
+
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            url = url.replace("{" + entry.getKey() + "}", entry.getValue().toString());
+        }
+
+        return url
+                .replace("{now}", jQueryName)
+                .replace("{now5}", String.valueOf(Long.parseLong(jQueryName) + 5));
     }
 
     @Async
@@ -181,7 +181,7 @@ public class ApiRestTemplate {
 
         log.debug("stock base data");
         String jQueryName = Utils.dateTime2Long(LocalDateTime.now().toString()).toString();
-        String url =  replaceEastmoneyBaseUrl(EASTMONEY_BASE_LIST_URL, jQueryName, index);
+        String url =  replaceUrl(EASTMONEY_BASE_LIST_URL, jQueryName, index);
         // call rest service
         String response;
 //        try {
@@ -252,7 +252,11 @@ public class ApiRestTemplate {
         try {
 
             // call rest service
-            String response = restTemplateText.getForObject(EASTMONEY_FR_YJBB_URL_4, String.class, hhqUrlBuilder(stockDomain));
+            String jQueryName = Utils.dateTime2Long(LocalDateTime.now().toString()).toString();
+            String url =  replaceUrl(EASTMONEY_FR_YJBB_URL_4, jQueryName, hhqUrlBuilder(stockDomain));
+            // call rest service
+            String response = okHttpClient.call(url);
+//            String response = restTemplateText.getForObject(EASTMONEY_FR_YJBB_URL_4, String.class, hhqUrlBuilder(stockDomain));
             log.debug("call fr yjbb response string :: {}", response);
             // 结构化返回值，对返回值进行fmt
             response = StringUtils.removeStart(response, "var ITnKjhqD=");
@@ -291,7 +295,7 @@ public class ApiRestTemplate {
     private List<FinancialReport2Domain> frYjbbResultDataBuilder4(List<Map<String, Object>> data) {
 
         List<FinancialReport2Domain> result = new ArrayList<>(data.size());
-        data.stream().forEach(t -> {
+        data.forEach(t -> {
 
             FinancialReport2Domain domain = new FinancialReport2Domain();
             // 股票代码
@@ -536,7 +540,11 @@ public class ApiRestTemplate {
         try {
 
             // call rest service
-            String response = restTemplateText.getForObject(EASTMONEY_HHQ_URL, String.class, hhqUrlBuilder(stockDomain));
+            String jQueryName = Utils.dateTime2Long(LocalDateTime.now().toString()).toString();
+            String url =  replaceUrl(EASTMONEY_HHQ_URL, jQueryName, hhqUrlBuilder(stockDomain));
+            // call rest service
+            String response = okHttpClient.call(url);
+//            String response = restTemplateText.getForObject(EASTMONEY_HHQ_URL, String.class, hhqUrlBuilder(stockDomain));
             log.debug("call hhq response string :: {}", response);
             // 结构化返回值，对返回值进行fmt
             response = StringUtils.removeStart(response, "jsonp1688913443970(");
@@ -613,7 +621,11 @@ public class ApiRestTemplate {
         try {
             Thread.sleep(150);
             // 指定日期
-            response = restTemplateText.getForObject(SOHU_HHQ_URL, String.class, hhqUrlBuilderWithSohu(stockDomain));
+            String jQueryName = Utils.dateTime2Long(LocalDateTime.now().toString()).toString();
+            String url =  replaceUrl(SOHU_HHQ_URL, jQueryName, hhqUrlBuilderWithSohu(stockDomain));
+            // call rest service
+            response = okHttpClient.call(url);
+//            response = restTemplateText.getForObject(SOHU_HHQ_URL, String.class, hhqUrlBuilderWithSohu(stockDomain));
             log.debug("call hhq response string :: {}", response);
 
             // 结构化返回值，对返回值进行fmt
@@ -803,10 +815,13 @@ public class ApiRestTemplate {
     public CompletableFuture<MoneyFlowDomain> getStockMoneyFlow(StockDomain stockDomain) {
 
         MoneyFlowDomain domain = new MoneyFlowDomain();
+        String jQueryName = Utils.dateTime2Long(LocalDateTime.now().toString()).toString();
+        String url =  replaceUrl(EASTMONEY_STOCK_MONEY_FLOW_URL, jQueryName, hhqUrlBuilder(stockDomain));
         // call rest service
-        String response = restTemplateText.getForObject(EASTMONEY_STOCK_MONEY_FLOW_URL, String.class, hhqUrlBuilder(stockDomain));
+        String response = okHttpClient.call(url);
+//        String response = restTemplateText.getForObject(EASTMONEY_STOCK_MONEY_FLOW_URL, String.class, hhqUrlBuilder(stockDomain));
         // 结构化返回值，对返回值进行fmt
-        response = StringUtils.removeStart(response, "jQuery112307003461005693303_1720105195359(");
+        response = StringUtils.removeStart(response, "jQuery112307003461005693303_"+jQueryName+"(");
         response = StringUtils.removeEnd(response, ");");
         Gson gson = new Gson();
         Map<String, Object> responseMap = gson.fromJson(response, Map.class);
