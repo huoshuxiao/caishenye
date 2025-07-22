@@ -475,7 +475,51 @@ public class StockDao {
                 writer.writeNext(domain.builders());
             }
         } catch (IOException x) {
-            log.error(String.format("IOException: %s%n", x));
+            log.error("IOException: {}\n", x);
         }
+    }
+
+    // 写 年度涨跌幅
+    public void writeAnnualIncreaseData(List<AnnualIncreaseDomain> data) {
+
+        Path path = Paths.get(common.getFilePath(), Constants.FILE_ANNUAL_INCREASE.getString());
+        try (FileOutputStream fos = new FileOutputStream(path.toFile());
+             OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+             CSVWriter writer = new CSVWriter(osw)) {
+            for (AnnualIncreaseDomain domain : data) {
+                writer.writeNext(domain.builders());
+            }
+        } catch (IOException x) {
+            log.error("IOException: {}\n", x);
+        }
+    }
+
+    // 读 年度涨跌幅
+    public List<AnnualIncreaseDomain> readAnnualIncreaseData() {
+        List<AnnualIncreaseDomain> list = new ArrayList<>();
+        Path path = Paths.get(common.getFilePath(), Constants.FILE_ANNUAL_INCREASE.getString());
+        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                log.debug("read ai data >> {}", line);
+
+                AnnualIncreaseDomain stockDomain = new AnnualIncreaseDomain();
+                String[] extendDomainArray = line.split(Constants.DELIMITING_COMMA.getString());
+
+                // 公司代码
+                stockDomain.setCompanyCode(extendDomainArray[0].trim());
+                // 公司简称
+                stockDomain.setCompanyName(extendDomainArray[1].trim());
+                // 年度
+                stockDomain.setYear(extendDomainArray[2].trim());
+                // 涨跌额(%)
+                stockDomain.setIncrease(extendDomainArray[3].trim());
+
+                list.add(stockDomain);
+            }
+        } catch (IOException x) {
+            log.error("IOException: {}\n", x);
+        }
+        return list;
     }
 }

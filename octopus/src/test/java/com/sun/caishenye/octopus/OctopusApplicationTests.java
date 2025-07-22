@@ -2,6 +2,12 @@ package com.sun.caishenye.octopus;
 
 import com.sun.caishenye.octopus.stock.agent.api.ApiOkHttpClient;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -9,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -56,14 +63,29 @@ class OctopusApplicationTests {
     private RestTemplate restTemplateText;
     @Test
     void test003() {
-        String XQ_URL = "http://www.xueqiu.com";
+        String XQ_URL = "http://xueqiu.com/snowman/S/SZ000001/detail";
         ResponseEntity<String> response = restTemplateText.getForEntity(XQ_URL, String.class);
         List<String > cookies = response.getHeaders().get("Set-Cookie");
         cookies.forEach(System.out::println);
+    }
 
-        response = restTemplateText.getForEntity(XQ_URL, String.class);
-        cookies = response.getHeaders().get("Set-Cookie");
-        cookies.forEach(System.out::println);
+    @Test
+    void test003_001() throws IOException {
+        // 创建一个本地的cookie存储
+        CookieStore cookieStore = new BasicCookieStore();
+
+        // 创建HttpClient对象，并设置cookie存储
+        try (CloseableHttpClient httpClient = HttpClients.custom()
+                .setDefaultCookieStore(cookieStore)
+                .build()) {
+            // 创建HttpGet请求，并设置User-Agent
+            HttpGet request = new HttpGet("http://xueqiu.com/snowman/S/SZ000001/detail");
+            request.setHeader("User-Agent", "Mozilla/5.0");
+
+            // 执行请求
+            HttpResponse response = httpClient.execute(request);
+            cookieStore.getCookies().forEach(System.out::println);
+        }
     }
 
     @Test

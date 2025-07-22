@@ -54,6 +54,8 @@ public class ApiRestTemplate {
     // 雪球 实时行情
     // https://stock.xueqiu.com/v5/stock/quote.json?symbol=SZ002233&extend=detail
     private static final String XUEQIU_QUOTE_URL = "http://stock.xueqiu.com/v5/stock/quote.json?symbol={location}{companyCode}&extend=detail";
+    // 雪球 历史行情(年)
+    // https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=SZ001289&begin=1751986948511&period=year&type=before&count=-624&indicator=kline,pe,pb,ps,pcf,market_capital,agt,ggt,balance
 
     // 雪球 分红配股
     // https://stock.xueqiu.com/v5/stock/f10/cn/bonus.json?symbol=SZ002032&size=1000&page=1&extend=true
@@ -601,8 +603,8 @@ public class ApiRestTemplate {
 
         int dd = 0;
         LocalDate date = LocalDate.parse(sDate);
-        DayLineDomain hhq = null;
-        while (hhq == null) {
+        DayLineDomain hhq;
+        while (true) {
             date = date.minusDays(dd--);
             stockDomain.getSbDomain().setRegistrationDate(date.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
             hhq = getHhqByDateForObject(stockDomain);
@@ -610,7 +612,40 @@ public class ApiRestTemplate {
                 return hhq;
             }
         }
-        return hhq;
+    }
+
+    // 历史行情(指定日期)
+    public AnnualIncreaseDomain getHhqByDateForObject(StockDomain stockDomain, String sDate, String eDate) {
+        AnnualIncreaseDomain domain = new AnnualIncreaseDomain();
+        // 指定日期
+        String jQueryName = Utils.dateTime2Long(LocalDateTime.now().toString()).toString();
+        String url =  replaceUrl(SOHU_HHQ_URL, jQueryName, hhqUrlBuilderWithSohu(stockDomain, sDate, eDate));
+        // call rest service
+        String response = okHttpClient.call(url);
+        // 结构化返回值，对返回值进行fmt
+        response = StringUtils.substringBetween(response, "(",")");
+        // 无交易数据
+        if (StringUtils.isEmpty(response) || "{}".equals(response)) {
+            domain.setIncrease("-");
+        } else {
+            JSONArray jsonArray = JSONArray.parseArray(response);
+            if (!jsonArray.isEmpty()) {
+                Gson gson = new Gson();
+                DayLineDomain hhqDomain = gson.fromJson(jsonArray.get(0).toString(), DayLineDomain.class);
+                // 无stat节点数据
+                if (hhqDomain.getStat() == null) {
+                    // call 雪球 TODO
+                    domain.setIncrease("x");
+                } else {
+                    domain.setIncrease(hhqDomain.getStat().get(3));
+                }
+            }
+        }
+
+        domain.setYear(Utils.getYear(sDate));
+        domain.setCompanyCode(stockDomain.getCompanyCode());
+        domain.setCompanyName(stockDomain.getCompanyName());
+        return domain;
     }
 
     // 历史行情(指定日期)
@@ -634,7 +669,7 @@ public class ApiRestTemplate {
 
             try {
                 JSONArray jsonArray = JSONArray.parseArray(response);
-                if (jsonArray.size() > 0) {
+                if (!jsonArray.isEmpty()) {
                     Gson gson = new Gson();
                     log.debug("call hhq response jsonarray value :: {}", jsonArray.get(0).toString());
                     hhqDomain = gson.fromJson(jsonArray.get(0).toString(), DayLineDomain.class);
@@ -739,6 +774,16 @@ public class ApiRestTemplate {
         params.put("companyCode", stockDomain.getCompanyCode());
         params.put("startDay", getDay(stockDomain));
         params.put("endDay", getDay(stockDomain));
+        params.put("random1", RandomUtils.nextInt());
+        params.put("random2", RandomUtils.nextInt());
+        return params;
+    }
+
+    private Map<String, Object> hhqUrlBuilderWithSohu(StockDomain stockDomain, String sDate, String eDate) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("companyCode", stockDomain.getCompanyCode());
+        params.put("startDay", sDate);
+        params.put("endDay", eDate);
         params.put("random1", RandomUtils.nextInt());
         params.put("random2", RandomUtils.nextInt());
         return params;

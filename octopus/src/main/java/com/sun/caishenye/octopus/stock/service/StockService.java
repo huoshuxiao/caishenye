@@ -8,6 +8,7 @@ import com.sun.caishenye.octopus.stock.domain.DayLineDomain;
 import com.sun.caishenye.octopus.stock.domain.ShareBonusDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,9 @@ public class StockService {
     @Autowired
     private ShareHolderService shareHolderService;
 
+    @Autowired
+    private AnnualIncreaseService annualIncreaseService;
+
     public void run() throws ExecutionException, InterruptedException {
         base();
         ///////////////////
@@ -92,8 +96,12 @@ public class StockService {
 
     // 历史行情
     public Object hhq() throws ExecutionException, InterruptedException {
-
         return historyHqService.hhq();
+    }
+
+    // 年度涨跌幅
+    public Object annualIncrease() {
+        return annualIncreaseService.execute();
     }
 
     // 实时行情
@@ -245,7 +253,7 @@ public class StockService {
                         .filter(t -> t.getSbDomain().getSchedule().equals(Constants.SB_SCHEDULE_IMPLEMENT.getString()))
                         .filter(t -> t.getSbDomain().getBonusDate().length() > 4)
                         .filter(t -> Float.parseFloat(t.getSbDomain().getDividend()) > 0f)
-                        .filter(t -> !t.getDividendYield().equals("×"))
+                        .filter(t -> StringUtils.isNotEmpty(t.getDividendYield()) && !"×".equals(t.getDividendYield()))
                         // 相同财年
                         .filter(t -> Utils.getYear(t.getSbDomain().getDividendYear()).equals(Utils.getYear(s.getSbDomain().getDividendYear())))
                         .collect(Collectors.toList());

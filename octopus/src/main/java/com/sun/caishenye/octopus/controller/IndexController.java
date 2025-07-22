@@ -140,6 +140,15 @@ public class IndexController {
         return tag + " " + ChronoUnit.MINUTES.between(startTime, endTime);
     }
 
+    // 年度涨跌幅
+    @GetMapping("ai")
+    public Object annualIncrease() {
+        LocalDateTime startTime = LocalDateTime.now();
+        String tag = stockService.annualIncrease().toString();
+        LocalDateTime endTime = LocalDateTime.now();
+        return tag + " " + ChronoUnit.MINUTES.between(startTime, endTime);
+    }
+
     // run (job)
     @GetMapping("stock")
     public Object stock() throws ExecutionException, InterruptedException {

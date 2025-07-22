@@ -27,7 +27,7 @@ public class ApiOkHttpClient {
             if (response.isSuccessful() && response.body() != null) {
                 return response.body().string();
             } else {
-                throw new IOException("HTTP error code: " + response.code());
+                return response.message();
             }
         } catch (IOException ex) {
             throw new RuntimeException(ex);

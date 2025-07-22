@@ -4,6 +4,7 @@ import com.sun.caishenye.octopus.fund.service.FundService;
 import com.sun.caishenye.octopus.stock.service.StockService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -22,16 +23,22 @@ public class AgentJob {
     @Autowired
     private StockService stockService;
 
+    @Value("${job.run}")
+    private boolean run;
+
     @Scheduled(cron = "${job.cron.fund}")
     public void fund() {
-        LocalDateTime startTime = LocalDateTime.now();
-        fundService.run();
-        LocalDateTime endTime = LocalDateTime.now();
-        log.info("fund job run :: {} minutes", ChronoUnit.MINUTES.between(startTime, endTime));
+        if (run) {
+            LocalDateTime startTime = LocalDateTime.now();
+            fundService.run();
+            LocalDateTime endTime = LocalDateTime.now();
+            log.info("fund job run :: {} minutes", ChronoUnit.MINUTES.between(startTime, endTime));
+        }
     }
 
     @Scheduled(cron = "${job.cron.stock}")
     public void stock() throws InterruptedException {
+        if (run) {
         LocalDateTime startTime = LocalDateTime.now();
         try {
             stockService.run();
@@ -45,5 +52,6 @@ public class AgentJob {
         }
         LocalDateTime endTime = LocalDateTime.now();
         log.info("stock job run :: {} minutes", ChronoUnit.MINUTES.between(startTime, endTime));
+        }
     }
 }

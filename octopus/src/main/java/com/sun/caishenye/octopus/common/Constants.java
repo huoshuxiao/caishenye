@@ -22,6 +22,7 @@ public enum Constants {
     FILE_FINANCIAL_REPORT2("Stock_FinancialReport.csv"),
     FILE_SHARE_BONUS("ShareBonus.log"),
     FILE_SHARE_BONUS1("ShareBonus1.log"),
+    FILE_ANNUAL_INCREASE("Annual_Increase.csv"),
     FILE_HQ("HQ.log"),
     FILE_HHQ("HHQ.log"),
     MONEY_FLOW_STOCK("MoneyFlow_Stock.csv"),

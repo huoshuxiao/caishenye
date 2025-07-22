@@ -64,6 +64,20 @@ public class DayLineDomain implements Serializable {
     @Getter
     private List<String[]> hq;
 
+    // 603999
+//    "累计:",
+//    "2019-01-02至2019-01-31",
+//    "1.72",
+//    "18.34%", --
+//    9.16,
+//    11.2,
+//    11496266,
+//    1219796.76,
+//    "6.68%"
+    @Setter
+    @Getter
+    private List<String> stat;
+
     // 公司代码
     @Setter
     @Getter

@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 public class StockCache {
 
-    private String XQ_URL = "http://www.xueqiu.com";
+    private String XQ_URL = "http://xueqiu.com/snowman/S/SZ000001/detail";
 
     @Value("${cookie.xq}")
     private String cookie;

@@ -2,6 +2,7 @@ package com.sun.caishenye.octopus.config.rest;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,16 +11,17 @@ import java.time.Duration;
 @Configuration
 public class OkHttpClientConfig {
 
+    @Value("${retry.okhttp}")
+    private int retry;
+
     @Bean
     public OkHttpClient okHttpClient() {
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-//        LoggingRequestInterceptor logging = new LoggingRequestInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         return new OkHttpClient.Builder()
-                .addInterceptor(logging)
                 .connectTimeout(Duration.ofSeconds(30))
                 .readTimeout(Duration.ofSeconds(30))
                 .writeTimeout(Duration.ofSeconds(30))
+                .addInterceptor(new OkHttpClientRetryInterceptor(retry)) // 设置最多重试 3 次
+                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build();
     }
 }
