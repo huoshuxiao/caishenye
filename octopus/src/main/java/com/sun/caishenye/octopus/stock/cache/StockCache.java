@@ -24,17 +24,17 @@ public class StockCache {
     @Autowired
     private RestTemplate restTemplateText;
 
-    @Cacheable(value = "ehcache_24H")
+    @Cacheable(value = "ehcache_1H")
     public String getXQCookies() {
         ResponseEntity<String> response = restTemplateText.getForEntity(XQ_URL, String.class);
         List<String > cookies = response.getHeaders().get("Set-Cookie");
         String xq = String.join(";", cookies);
-        log.info("cookies :: {}", xq);
+        log.info("cookies :: 1 {}", xq);
 
         if (!xq.contains("token")) {
             xq = cookie;
         }
-        log.info("cookies :: {}", xq);
+        log.info("cookies :: 2 {}", xq);
         return xq;
     }
 }
