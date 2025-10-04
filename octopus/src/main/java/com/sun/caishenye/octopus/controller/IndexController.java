@@ -88,6 +88,15 @@ public class IndexController {
 //        return morningstarService.detail();
 //    }
 
+    // 年度涨跌幅
+    @GetMapping("fund/ai")
+    public Object ai() {
+        LocalDateTime startTime = LocalDateTime.now();
+        String tag = fundService.annualIncrease().toString();
+        LocalDateTime endTime = LocalDateTime.now();
+        return tag + " " + ChronoUnit.MINUTES.between(startTime, endTime);
+    }
+
     // run
     @GetMapping("fund")
     public Object fund() {

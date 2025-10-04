@@ -135,4 +135,9 @@ public class FundService {
         }
         return managementTime.replace("天","");
     }
+
+    // 年度涨跌幅
+    public Object annualIncrease() {
+        return eastMoneyService.annualIncrease();
+    }
 }

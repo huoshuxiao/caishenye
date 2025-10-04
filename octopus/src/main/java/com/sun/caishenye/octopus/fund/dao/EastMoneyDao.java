@@ -1,16 +1,16 @@
 package com.sun.caishenye.octopus.fund.dao;
 
+import com.opencsv.CSVWriter;
 import com.sun.caishenye.octopus.common.Constants;
 import com.sun.caishenye.octopus.fund.component.CommonComponent;
 import com.sun.caishenye.octopus.fund.domain.EastMoneyBaseDomain;
 import com.sun.caishenye.octopus.fund.domain.EastMoneyDetailDomain;
+import com.sun.caishenye.octopus.fund.domain.AnnualIncreaseDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -151,4 +151,19 @@ public class EastMoneyDao {
 //
 //        return map;
 //    }
+
+    // 写 年度涨跌幅
+    public void writeAnnualIncreaseData(List<AnnualIncreaseDomain> data) {
+
+        Path path = Paths.get(common.getFilePath(), Constants.FILE_ANNUAL_INCREASE.getString());
+        try (FileOutputStream fos = new FileOutputStream(path.toFile());
+             OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+             CSVWriter writer = new CSVWriter(osw)) {
+            for (AnnualIncreaseDomain domain : data) {
+                writer.writeNext(domain.builders());
+            }
+        } catch (IOException x) {
+            log.error("IOException: {}\n", x);
+        }
+    }
 }

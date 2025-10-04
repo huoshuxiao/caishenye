@@ -1,7 +1,9 @@
 package com.sun.caishenye.octopus.fund.agent.api;
 
 import com.google.gson.Gson;
+import com.sun.caishenye.octopus.fund.domain.AnnualIncreaseDomain;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,7 +28,7 @@ public class EastMoneyRestTemplate {
 
     // 基础数据
     // http://fund.eastmoney.com/data/rankhandler.aspx?op=ph&dt=kf&ft=all&rs=&gs=0&sc=qjzf&st=desc&sd=1990-05-03&ed=2021-05-03&qdii=&tabSubtype=,,,,,&pi=1&pn=50000&dx=0&v=0.5407120213816268
-    private static final String BASE_DATA_URL = "http://fund.eastmoney.com/data/rankhandler.aspx?op=ph&dt=kf&ft=all&rs=&gs=0&sc=qjzf&st=desc&sd={startDate}&ed={endDate}&qdii=&tabSubtype=,,,,,&pi=1&pn=50000&dx=0&v=0.5407120213816268";
+    private static final String BASE_DATA_URL = "http://fund.eastmoney.com/data/rankhandler.aspx?op=ph&dt=kf&ft=all&rs=&gs=0&sc=qjzf&st=desc&sd={startDate}&ed={endDate}&qdii=&tabSubtype=,,,,,&pi=1&pn=50000&dx=0&v={random1}";
 
     @Qualifier("restTemplateText")
     @Autowired
@@ -41,6 +43,15 @@ public class EastMoneyRestTemplate {
 
         log.debug("EastMoneyRestTemplate call base request start");
 
+        createRequestHeader();
+
+        // call rest service
+        ResponseEntity<String> responseEntity = restTemplate.exchange(replaceUrl(year), HttpMethod.GET, createRequestHeader(), String.class);
+        return getResponseData(responseEntity);
+    }
+
+    private HttpEntity<String> createRequestHeader() {
+
         // create headers
         HttpHeaders headers = new HttpHeaders();
         headers.set("Referer", "http://fund.eastmoney.com/data/fundranking.html");
@@ -48,10 +59,10 @@ public class EastMoneyRestTemplate {
         headers.set("Cookie", "ASP.NET_SessionId=oodjjkqu1tqnzkiw5u52232v");
 
         // build the request
-        HttpEntity<String> request = new HttpEntity<>(headers);
+        return new HttpEntity<>(headers);
+    }
 
-        // call rest service
-        ResponseEntity<String> responseEntity = restTemplate.exchange(builderBaseDataUrl(year), HttpMethod.GET, request, String.class);
+    private List<String> getResponseData(ResponseEntity<String> responseEntity) {
         String response = responseEntity.getBody();
         log.debug("EastMoneyRestTemplate base response string :: {}", response);
 
@@ -65,13 +76,29 @@ public class EastMoneyRestTemplate {
         Map<String, Object> responseMap = gson.fromJson(response, Map.class);
         List<String> data = (List<String>)responseMap.get("datas");
         log.debug("EastMoneyRestTemplate call base data response :: {}", data);
-
         return data;
     }
 
-    private String builderBaseDataUrl(Integer year) {
+    private String replaceUrl(Integer year) {
         String url = BASE_DATA_URL.replace("{startDate}", LocalDate.now().minusYears(year).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         url = url.replace("{endDate}", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        url = url.replace("{random1}", String.valueOf(RandomUtils.nextFloat()));
         return url;
+    }
+
+    private String replaceUrl(String _url, String startDate, String endDate) {
+        String url = _url.replace("{startDate}", startDate);
+        url = url.replace("{endDate}", endDate);
+        url = url.replace("{random1}", String.valueOf(RandomUtils.nextFloat()));
+        return url;
+    }
+
+    public List<String> annualIncrease(String startDate, String endDate) {
+
+        createRequestHeader();
+
+        // call rest service
+        ResponseEntity<String> responseEntity = restTemplate.exchange(replaceUrl(BASE_DATA_URL, startDate, endDate), HttpMethod.GET, createRequestHeader(), String.class);
+        return getResponseData(responseEntity);
     }
 }

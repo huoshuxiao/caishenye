@@ -6,9 +6,11 @@ import com.sun.caishenye.octopus.fund.agent.webmagic.EastMoneyDetailPageProcesso
 import com.sun.caishenye.octopus.fund.dao.EastMoneyDao;
 import com.sun.caishenye.octopus.fund.domain.EastMoneyBaseDomain;
 import com.sun.caishenye.octopus.fund.domain.EastMoneyDetailDomain;
+import com.sun.caishenye.octopus.fund.domain.AnnualIncreaseDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -149,4 +151,52 @@ public class EastMoneyService {
 //    public Map<String, EastMoneyDetailDomain> readDetailDataMap() {
 //        return eastMoneyDao.readDetailDataMap();
 //    }
+
+    @Value("${ai.years}")
+    private int years;
+    public Object annualIncrease() {
+        List<AnnualIncreaseDomain> result = new ArrayList<>();
+//        try {
+            int endYear = LocalDate.now().getYear();
+            int startYear = endYear - years;
+            for (int year = startYear; year <= endYear; year++) {
+                String startDate = String.format("%d-01-01", year);
+                String endDate = String.format("%d-12-31", year);
+
+                List<String> data1Year = eastMoneyRestTemplate.annualIncrease(startDate, endDate);
+
+                for (String s : data1Year) {
+
+                    List<String> data = Arrays.asList(s.split(Constants.DELIMITING_COMMA.getString()));
+                    AnnualIncreaseDomain domain = new AnnualIncreaseDomain();
+                    // 基金代码
+                    domain.setFundCode(data.get(0));
+                    // 基金名称
+                    domain.setFundName(data.get(1));
+                    // 年度
+                    domain.setYear(String.valueOf(year));
+                    // 涨跌额(%)
+                    log.debug("年度 涨跌额 :: {}", String.join(",", data));
+                    if (data.size() > 18) {
+                        if (data.get(18).isEmpty()) {
+                            domain.setIncrease("-");
+                        } else {
+                            domain.setIncrease(data.get(18));
+                        }
+                    } else {
+                        // 数据无 跳过
+                        domain.setIncrease("X");
+                    }
+
+                    result.add(domain);
+                }
+//                Thread.sleep(150);
+            }
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+        eastMoneyDao.writeAnnualIncreaseData(result);
+        return "finished";
+    }
+
 }

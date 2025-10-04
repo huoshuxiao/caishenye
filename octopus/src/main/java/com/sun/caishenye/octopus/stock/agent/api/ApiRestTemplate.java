@@ -626,6 +626,7 @@ public class ApiRestTemplate {
         response = StringUtils.substringBetween(response, "(",")");
         // 无交易数据
         if (StringUtils.isEmpty(response) || "{}".equals(response)) {
+            // 未上市
             domain.setIncrease("-");
         } else {
             JSONArray jsonArray = JSONArray.parseArray(response);
@@ -637,7 +638,7 @@ public class ApiRestTemplate {
                     // call 雪球 TODO
                     domain.setIncrease("x");
                 } else {
-                    domain.setIncrease(hhqDomain.getStat().get(3));
+                    domain.setIncrease(hhqDomain.getStat().get(3).replace("%",""));
                 }
             }
         }
