@@ -5,8 +5,7 @@
 /data/
 /log/
 
-cube/.idea/
 octopus/log/
 
-cube/src/main/python/com/sun/caishenye/cube/*/__pycache__/
-cube/src/main/python/com/sun/caishenye/cube/*/*/__pycache__/
+cube/*
+/cube/*
