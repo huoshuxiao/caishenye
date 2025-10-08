@@ -17,6 +17,6 @@ logger = logging.getLogger(consts.APP_ID)
 def log(message):
     debug = app_config.get('debug')
     if debug:
-        logger.info(message)
-    else:
         logger.debug(message)
+    else:
+        logger.info(message)

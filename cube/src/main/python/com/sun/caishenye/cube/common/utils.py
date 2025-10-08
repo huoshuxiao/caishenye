@@ -16,7 +16,7 @@ def resources_path():
     return root() + r'/resources'
 
 
-def read_csv(file_path, file_name, headers):
+def read_csv(file_path, file_name, headers=None):
     file = r'{}/{}'.format(file_path, file_name)
     return pandas.read_csv(file, header=None, names=headers)
 
