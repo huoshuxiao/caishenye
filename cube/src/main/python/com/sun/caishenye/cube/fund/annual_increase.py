@@ -39,22 +39,23 @@ def run():
                           _df_result.sort_values(by=['E'], ascending=[False]))
         log.log(r'{}-{} :: {}'.format(out_file_name, r'{}_{}'.format(utils.year(), increases[i]), _df_result))
 
-    # 不包含当年
-    df_not_current_year = __not_y_current__(df_result)
-    for i in range(len(headers)):
-        _df_result = df_not_current_year[df_not_current_year['E'] > increases[i]]
-        utils.write_excel(file_path, out_file_name, r'{}_{}'.format('Y', increases[i]), _df_result)
-        log.log(r'{}-{} :: {}'.format(out_file_name, r'{}_{}'.format('Y', increases[i]), _df_result))
+    if config.get('file.name.fund.ai.cal_history_year') is True:
+        # 往年
+        df_history_year = __not_y_current__(df_result)
+        for i in range(len(headers)):
+            _df_result = df_history_year[df_history_year['E'] > increases[i]]
+            utils.write_excel(file_path, out_file_name, r'{}_{}'.format('Y', increases[i]), _df_result)
+            log.log(r'{}-{} :: {}'.format(out_file_name, r'{}_{}'.format('Y', increases[i]), _df_result))
 
-        # COUNT
-        df_count = __cal_count__(_df_result)
-        utils.write_excel(file_path, out_file_name, r'{}_{}_COUNT'.format('Y', increases[i]), df_count)
-        log.log(r'{}-{} :: {}'.format(out_file_name, r'{}_{}_COUNT'.format('Y', increases[i]), df_count))
+            # COUNT
+            df_count = __cal_count__(_df_result)
+            utils.write_excel(file_path, out_file_name, r'{}_{}_COUNT'.format('Y', increases[i]), df_count)
+            log.log(r'{}-{} :: {}'.format(out_file_name, r'{}_{}_COUNT'.format('Y', increases[i]), df_count))
 
-        # RECOUNT
-        df_recount = __cal_recount__(_df_result)
-        utils.write_excel(file_path, out_file_name, r'{}_{}_RECOUNT'.format('Y', increases[i]), df_recount)
-        log.log(r'{}-{} :: {}'.format(out_file_name, r'{}_{}_RECOUNT'.format('Y', increases[i]), df_recount))
+            # RECOUNT
+            df_recount = __cal_recount__(_df_result)
+            utils.write_excel(file_path, out_file_name, r'{}_{}_RECOUNT'.format('Y', increases[i]), df_recount)
+            log.log(r'{}-{} :: {}'.format(out_file_name, r'{}_{}_RECOUNT'.format('Y', increases[i]), df_recount))
 
 
 def __cal_count__(df):
