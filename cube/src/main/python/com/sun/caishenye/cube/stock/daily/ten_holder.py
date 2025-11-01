@@ -52,8 +52,8 @@ def __cal__():
     """
     写excel
     """
-    utils.write_excel(file_path, r'{}'.format(out_file_name), 'DEMO', df)
-    log.log(r'{} :: {}'.format(r'{}_{}'.format(out_file_name, 'DEMO'), df))
+    utils.write_excel(file_path, r'{}'.format(out_file_name), 'SDGD', df)
+    log.log(r'{} :: {}'.format(r'{}_{}'.format(out_file_name, 'SDGD'), df))
 
 
 # 非个人实体股东百分比
