@@ -47,4 +47,4 @@ cookie:
 retry:
   okhttp: 5
 file:
-  path: /data
+  path: /home/sunwenkun/Developer/workspace/caishenye.git/data
