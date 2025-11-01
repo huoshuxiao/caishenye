@@ -29,6 +29,7 @@ server:
 
 ################### 项目属性 ###############################
 job:
+  run: true
   cron:
     # 每小时一次
 #    fund: 0 30 0/1 * * ?
@@ -39,7 +40,11 @@ job:
 mm:
   # true: 股息二次计算(股息累加)
   cal2: true
-file:
-  path: data/
+ai:
+  years: 15
 cookie:
   xq: xx
+retry:
+  okhttp: 5
+file:
+  path: /data

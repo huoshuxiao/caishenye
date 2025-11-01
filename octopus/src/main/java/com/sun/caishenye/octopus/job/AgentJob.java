@@ -39,19 +39,19 @@ public class AgentJob {
     @Scheduled(cron = "${job.cron.stock}")
     public void stock() throws InterruptedException {
         if (run) {
-        LocalDateTime startTime = LocalDateTime.now();
-        try {
-            stockService.run();
-        } catch (ExecutionException e) {
+            LocalDateTime startTime = LocalDateTime.now();
             try {
-                TimeUnit.MINUTES.sleep(30);
                 stockService.run();
-            } catch (ExecutionException executionException) {
-                log.error("stock job run error :: {}", e);
+            } catch (ExecutionException e) {
+                try {
+                    TimeUnit.MINUTES.sleep(30);
+                    stockService.run();
+                } catch (ExecutionException executionException) {
+                    log.error("stock job run error :: {}", e);
+                }
             }
-        }
-        LocalDateTime endTime = LocalDateTime.now();
-        log.info("stock job run :: {} minutes", ChronoUnit.MINUTES.between(startTime, endTime));
+            LocalDateTime endTime = LocalDateTime.now();
+            log.info("stock job run :: {} minutes", ChronoUnit.MINUTES.between(startTime, endTime));
         }
     }
 }

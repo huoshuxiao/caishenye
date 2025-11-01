@@ -62,17 +62,22 @@ public class StockService {
 
     public void run() throws ExecutionException, InterruptedException {
         base();
+
         ///////////////////
         tenHolder();
         moneyFlow();
         //////////////////
 
+        ///////////////////
         financialReport();
+        ///////////////////
 
+        //////////////////
         hq();
 //        hhq();
         shareBonus();
         moneyMoney();
+        ///////////////////
     }
 
     // 基础数据
@@ -97,11 +102,6 @@ public class StockService {
     // 历史行情
     public Object hhq() throws ExecutionException, InterruptedException {
         return historyHqService.hhq();
-    }
-
-    // 年度涨跌幅
-    public Object annualIncrease() {
-        return annualIncreaseService.execute();
     }
 
     // 实时行情
@@ -320,5 +320,10 @@ public class StockService {
 
         tenHolder();
         moneyFlow();
+    }
+
+    // 年度涨跌幅
+    public Object annualIncrease() {
+        return annualIncreaseService.execute();
     }
 }
