@@ -38,12 +38,14 @@ job:
     fund: 0 45 0 * * ?
     stock: 0 45 1 * * ?
 mm:
+  cal-history: true
   # true: 股息二次计算(股息累加)
   cal2: true
 ai:
   years: 15
 cookie:
   xq: xx
+  mq: qgqp_b_id=
 retry:
   okhttp: 5
 file:

@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -74,7 +75,12 @@ public class EastMoneyRestTemplate {
         // 获取数据部分
         Gson gson = new Gson();
         Map<String, Object> responseMap = gson.fromJson(response, Map.class);
-        List<String> data = (List<String>)responseMap.get("datas");
+        List<String> data;
+        if (responseMap == null) {
+            data = new ArrayList<>();
+        } else {
+            data = (List<String>) responseMap.get("datas");
+        }
         log.debug("EastMoneyRestTemplate call base data response :: {}", data);
         return data;
     }

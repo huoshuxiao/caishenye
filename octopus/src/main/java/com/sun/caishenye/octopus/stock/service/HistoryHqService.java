@@ -29,21 +29,21 @@ public class HistoryHqService {
     @Autowired
     private BaseService baseService;
 
-    // 历史行情(主)
+    // 历史行情(主)(指定日期+股权登记日)(全: SOHU+EASTMONEY+交易所)
     public DayLineDomain getHhqByDateForObject(StockDomain stockDomain) {
         return apiRestTemplate.getHhqByDateForObject(stockDomain);
     }
-    // 历史行情(指定日期)
+    // 历史行情(指定日期)(全: SOHU+EASTMONEY+交易所)
     public DayLineDomain getHhqByDateForObject(StockDomain stockDomain, String date) {
         return apiRestTemplate.getHhqByDateForObject(stockDomain, date);
     }
 
-    // 历史行情
+    // 历史行情(EASTMONEY)
     public DayLineDomain getHhqForObject(StockDomain stockDomain) throws ExecutionException, InterruptedException {
         return agentHhqData(stockDomain);
     }
 
-    // 历史行情
+    // 历史行情(EASTMONEY)
     public Object hhq() throws ExecutionException, InterruptedException {
 
         // 查询证券基础数据

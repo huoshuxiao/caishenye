@@ -534,7 +534,7 @@ public class ApiRestTemplate {
 //        return CompletableFuture.completedFuture(hhqDomain);
 //    }
 //
-    // 历史行情
+    // 历史行情(EASTMONEY)
     @Async
     public CompletableFuture<DayLineDomain> getHhqForObject(StockDomain stockDomain) {
         log.debug("call hhq request params :: {}", stockDomain);
@@ -578,6 +578,9 @@ public class ApiRestTemplate {
             log.error(stockDomain.getCompanyCode() + " " + e.getRawStatusCode());
         } catch (JsonSyntaxException je) {
             log.error("getHhqForObject :: " + hhqUrlBuilder(stockDomain) + " " + je);
+        } catch (RuntimeException ioe) {
+            // call TODO
+            log.error("getHhqForObject RuntimeException :: " + hhqUrlBuilder(stockDomain) + " " + ioe);
         }
         return CompletableFuture.completedFuture(hhqDomain);
     }
@@ -598,7 +601,7 @@ public class ApiRestTemplate {
         return params;
     }
 
-    // 历史行情(指定日期)
+    // 历史行情(全: SOHU+EASTMONEY+交易所)
     public DayLineDomain getHhqByDateForObject(StockDomain stockDomain, String sDate) {
 
         int dd = 0;
@@ -649,7 +652,7 @@ public class ApiRestTemplate {
         return domain;
     }
 
-    // 历史行情(指定日期)
+    // 历史行情(全: SOHU+EASTMONEY+交易所)
     public DayLineDomain getHhqByDateForObject(StockDomain stockDomain) {
         log.debug("call hhq request params :: {}", stockDomain);
         DayLineDomain hhqDomain = null;

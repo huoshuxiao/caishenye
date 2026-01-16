@@ -32,6 +32,8 @@ public class StockService {
 
     @Value("${mm.cal2}")
     private boolean cal2;
+    @Value("${mm.cal-history}")
+    private boolean calHistory;
 
     @Autowired
     private StockDao stockDao;
@@ -146,7 +148,7 @@ public class StockService {
                 calDividendYield(stockDomain, hqDataMap);
             // 实施
             // 历史 股息率,用 历史行情 数据 计算
-            } else if (sbDomain.getSchedule().equals(Constants.SB_SCHEDULE_IMPLEMENT.getString())
+            } else if (calHistory && sbDomain.getSchedule().equals(Constants.SB_SCHEDULE_IMPLEMENT.getString())
                     && Double.parseDouble(sbDomain.getDividend()) > 0d) { // 分红金额大于0
 
                 // 根据 公司代码 + 股权登记日(map) 取得 股价
