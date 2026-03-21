@@ -11,8 +11,11 @@ import java.time.Duration;
 @Configuration
 public class OkHttpClientConfig {
 
-    @Value("${retry.okhttp}")
+    @Value("${okhttp.retries}")
     private int retry;
+
+    @Value("${okhttp.log.level:NONE}")
+    private String okHttpLogLevel;
 
     @Bean
     public OkHttpClient okHttpClient() {
@@ -21,7 +24,7 @@ public class OkHttpClientConfig {
                 .readTimeout(Duration.ofSeconds(30))
                 .writeTimeout(Duration.ofSeconds(30))
                 .addInterceptor(new OkHttpClientRetryInterceptor(retry)) // 设置最多重试 3 次
-                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.valueOf(okHttpLogLevel)))
                 .build();
     }
 }

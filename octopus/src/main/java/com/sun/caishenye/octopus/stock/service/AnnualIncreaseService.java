@@ -29,7 +29,7 @@ public class AnnualIncreaseService {
     @Autowired
     private StockDao stockDao;
 
-    @Value("${ai.years}")
+    @Value("${years}")
     private int years;
 
     public Object execute() {

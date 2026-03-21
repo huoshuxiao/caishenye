@@ -152,7 +152,7 @@ public class EastMoneyService {
 //        return eastMoneyDao.readDetailDataMap();
 //    }
 
-    @Value("${ai.years}")
+    @Value("${years}")
     private int years;
     public Object annualIncrease() {
         List<AnnualIncreaseDomain> result = new ArrayList<>();

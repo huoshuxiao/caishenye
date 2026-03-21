@@ -15,16 +15,21 @@ import java.util.List;
 @Slf4j
 public class StockCache {
 
-    private String XQ_URL = "http://xueqiu.com/snowman/S/SZ000001/detail";
-
-    @Value("${cookie.xq}")
-    private String cookie;
-
     @Qualifier("restTemplateText")
     @Autowired
     private RestTemplate restTemplateText;
 
-    @Cacheable(value = "ehcache_1H")
+    private String XQ_URL = "http://xueqiu.com/snowman/S/SZ000001/detail";
+
+    @Value("${cookie.xq}")
+    private String xqCookie;
+
+    private String EM_URL = "http://data.eastmoney.com";
+
+    @Value("${cookie.em}")
+    private String emCookie;
+
+    @Cacheable(value = "ehcache_1H_XQ")
     public String getXQCookies() {
         ResponseEntity<String> response = restTemplateText.getForEntity(XQ_URL, String.class);
         List<String > cookies = response.getHeaders().get("Set-Cookie");
@@ -32,9 +37,25 @@ public class StockCache {
         log.info("cookies :: 1 {}", xq);
 
         if (!xq.contains("token")) {
-            xq = cookie;
+            xq = xqCookie;
         }
         log.info("cookies :: 2 {}", xq);
+        return xq;
+    }
+
+    @Cacheable(value = "ehcache_1H_EM")
+    public String getEMCookies() {
+        ResponseEntity<String> response = restTemplateText.getForEntity(EM_URL, String.class);
+        List<String > cookies = response.getHeaders().get("Set-Cookie");
+        String xq = emCookie;
+        if (cookies == null) {
+            return xq;
+        } else {
+            xq = String.join(";", cookies);
+            if (!xq.contains("token")) {
+                xq = emCookie;
+            }
+        }
         return xq;
     }
 }

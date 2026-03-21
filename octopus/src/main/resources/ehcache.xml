@@ -8,7 +8,9 @@
     <!-- 默认配置 -->
     <defaultCache maxElementsInMemory="10000" eternal="true"/>
 
-    <cache name="ehcache_1H" maxElementsInMemory="10000" eternal="false"
+    <cache name="ehcache_1H_XQ" maxElementsInMemory="10000" eternal="false"
+           timeToIdleSeconds="3600" timeToLiveSeconds="5400" overflowToDisk="false" />
+    <cache name="ehcache_1H_EM" maxElementsInMemory="10000" eternal="false"
            timeToIdleSeconds="3600" timeToLiveSeconds="5400" overflowToDisk="false" />
 
     <cache name="ehcache_10M" maxElementsInMemory="10000" eternal="false"

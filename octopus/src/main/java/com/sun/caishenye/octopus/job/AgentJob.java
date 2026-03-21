@@ -23,7 +23,7 @@ public class AgentJob {
     @Autowired
     private StockService stockService;
 
-    @Value("${job.run}")
+    @Value("${job.run:false}")
     private boolean run;
 
     @Scheduled(cron = "${job.cron.fund}")

@@ -7,7 +7,9 @@ import com.sun.caishenye.octopus.stock.dao.StockDao;
 import com.sun.caishenye.octopus.stock.domain.DayLineDomain;
 import com.sun.caishenye.octopus.stock.domain.ShareBonusDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +18,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.stream.Collectors;
 
 /**
@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
 @Service
 public class StockService {
 
-    @Value("${mm.cal2}")
+    @Value("${mm.cal2:true}")
     private boolean cal2;
-    @Value("${mm.cal-history}")
+    @Value("${mm.cal-history:false}")
     private boolean calHistory;
 
     @Autowired
@@ -62,23 +62,44 @@ public class StockService {
     @Autowired
     private AnnualIncreaseService annualIncreaseService;
 
+    @Value("${years}")
+    private int years;
+
     public void run() throws ExecutionException, InterruptedException {
-        base();
+//        base();
 
         ///////////////////
-        tenHolder();
-        moneyFlow();
+        new Thread(this::tenHolder).start();
+        new Thread(() -> {
+            try {
+                moneyFlow();
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
         //////////////////
 
         ///////////////////
-        financialReport();
+        new Thread(() -> {
+            try {
+                financialReport();
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
         ///////////////////
 
         //////////////////
-        hq();
+        new Thread(() -> {
+            try {
+                hq();
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 //        hhq();
-        shareBonus();
-        moneyMoney();
+            shareBonus();
+            moneyMoney();
+        }).start();
         ///////////////////
     }
 
@@ -149,7 +170,10 @@ public class StockService {
             // 实施
             // 历史 股息率,用 历史行情 数据 计算
             } else if (calHistory && sbDomain.getSchedule().equals(Constants.SB_SCHEDULE_IMPLEMENT.getString())
-                    && Double.parseDouble(sbDomain.getDividend()) > 0d) { // 分红金额大于0
+                    && Double.parseDouble(sbDomain.getDividend()) > 0d // 分红金额大于0
+                    && LocalDate.now().getYear() - Integer.parseInt(Utils.getYear(sbDomain.getRegistrationDate())) <= years
+                    || (!sbDomain.getRegistrationDate().equals("--") && Utils.getYear(sbDomain.getRegistrationDate()).equals(String.valueOf(LocalDate.now().getYear())))
+            ) {
 
                 // 根据 公司代码 + 股权登记日(map) 取得 股价
                 String mapKey = stockDomain.getCompanyCode() + Utils.formatDate2String(sbDomain.getRegistrationDate());
@@ -174,18 +198,17 @@ public class StockService {
                             calDividendYield(stockDomain, hqDataMap);
                         } else {
                             try {
-                                // 从历史数据 取最近的股价计算股息率
+                                // 从历史数据 取最近的股价计算股息率 (EASTMONEY)
                                 DayLineDomain tDayLineDomain = historyHqService.getHhqForObject(stockDomain);
-                                if (tDayLineDomain.getSummary() != null) {
-
+                                if (tDayLineDomain.getSummary() != null && CollectionUtils.isNotEmpty(tDayLineDomain.getHqs())) {
                                     boolean isExits = false;
                                     int dd = 0;
                                     String[] hhq = null;
                                     while (!isExits) {
                                         String day = dividendLocalDate.minusDays(dd++).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-                                        isExits = tDayLineDomain.getHqs().stream().anyMatch(t-> t[0].equals(day));
+                                        isExits = tDayLineDomain.getHqs().stream().anyMatch(t-> Utils.formatDate2String(t[0]).equals(day));
                                         if (isExits) {
-                                            hhq = tDayLineDomain.getHqs().stream().filter(t-> t[0].equals(day)).findFirst().get();
+                                            hhq = tDayLineDomain.getHqs().stream().filter(t-> Utils.formatDate2String(t[0]).equals(day)).findFirst().get();
                                         }
                                     }
 
@@ -299,9 +322,9 @@ public class StockService {
 
     // 计算股息率
     private String calDividendYield(StockDomain stockDomain) {
-        log.debug("calDividendYield {} ::", stockDomain.toString());
+        log.debug("calDividendYield :: {}", stockDomain.toString());
         // 股息率 = 派息(税前)(元) / 股价
-        String price = String.valueOf(Double.parseDouble(stockDomain.getPrice()) * 10);
+        String price = String.valueOf(Double.parseDouble(stockDomain.getPrice() == null ? "0" : stockDomain.getPrice()) * 10);
         return Utils.rate(stockDomain.getSbDomain().getDividend(), price);
     }
 
@@ -310,15 +333,25 @@ public class StockService {
     }
 
     public void moneyFlow() throws ExecutionException, InterruptedException {
+
+//        FutureTask<Integer> task = new FutureTask<>(() -> {
+//            moneyFlowService.stock();
+//            return 1;
+//        });
+//        task.run();
         moneyFlowService.stock();
     }
 
-    public void tenHolder() throws ExecutionException, InterruptedException {
-        shareHolderService.tenHolder();
+    public void tenHolder() {
+        FutureTask<Integer> task = new FutureTask<>(() -> {
+            shareHolderService.tenHolder();
+            return 1;
+        });
+        task.run();
     }
 
     public void daily() throws ExecutionException, InterruptedException {
-        base();
+//        base();
 
         tenHolder();
         moneyFlow();
