@@ -13,7 +13,10 @@ def get(k: str):
         keys = k.split('.')
         for i in keys:
             result = config.get(i)
-            config = result
+            if result is not None:
+                config = result
+            else:
+                break
     else:
         result = config.get(k)
 

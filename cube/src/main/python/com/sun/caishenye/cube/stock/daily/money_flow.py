@@ -110,6 +110,7 @@ def __stock__():
         """
         过滤数据（二次计算）
         """
+        log.log('cal count v start')
         df_o_max = __cal2_v_by_o__(df_o)
         # df_o['C'] = df_o['C'].astype(str)
         # # 只保留最新日期
@@ -117,6 +118,7 @@ def __stock__():
         # # # drop_duplicates 函数默认保留首次出现的值，如果想保留最后一次出现的值，可以使用keep='last'这样，在去除重复值的过程中，会保留最后一次出现的重复值。
         # # df = df.drop_duplicates('B', keep='last')
         # # df = df[~(df['N'].eq(0))]
+        log.log('cal count v end')
 
         df_o_result = df_o_max.sort_values(by='V', ascending=False)
 
@@ -227,6 +229,9 @@ def __cal2_v_by_d__(df):
             c_desc = group.sort_values(by='C', ascending=False)
             header_d_count = 0
             for _, r in c_desc.iterrows():
+                # 只计算最新的数据
+                if max_row['group_d'] != r['group_d']:
+                    break
                 if r['D'] == header_d:
                     header_d_count = header_d_count + 1
                 # exit
@@ -254,6 +259,9 @@ def __cal2_v_by_o__(df):
             c_desc = group.sort_values(by='C', ascending=False)
             header_o_count = 0
             for _, r in c_desc.iterrows():
+                # 只计算最新的数据
+                if max_row['group_o'] != r['group_o']:
+                    break
                 if r['O'] == header_o:
                     header_o_count = header_o_count + 1
                 # exit

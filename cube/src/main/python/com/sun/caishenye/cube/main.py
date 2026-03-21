@@ -12,7 +12,7 @@ def main():
     log.log(r'base directory :: {}'.format(config.get('file.path')))
 
     thread_count = os.cpu_count() + 1
-    task_funcs = [run_fund, run_stock, run_stock2]
+    task_funcs = [run_fund, run_stock, run_stock_annual_increase]
 
     # 如果任务是I/O密集型的，即主要涉及网络通信、文件读写和数据库操作等，应该选择线程池，以充分利用线程的非阻塞特性，提高执行效率。
     with futures.ThreadPoolExecutor(max_workers=thread_count) as executor:
@@ -38,7 +38,7 @@ def run_stock():
     ten_holder.run()
 
 
-def run_stock2():
+def run_stock_annual_increase():
     stock_annual_increase.run()
 
 
