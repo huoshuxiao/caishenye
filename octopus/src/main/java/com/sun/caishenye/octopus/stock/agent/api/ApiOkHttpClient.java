@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.apache.commons.lang3.concurrent.CircuitBreaker;
+import okhttp3.ResponseBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,15 +24,7 @@ public class ApiOkHttpClient {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
-        try (Response response = okHttpClient.newCall(request).execute()) {
-            if (response.isSuccessful() && response.body() != null) {
-                return response.body().string();
-            } else {
-                return response.message();
-            }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        return call(request, url);
     }
 
     public String call(String url, String header, String value) {
@@ -40,14 +32,22 @@ public class ApiOkHttpClient {
                 .url(url)
                 .addHeader(header, value)
                 .build();
+        return call(request, url);
+    }
+
+    private String call(Request request, String url) {
         try (Response response = okHttpClient.newCall(request).execute()) {
-            if (response.isSuccessful() && response.body() != null) {
-                return response.body().string();
-            } else {
-                return response.message();
+            if (!response.isSuccessful()) {
+                log.warn("HTTP请求失败 [{}]: {} {}", url, response.code(), response.message());
+                return "";
             }
+            ResponseBody body = response.body();
+            return (body != null) ? body.string() : "";
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            // 【关键】捕获所有IO异常（网络超时/连接失败等）
+            log.error("HTTP请求异常 [{}]: {}", url, ex.getMessage(), ex);
+//            throw new RuntimeException(ex);
+            return "";
         }
     }
 }

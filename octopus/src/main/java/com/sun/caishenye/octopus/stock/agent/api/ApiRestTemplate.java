@@ -52,8 +52,6 @@ public class ApiRestTemplate {
     // 雪球 实时行情
     // https://stock.xueqiu.com/v5/stock/quote.json?symbol=SZ002233&extend=detail
     private static final String XUEQIU_QUOTE_URL = "http://stock.xueqiu.com/v5/stock/quote.json?symbol={location}{companyCode}&extend=detail";
-    // 雪球 历史行情(年)
-    // https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=SZ001289&begin=1751986948511&period=year&type=before&count=-624&indicator=kline,pe,pb,ps,pcf,market_capital,agt,ggt,balance
 
     // 雪球 分红配股
     // https://stock.xueqiu.com/v5/stock/f10/cn/bonus.json?symbol=SZ002032&size=1000&page=1&extend=true
@@ -95,13 +93,6 @@ public class ApiRestTemplate {
      */
     private static final String EASTMONEY_BASE_LIST_URL  = "http://{index}.push2.eastmoney.com/api/qt/clist/get?cb=jQuery{random}_{now}&pn={index}&pz=100&po=0&np=1&ut={uuid}&fltt=2&invt=2&fid=f12&fs=m:0+t:6,m:0+t:13,m:0+t:80,m:1+t:2,m:1+t:23&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152&_={now5}";
 
-//    // 历史行情 金融界
-//    // http://flashdata2.jrj.com.cn/history/js/share/601628/other/dayk_ex.js?random=1585145121921
-//    protected static final String JRJ_HHQ_URL = "http://flashdata2.jrj.com.cn/history/js/share/{companyCode}/other/dayk_ex.js?random={random}";
-    // 历史行情 东方财富网 升序
-    // http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg=0&end=20500101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid=0.300308&klt=101&fqt=1&cb=jsonp1688913443970
-    protected static final String EASTMONEY_HHQ_URL = "http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg=0&end=20490101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid={exchange}.{companyCode}&klt=101&fqt=1&cb=jsonp1688913443970";
-
     // 财务数据(业绩报表) 东方财富网
 //    // http://dcfm.eastmoney.com//em_mutisvcexpandinterface/api/js/get?type=YJBB21_YJBB&token=70f12f2f4f091e459a279469fe49eca5&filter=(scode=600000)&st=reportdate&sr=-1&p=1&ps=500&js=var%20ITnKjhqD={pages:(tp),data:%20(x),font:(font)}&rt=52946252
 //    protected static final String EASTMONEY_FR_YJBB_URL = "http://dcfm.eastmoney.com//em_mutisvcexpandinterface/api/js/get?type=YJBB21_YJBB&token=70f12f2f4f091e459a279469fe49eca5&filter=(scode={companyCode})&st=reportdate&sr=-1&p=1&ps=500&js={js}&rt=52946252";
@@ -115,6 +106,17 @@ public class ApiRestTemplate {
     // 历史行情 搜狐
     // http://q.stock.sohu.com/hisHq?code=cn_603999&start=20091126&end=20200325&stat=1&order=D&period=d&callback=historySearchHandler&rt=jsonp&r=0.028961481283250157&0.037908320278956964
     protected static final String SOHU_HHQ_URL = "http://q.stock.sohu.com/hisHq?code=cn_{companyCode}&start={startDay}&end={endDay}&stat=1&order=D&period=d&callback=historySearchHandler&rt=jsonp&r={random1}&{random2}";
+
+    // 雪球 历史行情(年)
+    // https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=SZ001289&begin=1751986948511&period=year&type=before&count=-624&indicator=kline,pe,pb,ps,pcf,market_capital,agt,ggt,balance
+
+//    // 历史行情 金融界
+//    // http://flashdata2.jrj.com.cn/history/js/share/601628/other/dayk_ex.js?random=1585145121921
+//    protected static final String JRJ_HHQ_URL = "http://flashdata2.jrj.com.cn/history/js/share/{companyCode}/other/dayk_ex.js?random={random}";
+    // 历史行情 东方财富网 升序
+    // http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg=0&end=20500101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid=0.300308&klt=101&fqt=1&cb=jsonp1688913443970
+    protected static final String EASTMONEY_HHQ_URL = "http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg=0&end=20490101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid={exchange}.{companyCode}&klt=101&fqt=1&cb=jsonp1688913443970";
+
 
     @Autowired
     private StockCache cache;

@@ -30,7 +30,12 @@ public class OkHttpClientRetryInterceptor implements Interceptor {
                 Response response = chain.proceed(request);
                 // HTTP 非 2xx 成功码，触发重试
                 if (!response.isSuccessful()) {
-                    throw new IOException("HTTP error code: " + response.code());
+                    int code = response.code();
+                    String msg = response.message();
+                    // ✅ 先关闭连接，再抛异常
+                    response.close();
+//                    throw new IOException("HTTP error code: " + response.code());
+                    throw new IOException(String.format("HTTP %d: %s (URL: %s)", code, msg, request.url()));
                 }
                 return response;
             } catch (IOException e) {

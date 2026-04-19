@@ -171,7 +171,7 @@ public class StockService {
             // 历史 股息率,用 历史行情 数据 计算
             } else if (calHistory && sbDomain.getSchedule().equals(Constants.SB_SCHEDULE_IMPLEMENT.getString())
                     && Double.parseDouble(sbDomain.getDividend()) > 0d // 分红金额大于0
-                    && LocalDate.now().getYear() - Integer.parseInt(Utils.getYear(sbDomain.getRegistrationDate())) <= years
+                    && !sbDomain.getRegistrationDate().equals("--") && (LocalDate.now().getYear() - Integer.parseInt(Utils.getYear(sbDomain.getRegistrationDate())) <= years)
                     || (!sbDomain.getRegistrationDate().equals("--") && Utils.getYear(sbDomain.getRegistrationDate()).equals(String.valueOf(LocalDate.now().getYear())))
             ) {
 
@@ -324,7 +324,12 @@ public class StockService {
     private String calDividendYield(StockDomain stockDomain) {
         log.debug("calDividendYield :: {}", stockDomain.toString());
         // 股息率 = 派息(税前)(元) / 股价
-        String price = String.valueOf(Double.parseDouble(stockDomain.getPrice() == null ? "0" : stockDomain.getPrice()) * 10);
+        String price;
+        if (StringUtils.isEmpty(stockDomain.getPrice()) || "null".equalsIgnoreCase(stockDomain.getPrice())) {
+            price = "0";
+        } else {
+            price = String.valueOf(Double.parseDouble(stockDomain.getPrice()) * 10);
+        }
         return Utils.rate(stockDomain.getSbDomain().getDividend(), price);
     }
 

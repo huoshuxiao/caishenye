@@ -39,6 +39,7 @@ public class AgentJob {
     @Scheduled(cron = "${job.cron.stock}")
     public void stock() throws InterruptedException {
         if (run) {
+            run = false;
             LocalDateTime startTime = LocalDateTime.now();
             try {
                 stockService.run();
