@@ -139,10 +139,15 @@ public class ApiRestTemplate {
 
     @Value("${sleep.time:1000}")
     private long time;
+    @Value("${sleep.run:false}")
+    private boolean sleepFlg;
 
     private void sleep() {
         try {
-            Thread.sleep(RandomUtils.nextInt(1, 5) * time);
+            if (!sleepFlg) {
+                return;
+            }
+            Thread.sleep(RandomUtils.nextInt(1, 3) * time);
         } catch (Exception ignored) {
         }
     }
@@ -192,6 +197,8 @@ public class ApiRestTemplate {
                 .replace("{now}", jQueryName)
                 .replace("{now5}", String.valueOf(Long.parseLong(jQueryName) + 5));
     }
+
+
     private String replaceUrl(String url, String jQueryName, String random, Map<String, Object> params) {
         url = replaceUrl(url, jQueryName, random, 1);
         for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -567,6 +574,7 @@ public class ApiRestTemplate {
 //        return CompletableFuture.completedFuture(hhqDomain);
 //    }
 //
+
     // 历史行情(EASTMONEY)
     @Async
     public CompletableFuture<DayLineDomain> getHhqForObject(StockDomain stockDomain) {
@@ -831,6 +839,7 @@ public class ApiRestTemplate {
     private String getDay(StockDomain stockDomain) {
         return Utils.formatDate2String(stockDomain.getSbDomain().getRegistrationDate());
     }
+
     private String getDay2(StockDomain stockDomain) {
         return Utils.formatDate2String(LocalDate.parse(stockDomain.getSbDomain().getRegistrationDate()).minusDays(90).toString());
     }
