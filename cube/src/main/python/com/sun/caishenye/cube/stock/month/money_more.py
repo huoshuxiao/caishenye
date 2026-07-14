@@ -2,11 +2,16 @@
 钱多多
 """
 import os
+import warnings
 
 import pandas as pd
 
 from com.sun.caishenye.cube.common import utils, consts
 from com.sun.caishenye.cube.config import config, log
+
+
+# 忽略所有 FutureWarning
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 file_path = os.path.join(config.get('file.path'), consts.STOCK)
 file_name = config.get('file.name.stock.mm.file_name.in')

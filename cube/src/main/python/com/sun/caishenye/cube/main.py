@@ -1,4 +1,5 @@
 import os
+import warnings
 from concurrent import futures
 
 from com.sun.caishenye.cube.config import config, log
@@ -8,10 +9,14 @@ from com.sun.caishenye.cube.stock.daily import money_flow, ten_holder
 from com.sun.caishenye.cube.stock.month import boss, money_more
 
 
+# 忽略所有 FutureWarning
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
+
 def main():
     log.log(r'base directory :: {}'.format(config.get('file.path')))
 
-    thread_count = os.cpu_count() + 1
+    thread_count = os.cpu_count() / 2 + 1
     task_funcs = [run_fund, run_stock, run_stock_annual_increase]
 
     # 如果任务是I/O密集型的，即主要涉及网络通信、文件读写和数据库操作等，应该选择线程池，以充分利用线程的非阻塞特性，提高执行效率。
