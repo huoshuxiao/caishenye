@@ -34,12 +34,12 @@ public class StockCache {
         ResponseEntity<String> response = restTemplateText.getForEntity(XQ_URL, String.class);
         List<String > cookies = response.getHeaders().get("Set-Cookie");
         String xq = String.join(";", cookies);
-        log.info("cookies :: 1 {}", xq);
+        log.info("XQ cookies :: 1 {}", xq);
 
         if (!xq.contains("token")) {
             xq = xqCookie;
         }
-        log.info("cookies :: 2 {}", xq);
+        log.info("XQ cookies :: 2 {}", xq);
         return xq;
     }
 
@@ -52,9 +52,11 @@ public class StockCache {
             return xq;
         } else {
             xq = String.join(";", cookies);
+            log.info("EM cookies :: 1 {}", xq);
             if (!xq.contains("token")) {
                 xq = emCookie;
             }
+            log.info("EM cookies :: 2 {}", xq);
         }
         return xq;
     }

@@ -1,6 +1,7 @@
 package com.sun.caishenye.octopus;
 
 import com.sun.caishenye.octopus.stock.agent.api.ApiOkHttpClient;
+import com.sun.caishenye.octopus.stock.cache.StockCache;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
@@ -100,6 +101,14 @@ class OctopusApplicationTests {
     void test005() {
         String XQ_URL = "http://10.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112408506576043032625_1750259055480&pn=617&pz=1&po=0&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f12&fs=m:0+t:6,m:0+t:13,m:0+t:80,m:1+t:2,m:1+t:23&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152&_=1750259055485";
         String response = okHttpClient.call(XQ_URL);
+        System.out.println(response);
+    }
+
+    @Autowired
+    private StockCache cache;
+    @Test
+    void test006() {
+        String response = cache.getEMCookies();
         System.out.println(response);
     }
 

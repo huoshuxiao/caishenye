@@ -37,6 +37,8 @@ public class MoneyFlowService {
     private String exchange;
     @Value("${mf.code:0}")
     private int companyCode;
+    @Value("${sleep.run:false}")
+    private boolean sleepFlg;
 
     // 个股
 //    @Async
@@ -92,11 +94,14 @@ public class MoneyFlowService {
     }
 
     // 采集 个股资金流
-    private MoneyFlowDomain agentStockData(StockDomain stockDomain) {
-//        // call rest service
-//        CompletableFuture<MoneyFlowDomain> data = CompletableFuture.supplyAsync(() -> apiRestTemplate.getStockMoneyFlowAsync(stockDomain)).join();
-//        return data.get();
-        return apiRestTemplate.getStockMoneyFlow(stockDomain);
+    private MoneyFlowDomain agentStockData(StockDomain stockDomain) throws ExecutionException, InterruptedException {
+
+        if (sleepFlg) {
+            return apiRestTemplate.getStockMoneyFlow(stockDomain);
+        }
+        // call rest service
+        CompletableFuture<MoneyFlowDomain> data = CompletableFuture.supplyAsync(() -> apiRestTemplate.getStockMoneyFlowAsync(stockDomain)).join();
+        return data.get();
     }
 
     // 写 个股资金流

@@ -365,10 +365,7 @@ public class StockService {
     public void daily() throws ExecutionException, InterruptedException {
 //        base();
 
-//        tenHolder();
-//        moneyFlow();
-
-        new Thread(this::tenHolder).start();
+        tenHolder();
         moneyFlow();
     }
 
