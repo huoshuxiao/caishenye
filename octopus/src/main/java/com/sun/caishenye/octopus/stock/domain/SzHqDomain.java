@@ -1,10 +1,8 @@
 package com.sun.caishenye.octopus.stock.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
 
 // 深圳证券交易所 实时行情
 @Data

@@ -136,9 +136,7 @@ public class ApiRestTemplate {
 
     @Autowired
     private ApiOkHttpClient okHttpClient;
-//
-//    @Value("${sleep.time.xq:500}")
-//    private long xqTime;
+
     @Value("${sleep.time:1000}")
     private long time;
 

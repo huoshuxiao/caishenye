@@ -7,7 +7,6 @@ import com.sun.caishenye.octopus.stock.dao.StockDao;
 import com.sun.caishenye.octopus.stock.domain.DayLineDomain;
 import com.sun.caishenye.octopus.stock.domain.ShareBonusDomain;
 import com.sun.caishenye.octopus.stock.domain.StockDomain;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +63,8 @@ public class StockService {
 
     @Value("${years}")
     private int years;
+    @Value("${ai.run:true}")
+    private boolean aiRun;
 
     public void run() throws ExecutionException, InterruptedException {
 //        base();
@@ -100,6 +101,12 @@ public class StockService {
             shareBonus();
             moneyMoney();
         }).start();
+        ///////////////////
+
+        //////////////////
+        if (aiRun) {
+            new Thread(this::annualIncrease).start();
+        }
         ///////////////////
     }
 
@@ -358,7 +365,10 @@ public class StockService {
     public void daily() throws ExecutionException, InterruptedException {
 //        base();
 
-        tenHolder();
+//        tenHolder();
+//        moneyFlow();
+
+        new Thread(this::tenHolder).start();
         moneyFlow();
     }
 

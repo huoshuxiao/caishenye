@@ -106,7 +106,8 @@ public class ContextRefreshedListener implements ApplicationListener<ContextRefr
         log.debug("✅ 统计: 配置文件数={} | 属性总数={} | 脱敏字段={}",
                 fileCount, totalProps, maskedCount);
         log.info("🔍 重点验证: job.run = {}", env.getProperty("job.run", "NOT SET"));
-        log.info("🔍 重点验证: mf.sh = {}", env.getProperty("mf.sh", "NOT SET"));
+        log.info("🔍 重点验证: mf.exchange = {}", env.getProperty("mf.exchange", "NOT SET"));
+        log.info("🔍 重点验证: mf.code = {}", env.getProperty("mf.code", "NOT SET"));
     }
 
     /** 提取文件名（如: file:/home/test1/config/application.yml → application.yml） */

@@ -33,24 +33,43 @@ public class MoneyFlowService {
     @Autowired
     private StockDao stockDao;
 
-    @Value("${mf.sh:999999}")
+    @Value("${mf.exchange}")
+    private String exchange;
+    @Value("${mf.code:0}")
     private int companyCode;
 
     // 个股
 //    @Async
     public void stock() throws ExecutionException, InterruptedException {
         // 查询证券基础数据
-//        List<StockDomain> baseList = baseService.readBaseData();
-        List<StockDomain>  szBaseList = baseService.readBaseData()
-                .stream().filter(t -> t.getExchange().equalsIgnoreCase(Constants.EXCHANGE_SZ.getString()))
-                .collect(Collectors.toList());
-        List<StockDomain>  shBaseList = baseService.readBaseData()
-                    .stream().filter(t -> t.getExchange().equalsIgnoreCase(Constants.EXCHANGE_SH.getString())
-                                                && new Integer(t.getCompanyCode()) < companyCode)
-                    .collect(Collectors.toList());
+        List<StockDomain> _baseList = baseService.readBaseData();
+
+        List<StockDomain>  szBaseList = _baseList.stream()
+                                                .filter(t -> t.getExchange().equalsIgnoreCase(Constants.EXCHANGE_SZ.getString()))
+                                                .collect(Collectors.toList());
+
+        List<StockDomain>  shBaseList = _baseList.stream()
+                                                .filter(t -> t.getExchange().equalsIgnoreCase(Constants.EXCHANGE_SH.getString()))
+                                                .collect(Collectors.toList());
+        List<StockDomain>  baseList2 = _baseList.stream()
+                                                    .filter(t -> new Integer(t.getCompanyCode()) < companyCode)
+                                                    .collect(Collectors.toList());
+
         List<StockDomain> baseList = new ArrayList<>();
-        baseList.addAll(szBaseList);
-        baseList.addAll(shBaseList);
+        if (companyCode == 999999) {
+            baseList.addAll(szBaseList);
+            baseList.addAll(shBaseList);
+        } else {
+            if (exchange.equalsIgnoreCase(Constants.EXCHANGE_SZ.getString())) {
+                baseList.addAll(szBaseList);
+            }
+            if (exchange.equalsIgnoreCase(Constants.EXCHANGE_SH.getString())) {
+                baseList.addAll(shBaseList);
+            }
+            if (companyCode != 0) {
+                baseList.addAll(baseList2);
+            }
+        }
 
         List<MoneyFlowDomain> resultList = new ArrayList<>();
         for (StockDomain stockDomain: baseList) {
