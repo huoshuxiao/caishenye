@@ -136,6 +136,16 @@
             <appender-ref ref="logstash"/>
         </root>
         <!-- business log -->
+        <logger name="com.sun.caishenye" level="debug">
+            <appender-ref ref="filebeat"/>
+        </logger>
+    </springProfile>
+
+    <springProfile name="stg">
+        <root level="INFO">
+            <appender-ref ref="logstash"/>
+        </root>
+        <!-- business log -->
         <logger name="com.sun.caishenye" level="INFO">
             <appender-ref ref="filebeat"/>
         </logger>

@@ -6,7 +6,7 @@
 #  level:
 ##    org:
 ##      apache:
-##        http: debug
+##        http: info
 #    com:
 #      sun:
-#        caishenye: debug
+#        caishenye: info

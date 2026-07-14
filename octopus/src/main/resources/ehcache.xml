@@ -9,19 +9,20 @@
     <defaultCache maxElementsInMemory="10000" eternal="true"/>
 
     <cache name="ehcache_1H_XQ" maxElementsInMemory="10000" eternal="false"
-           timeToIdleSeconds="3600" timeToLiveSeconds="5400" overflowToDisk="false" />
+           timeToIdleSeconds="3600" timeToLiveSeconds="6000" overflowToDisk="false" />
     <cache name="ehcache_1H_EM" maxElementsInMemory="10000" eternal="false"
-           timeToIdleSeconds="3600" timeToLiveSeconds="5400" overflowToDisk="false" />
+           timeToIdleSeconds="3600" timeToLiveSeconds="6000" overflowToDisk="false" />
 
     <cache name="ehcache_10M" maxElementsInMemory="10000" eternal="false"
                   timeToIdleSeconds="360" timeToLiveSeconds="600" overflowToDisk="false" />
+    <cache name="ehcache_1W" maxElementsInMemory="10000" eternal="false"
+           timeToIdleSeconds="86400" timeToLiveSeconds="604800" overflowToDisk="false" />
 
-    <!--    <defaultCache maxElementsInMemory="10000" eternal="false"-->
-    <!--                  timeToIdleSeconds="600" timeToLiveSeconds="600" overflowToDisk="true" />-->
-
+    <!--       说明：下列配置自缓存建立起600秒(10分钟)有效 。-->
+    <!--       在有效的600秒(10分钟)内，如果连续120秒(2分钟)未访问缓存，则缓存失效。-->
+    <!--       就算有访问，也只会存活600秒。-->
     <!--    <cache name="myCache" maxElementsInMemory="10000" eternal="false"-->
     <!--           timeToIdleSeconds="120" timeToLiveSeconds="600" overflowToDisk="true" />-->
-
 
 <!--    name:缓存名称。-->
 <!--    maxElementsInMemory：缓存最大个数。-->
@@ -35,10 +36,4 @@
 <!--    diskExpiryThreadIntervalSeconds：磁盘失效线程运行时间间隔，默认是120秒。-->
 <!--    memoryStoreEvictionPolicy：当达到maxElementsInMemory限制时，Ehcache将会根据指定的策略去清理内存。默认策略是LRU（最近最少使用）。你可以设置为FIFO（先进先出）或是LFU（较少使用）。-->
 <!--    clearOnFlush：内存数量最大时是否清除。-->
-
-<!--       说明：下列配置自缓存建立起600秒(10分钟)有效 。-->
-<!--       在有效的600秒(10分钟)内，如果连续120秒(2分钟)未访问缓存，则缓存失效。-->
-<!--       就算有访问，也只会存活600秒。-->
-<!--    <cache name="myCache" maxElementsInMemory="10000" eternal="false"-->
-<!--           timeToIdleSeconds="120" timeToLiveSeconds="600" overflowToDisk="true" />-->
 </ehcache>
