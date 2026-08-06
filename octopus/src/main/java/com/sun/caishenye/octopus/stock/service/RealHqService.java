@@ -40,7 +40,7 @@ public class RealHqService {
         List<StockDomain> stockDomainList = baseService.readBaseData();
         boolean isSzse = true;
         for (StockDomain stockDomain: stockDomainList) {
-            if (Constants.EXCHANGE_SZ.getString().equals(stockDomain.getExchange())) {
+            if (Constants.EXCHANGE_SZ.getString().equalsIgnoreCase(stockDomain.getExchange())) {
                 if (isSzse) {
                     try {
                         szService.hq(stockDomain);

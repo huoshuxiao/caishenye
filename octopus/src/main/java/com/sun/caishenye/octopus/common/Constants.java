@@ -35,8 +35,8 @@ public enum Constants {
 
     FR_YUAN("元"),
     FR_10000(100000000),    // 亿
-    EXCHANGE_SH("sh"),
-    EXCHANGE_SZ("sz"),
+    EXCHANGE_SH("SH"),
+    EXCHANGE_SZ("SZ"),
     HQ_SUSPENSION("停牌"),
     SB_SCHEDULE_IMPLEMENT("实施"),
     SB_SCHEDULE_IMPLEMENT_MID("实施[年中]"),

@@ -713,6 +713,76 @@ public class ApiRestTemplate {
             log.debug("call hhq response :: {}", response);
 
             try {
+                // 无交易数据
+                if (StringUtils.isEmpty(response) || "{}".equals(response)) {
+                    // not found, call next api
+                    if ("{}".equals(response)) {
+                        AtomicBoolean isOK = new AtomicBoolean(false);
+                        try {
+                            String day = getDay(stockDomain);
+                            // 全量
+                            DayLineDomain tDayLineDomain = getHhqForObject(stockDomain).get();
+                            while (!isOK.get()) {
+                                for (String[] t : tDayLineDomain.getHqs()) {
+                                    if (t[0].equals(day)) {
+                                        isOK.set(true);
+                                        // 收盘日
+                                        hhqDomain.setDay(getDay(stockDomain));
+                                        // 收盘价
+                                        hhqDomain.setPrice(t[2]);
+                                        break;
+                                    }
+                                }
+                                if (isOK.get()) {
+                                    break;
+                                } else {
+                                    day = String.valueOf(Integer.parseInt(day) - 1);
+                                    log.debug("call getHhqForObject :: {} date :: {} ", stockDomain.getCompanyCode(), day);
+                                    // 数据质量差，交易所取数据（不保证数据正确）
+                                    if ("19900101".equals(day)) {
+                                        // 从 证券交易所 取数据
+                                        if (tDayLineDomain.getSummary().getId().contains(Constants.EXCHANGE_SZ.getString())) {
+                                            // call SzRestTemplate
+                                            SzHqDomain hqDomain = szRestTemplate.getHhqData(stockDomain, null);
+                                            if (hqDomain != null) {
+                                                // 收盘价
+                                                hhqDomain.setPrice(hqDomain.getPrice());
+                                                isOK.set(true);
+                                            }
+                                        } else {
+                                            String day2 = getDay(stockDomain);
+                                            // call ShRestTemplate
+                                            long days = ChronoUnit.DAYS.between(LocalDate.of(Integer.parseInt(day2.substring(0, 4)),
+                                                            Integer.parseInt(day2.substring(4, 6)), Integer.parseInt(day2.substring(6, 8))),
+                                                    LocalDate.now());
+                                            ShHqDomain shHqDomain = shRestTemplate.getHhqData(stockDomain, days);
+                                            if (shHqDomain != null) {
+                                                // 收盘价
+                                                DayLineDomain finalHhqDomain = hhqDomain;
+                                                shHqDomain.getKline().forEach(t -> {
+                                                    if (day2.equals(t[0])) {
+                                                        finalHhqDomain.setPrice(t[3]);
+                                                        isOK.set(true);
+                                                    }
+                                                });
+                                            }
+                                        }
+                                        // 收盘日
+                                        hhqDomain.setDay(getDay(stockDomain));
+                                        break;
+                                    }
+                                }
+                            }
+                        } catch (InterruptedException | ExecutionException e2) {
+                            log.error("call getHhqForObject error :: {}", e2.toString());
+                            return null;
+                        }
+                        return isOK.get() ? hhqDomain : null;
+                    } else if ("{\"status\":3,\"msg\":\"begin time invalid\"}".equals(response)) {
+                        return null;
+                    }
+                }
+
                 // sort desc
                 JSONArray jsonArray = JSONArray.parseArray(response);
                 if (!jsonArray.isEmpty()) {
