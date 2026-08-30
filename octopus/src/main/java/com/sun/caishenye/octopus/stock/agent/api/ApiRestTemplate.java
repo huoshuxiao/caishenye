@@ -2,6 +2,7 @@ package com.sun.caishenye.octopus.stock.agent.api;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -723,13 +724,16 @@ public class ApiRestTemplate {
                             // 全量
                             DayLineDomain tDayLineDomain = getHhqForObject(stockDomain).get();
                             while (!isOK.get()) {
-                                for (String[] t : tDayLineDomain.getHqs()) {
-                                    if (t[0].equals(day)) {
+                                for (String[] hq : tDayLineDomain.getHqs()) {
+                                    if (hq[0].equals(day)) {
                                         isOK.set(true);
+                                        ObjectMapper mapper = new ObjectMapper();
+                                        hhqDomain = mapper.readValue(mapper.writeValueAsString(tDayLineDomain), DayLineDomain.class);
+
                                         // 收盘日
                                         hhqDomain.setDay(getDay(stockDomain));
                                         // 收盘价
-                                        hhqDomain.setPrice(t[2]);
+                                        hhqDomain.setPrice(hq[2]);
                                         break;
                                     }
                                 }
@@ -790,11 +794,12 @@ public class ApiRestTemplate {
                     log.debug("call hhq response jsonarray value :: {}", jsonArray.get(0).toString());
                     hhqDomain = gson.fromJson(jsonArray.get(0).toString(), DayLineDomain.class);
                     // 有历史数据
-                    if (hhqDomain.getHq() != null) {
+                    List<String[]> hq = hhqDomain.getHq();
+                    if (hq != null) {
                         // 收盘日
-                        hhqDomain.setDay(Utils.formatDate2String(hhqDomain.getHq().get(0)[0]));
+                        hhqDomain.setDay(Utils.formatDate2String(hq.get(0)[0]));
                         // 收盘价
-                        hhqDomain.setPrice(hhqDomain.getHq().get(0)[2]);
+                        hhqDomain.setPrice(hq.get(0)[2]);
 
                         // 数据问题 call jrj
                         if (Double.parseDouble(hhqDomain.getPrice()) >= 2000) {
@@ -815,6 +820,7 @@ public class ApiRestTemplate {
             }
         } catch (Exception e) {
             log.error("call getHhqForObject 历史行情(全: SOHU+EASTMONEY+交易所) error :: {} ", e.toString());
+//            return null;
             // not found, call next api
             if ("{}".equals(response)) {
                 AtomicBoolean isOK = new AtomicBoolean(false);
