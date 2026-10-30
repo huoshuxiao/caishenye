@@ -116,7 +116,7 @@ public class ApiRestTemplate {
 //    protected static final String JRJ_HHQ_URL = "http://flashdata2.jrj.com.cn/history/js/share/{companyCode}/other/dayk_ex.js?random={random}";
     // 历史行情 东方财富网 升序
     // http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg=0&end=20500101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid=0.300308&klt=101&fqt=1&cb=jsonp1688913443970
-    protected static final String EASTMONEY_HHQ_URL = "http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg=0&end=20490101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid={exchange}.{companyCode}&klt=101&fqt=1&cb=jsonp1688913443970";
+    protected static final String EASTMONEY_HHQ_URL = "http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg=0&end=20991231&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid={exchange}.{companyCode}&klt=101&fqt=1&cb=jsonp1688913443970";
 
 
     @Autowired
@@ -271,10 +271,10 @@ public class ApiRestTemplate {
             // 公司简称
             base.setCompanyName(diff.get("f14"));
             // 证券交易所
-            if (StringUtils.startsWith(companyCode, "6")) {
+            if (StringUtils.startsWith(companyCode, "60") || StringUtils.startsWith(companyCode, "68")) {
                 // 600001/686868
                 base.setExchange(Constants.EXCHANGE_SH.getString());
-            } else {
+            } else if (StringUtils.startsWith(companyCode, "00") || StringUtils.startsWith(companyCode, "30")){
                 // 000002/300002
                 base.setExchange(Constants.EXCHANGE_SZ.getString());
             }
@@ -603,10 +603,12 @@ public class ApiRestTemplate {
             hhqDomain.setCompanyName(dataMap.get("name").toString());
 
             // 证券交易所
-            if (StringUtils.startsWith(dataMap.get("code").toString(), "6")) {
+            if (StringUtils.startsWith(dataMap.get("code").toString(), "60")
+                || StringUtils.startsWith(dataMap.get("code").toString(), "68")) {
                 // 600001/686868
                 hhqDomain.getSummary().setId(Constants.EXCHANGE_SH.getString().concat(dataMap.get("code").toString()));
-            } else {
+            } else if (StringUtils.startsWith(dataMap.get("code").toString(), "00")
+                    || StringUtils.startsWith(dataMap.get("code").toString(), "30")) {
                 // 000002/300002
                 hhqDomain.getSummary().setId(Constants.EXCHANGE_SZ.getString().concat(dataMap.get("code").toString()));
             }
@@ -753,7 +755,7 @@ public class ApiRestTemplate {
                                                 hhqDomain.setPrice(hqDomain.getPrice());
                                                 isOK.set(true);
                                             }
-                                        } else {
+                                        } else if (tDayLineDomain.getSummary().getId().contains(Constants.EXCHANGE_SH.getString())) {
                                             String day2 = getDay(stockDomain);
                                             // call ShRestTemplate
                                             long days = ChronoUnit.DAYS.between(LocalDate.of(Integer.parseInt(day2.substring(0, 4)),
@@ -855,7 +857,7 @@ public class ApiRestTemplate {
                                         hhqDomain.setPrice(hqDomain.getPrice());
                                         isOK.set(true);
                                     }
-                                } else {
+                                } else if (tDayLineDomain.getSummary().getId().contains(Constants.EXCHANGE_SH.getString())) {
                                     String day2 = getDay(stockDomain);
                                     // call ShRestTemplate
                                     long days = ChronoUnit.DAYS.between(LocalDate.of(Integer.parseInt(day2.substring(0, 4)),

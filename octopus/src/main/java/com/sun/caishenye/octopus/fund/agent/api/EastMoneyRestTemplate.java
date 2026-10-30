@@ -44,8 +44,6 @@ public class EastMoneyRestTemplate {
 
         log.debug("EastMoneyRestTemplate call base request start");
 
-        createRequestHeader();
-
         // call rest service
         ResponseEntity<String> responseEntity = restTemplate.exchange(replaceUrl(year), HttpMethod.GET, createRequestHeader(), String.class);
         return getResponseData(responseEntity);
@@ -101,10 +99,11 @@ public class EastMoneyRestTemplate {
 
     public List<String> annualIncrease(String startDate, String endDate) {
 
-        createRequestHeader();
-
         // call rest service
-        ResponseEntity<String> responseEntity = restTemplate.exchange(replaceUrl(BASE_DATA_URL, startDate, endDate), HttpMethod.GET, createRequestHeader(), String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(replaceUrl(BASE_DATA_URL, startDate, endDate),
+                HttpMethod.GET,
+                createRequestHeader(),
+                String.class);
         return getResponseData(responseEntity);
     }
 }

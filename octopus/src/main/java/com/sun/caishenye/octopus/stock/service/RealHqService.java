@@ -52,7 +52,7 @@ public class RealHqService {
                 } else {
                     apiRestTemplate.getHqData(stockDomain, Constants.EXCHANGE_SZ.getString());
                 }
-            } else {
+            } else if (Constants.EXCHANGE_SH.getString().equalsIgnoreCase(stockDomain.getExchange())) {
                 shService.hq(stockDomain);
             }
         }

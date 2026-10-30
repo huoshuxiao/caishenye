@@ -14,7 +14,7 @@
            timeToIdleSeconds="3600" timeToLiveSeconds="6000" overflowToDisk="false" />
 
     <cache name="ehcache_10M" maxElementsInMemory="10000" eternal="false"
-                  timeToIdleSeconds="360" timeToLiveSeconds="600" overflowToDisk="false" />
+           timeToIdleSeconds="360" timeToLiveSeconds="600" overflowToDisk="false" />
     <cache name="ehcache_1W" maxElementsInMemory="10000" eternal="false"
            timeToIdleSeconds="86400" timeToLiveSeconds="604800" overflowToDisk="false" />
 
